@@ -1,0 +1,1566 @@
+<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="4.4.1">Jekyll</generator><link href="http://localhost:4000/feed.xml" rel="self" type="application/atom+xml" /><link href="http://localhost:4000/" rel="alternate" type="text/html" /><updated>2025-07-20T13:35:13+05:30</updated><id>http://localhost:4000/feed.xml</id><title type="html">Shivam’s Tech Blog</title><subtitle>Infra monitoring, automation &amp; DevOps tutorials</subtitle><author><name>Shivam Shukla</name></author><entry><title type="html">Sample Ansible Playbook</title><link href="http://localhost:4000/automation/ansible/2025/07/05/ansible-playbook-sample.html" rel="alternate" type="text/html" title="Sample Ansible Playbook" /><published>2025-07-05T12:00:00+05:30</published><updated>2025-07-05T12:00:00+05:30</updated><id>http://localhost:4000/automation/ansible/2025/07/05/ansible-playbook-sample</id><content type="html" xml:base="http://localhost:4000/automation/ansible/2025/07/05/ansible-playbook-sample.html"><![CDATA[<p>Here is a basic Ansible playbook to install Apache:</p>
+
+<h2 id="yaml">```yaml</h2>
+<ul>
+  <li>name: Install Apache Web Server
+hosts: webservers
+become: true
+tasks:
+    <ul>
+      <li>name: Install Apache
+apt:
+  name: apache2
+  state: present</li>
+    </ul>
+  </li>
+</ul>]]></content><author><name>Shivam Shukla</name></author><category term="automation" /><category term="ansible" /><category term="ansible" /><category term="devops" /><category term="playbook" /><summary type="html"><![CDATA[Here is a basic Ansible playbook to install Apache:]]></summary></entry><entry><title type="html">Welcome to My Tech Blog</title><link href="http://localhost:4000/intro/2025/07/05/welcome.html" rel="alternate" type="text/html" title="Welcome to My Tech Blog" /><published>2025-07-05T00:00:00+05:30</published><updated>2025-07-05T00:00:00+05:30</updated><id>http://localhost:4000/intro/2025/07/05/welcome</id><content type="html" xml:base="http://localhost:4000/intro/2025/07/05/welcome.html"><![CDATA[<p>This is my first post! More deep-dive tutorials coming soon 🚀</p>]]></content><author><name>Shivam Shukla</name></author><category term="intro" /><summary type="html"><![CDATA[This is my first post! More deep-dive tutorials coming soon 🚀]]></summary></entry><entry><title type="html">Setup A Dns Server On Centos 6 Step By Step</title><link href="http://localhost:4000/2015/07/19/setup-a-dns-server-on-centos-6-step-by-step.html" rel="alternate" type="text/html" title="Setup A Dns Server On Centos 6 Step By Step" /><published>2015-07-19T00:00:00+05:30</published><updated>2015-07-19T00:00:00+05:30</updated><id>http://localhost:4000/2015/07/19/setup-a-dns-server-on-centos-6-step-by-step</id><content type="html" xml:base="http://localhost:4000/2015/07/19/setup-a-dns-server-on-centos-6-step-by-step.html"><![CDATA[<p>Hi Guys, here’s my new post on how to set up a DNS server on a CentOS 6 box. Hope you will find this helpful.</p>
+
+<h3 id="scenario">Scenario:</h3>
+
+<p>Here is my test setup scenario:</p>
+
+<p><strong>DNS Server Details:</strong></p>
+
+<table>
+  <thead>
+    <tr>
+      <th>Setting</th>
+      <th>Value</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>OS</td>
+      <td>CentOS release 6.4 (Final) 64-Bit</td>
+    </tr>
+    <tr>
+      <td>Hostname</td>
+      <td>dnsserver</td>
+    </tr>
+    <tr>
+      <td>IP Address</td>
+      <td>192.168.1.26/24</td>
+    </tr>
+    <tr>
+      <td>Domain Name</td>
+      <td>localdnstest.local</td>
+    </tr>
+  </tbody>
+</table>
+
+<blockquote>
+  <p><strong>Note</strong>: The IP address used here is a private IP and the domain name is for testing purposes only.</p>
+</blockquote>
+
+<p>Step 1: Install the packages required for DNS setup</p>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="o">[</span>root@dnsserver ~ <span class="o">]</span><span class="c">#yum -y install bind </span>
+</code></pre></div></div>
+<p>Step 2: Edit the “named.conf” file which is present in the “/etc/” directory the file looks somewhat like the one shown below, Edit/add the entries marked with comment to your file, make sure to use the details as per your requirement.</p>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="o">[</span>root@dnsserver ~ <span class="o">]</span><span class="c">#vi /etc/named.conf</span>
+</code></pre></div></div>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>
+// named.conf
+//
+// Provided by Red Hat <span class="nb">bind </span>package to configure the ISC BIND named<span class="o">(</span>8<span class="o">)</span> DNS
+// server as a caching only nameserver <span class="o">(</span>as a localhost DNS resolver only<span class="o">)</span><span class="nb">.</span>
+//
+// See /usr/share/doc/bind<span class="k">*</span>/sample/ <span class="k">for </span>example named configuration files.
+//
+options <span class="o">{</span>
+ listen-on port 53 <span class="o">{</span> 127.0.0.1<span class="p">;</span> 192.168.1.26<span class="p">;</span><span class="o">}</span><span class="p">;</span> <span class="c">#ADD/EDIT THE SERVER IP EXAMPLE 192.168.1.26</span>
+ listen-on-v6 port 53 <span class="o">{</span> ::1<span class="p">;</span> <span class="o">}</span><span class="p">;</span>
+ directory <span class="s2">"/var/named"</span><span class="p">;</span>
+ dump-file <span class="s2">"/var/named/data/cache_dump.db"</span><span class="p">;</span>
+ statistics-file <span class="s2">"/var/named/data/named_stats.txt"</span><span class="p">;</span>
+ memstatistics-file <span class="s2">"/var/named/data/named_mem_stats.txt"</span><span class="p">;</span>
+ allow-query <span class="o">{</span> localhost<span class="p">;</span> 192.168.1.0/24<span class="p">;</span><span class="o">}</span><span class="p">;</span> <span class="c">#ADD/EDIT THE IP RANGE HERE AS SHOWN</span>
+ recursion <span class="nb">yes</span><span class="p">;</span>
+ dnssec-enable <span class="nb">yes</span><span class="p">;</span>
+ dnssec-validation <span class="nb">yes</span><span class="p">;</span>
+ dnssec-lookaside auto<span class="p">;</span>
+ /<span class="k">*</span> Path to ISC DLV key <span class="k">*</span>/
+ bindkeys-file <span class="s2">"/etc/named.iscdlv.key"</span><span class="p">;</span>
+ managed-keys-directory <span class="s2">"/var/named/dynamic"</span><span class="p">;</span>
+<span class="o">}</span><span class="p">;</span>
+logging <span class="o">{</span>
+ channel default_debug <span class="o">{</span>
+ file <span class="s2">"data/named.run"</span><span class="p">;</span>
+ severity dynamic<span class="p">;</span>
+ <span class="o">}</span><span class="p">;</span>
+<span class="o">}</span><span class="p">;</span>
+zone <span class="s2">"."</span> IN <span class="o">{</span>
+ <span class="nb">type </span>hint<span class="p">;</span>
+ file <span class="s2">"named.ca"</span><span class="p">;</span>
+<span class="o">}</span><span class="p">;</span>
+<span class="c">#ADD THE FORWARD &amp;amp; REVERSE ZONE AS SHOWN BELOW</span>
+<span class="c">########Forward Zone#########################</span>
+zone <span class="s2">"localdnstest.local"</span> IN <span class="o">{</span>
+        <span class="nb">type </span>master<span class="p">;</span>
+        file <span class="s2">"fwd.localdnstest.local"</span><span class="p">;</span>
+        allow-update <span class="o">{</span> none<span class="p">;</span> <span class="o">}</span><span class="p">;</span>
+<span class="o">}</span><span class="p">;</span>
+<span class="c">#############################################</span>
+<span class="c">########Reverse Zone#######################</span>
+zone <span class="s2">"1.168.192.in-addr.arpa"</span> IN <span class="o">{</span>
+       type master<span class="p">;</span>
+       file <span class="s2">"rev.localdnstest.local"</span><span class="p">;</span>
+       allow-update <span class="o">{</span> none<span class="p">;</span> <span class="o">}</span><span class="p">;</span>
+<span class="o">}</span><span class="p">;</span>
+<span class="c">###########################################</span>
+include <span class="s2">"/etc/named.rfc1912.zones"</span><span class="p">;</span>
+include <span class="s2">"/etc/named.root.key"</span><span class="p">;</span>
+</code></pre></div></div>
+<p>Step 3: Creating zone files.
+We need to create forward &amp; reverse zone files which we mentioned in the “/etc/named.conf” file.
+Create the forward zone file “fwd.localdnstest.local” in the “/var/named” and add the entries for the forward zone as shown below.</p>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="o">[</span>root@dnsserver ~ <span class="o">]</span><span class="c">#vi /var/named/fwd.localdnstest.local</span>
+</code></pre></div></div>
+<p>Add the below lines make sure to modify them as per your requirement.</p>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$TTL</span> 600
+@ IN SOA  dnsserver.localdnstest.local. root.localdnstest.local. <span class="o">(</span>
+                                         2015022609  <span class="p">;</span> serial
+                                         3600    <span class="p">;</span> refresh
+                                         1800    <span class="p">;</span> retry
+                                         604800  <span class="p">;</span> expire
+                                         600 <span class="o">)</span>   <span class="p">;</span> minimum
+                IN NS   dnsserver.localdnstest.local.
+                IN MX   10 mail.localdnstest.local.
+dnsserver       IN A    192.168.1.26
+mail            IN A    192.168.1.26
+www             IN CNAME        dnsserver
+ftp             IN CNAME        dnsserver
+</code></pre></div></div>
+<p>Create the reverse zone file “rev.localdnstest.local” in the “/var/named” and add the entries for the reverse zone as shown below.</p>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="o">[</span>root@dnsserver ~ <span class="o">]</span><span class="c">#vi /var/named/rev.localdnstest.local</span>
+</code></pre></div></div>
+<p>Add the below lines make sure to modify them as per your requirement.</p>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$TTL</span> 600
+@ IN SOA dnsserver.localdnstest.local. root.localdnstest.local. <span class="o">(</span>
+                               2015022609 <span class="p">;</span> serial
+                               3600 <span class="p">;</span> refresh
+                               1800 <span class="p">;</span> retry
+                               604800 <span class="p">;</span> expire
+                               600 <span class="o">)</span> <span class="p">;</span> minimum
+            IN NS dnsserver.localdnstest.local.
+            IN MX 10 mail.localdnstest.local.
+dnsserver   IN A 192.168.1.26
+mail        IN A 192.168.1.26
+www         IN   CNAME    dnsserver
+ftp         IN   CNAME    dnsserver
+26          IN   PTR      dnsserver.localdnstest.local.
+</code></pre></div></div>
+<p>Step 4: After the creation of zone files, we need to start/restart the bind service. and allow it to start automatically.</p>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="o">[</span>root@dnsserver ~ <span class="o">]</span><span class="c">#service named start</span>
+<span class="o">[</span>root@dnsserver ~ <span class="o">]</span><span class="c">#chkconfig named on</span>
+</code></pre></div></div>
+<p>Step 5: Allow the DNS sever through IP tables.
+Edit the file “/etc/sysconfig/iptables” and add the below lines to the file</p>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="o">[</span>root@dnsserver ~ <span class="o">]</span><span class="c">#vi /etc/sysconfig/iptables</span>
+</code></pre></div></div>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nt">-A</span> INPUT <span class="nt">-p</span> udp <span class="nt">-m</span> state <span class="nt">--state</span> NEW <span class="nt">--dport</span> 53 <span class="nt">-j</span> ACCEPT
+<span class="nt">-A</span> INPUT <span class="nt">-p</span> tcp <span class="nt">-m</span> state <span class="nt">--state</span> NEW <span class="nt">--dport</span> 53 <span class="nt">-j</span> ACCEPT
+</code></pre></div></div>
+<p>Step 6: Restart the iptables service to save the changes.</p>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="o">[</span>root@dnsserver ~ <span class="o">]</span><span class="c">#service iptables restart</span>
+</code></pre></div></div>
+<p>Step 7: Now let’s test the DNS configuration &amp; zone files for syntax errors.
+Check DNS configuration files.</p>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="o">[</span>root@dnsserver ~ <span class="o">]</span><span class="c">#named-checkconf /etc/named.conf</span>
+<span class="o">[</span>root@dnsserver ~ <span class="o">]</span><span class="c">#named-checkconf /etc/named.rfc1912.zones</span>
+</code></pre></div></div>
+<p>Check zone files.</p>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="o">[</span>root@dnsserver ~ <span class="o">]</span><span class="c">#named-checkzone localdnstest.local /var/named/fwd.localdnstest.local</span>
+<span class="o">[</span>root@dnsserver ~ <span class="o">]</span><span class="c">#named-checkzone localdnstest.local /var/named/rev.localdnstest.local</span>
+</code></pre></div></div>
+<p>NOTE: As this is a test domain so this test my not work until you modify the “/etc/resolv.conf” file and add the new nameserver parameter “nameserver 192.168.1.26”</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="o">[</span>root@dnsserver ~ <span class="o">]</span><span class="c"># vi /etc/resolve.conf</span>
+</code></pre></div></div>
+
+<p>Add the below parameter.</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>nameserver 192.168.1.26
+</code></pre></div></div>
+
+<p>Step 8: Test the DNS server.</p>
+
+<p>Method 1:</p>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="o">[</span>root@dnsserver ~ <span class="o">]</span><span class="c">#dig localdnstest.local</span>
+</code></pre></div></div>
+
+<p>Method 2:</p>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="o">[</span>root@dnsserver ~ <span class="o">]</span><span class="c">#dig -x 192.168.1.26</span>
+</code></pre></div></div>
+
+<p>Method 3:</p>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="o">[</span>root@dnsserver ~ <span class="o">]</span><span class="c">#nslookup www.localdnstest.local</span>
+</code></pre></div></div>
+
+<p>Hope you find this interesting.
+Thanks</p>]]></content><author><name>Shivam Shukla</name></author><summary type="html"><![CDATA[Hi Guys, here’s my new post on how to set up a DNS server on a CentOS 6 box. Hope you will find this helpful.]]></summary></entry><entry><title type="html">Openvpn With User Password Based Authentication</title><link href="http://localhost:4000/2014/11/27/openvpn-with-user-password-based-authentication.html" rel="alternate" type="text/html" title="Openvpn With User Password Based Authentication" /><published>2014-11-27T00:00:00+05:30</published><updated>2014-11-27T00:00:00+05:30</updated><id>http://localhost:4000/2014/11/27/openvpn-with-user-password-based-authentication</id><content type="html" xml:base="http://localhost:4000/2014/11/27/openvpn-with-user-password-based-authentication.html"><![CDATA[<p>System details:-</p>
+
+<p>OpenVPN Server IP: 192.168.1.2 (Public IP, the written IP is private used for example purpose)</p>
+
+<p>MySQL Server IP: 192.168.1.2 (Public IP, the written IP is private used for example purpose)</p>
+
+<p>Shell script (Customize)- 1 user - many connections</p>
+
+<p>Install MySQL Server for User/Pass Authentication, IP = 192.168.1.2</p>
+
+<p>Install MySQL Server</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="o">[</span>root@localhost]# yum <span class="nb">install </span>mysql-server
+</code></pre></div></div>
+
+<p>Log in MySQL as root</p>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="o">[</span>root@localhost]#mysql <span class="nt">-uroot</span> <span class="nt">-p</span>
+</code></pre></div></div>
+
+<p>Create the database ‘openvpn’</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>mysql&gt; CREATE DATABASE openvpn<span class="p">;</span>
+</code></pre></div></div>
+
+<p>Create a MySQL user with username ‘USERNAME’ and password ‘PASSWORD’</p>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>mysql&gt;GRANT ALL ON openvpn.<span class="k">*</span> TO <span class="s1">'USERNAME'</span>@<span class="s2">"%"</span> IDENTIFIED BY <span class="s1">'PASSWORD'</span><span class="p">;</span>
+</code></pre></div></div>
+
+<p>Log out root user</p>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>mysql&gt;exit
+</code></pre></div></div>
+
+<p>Log in MySQL as new user ’USERNAME’</p>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="o">[</span>root@localhost]# mysql <span class="nt">-uUSERNAME</span> <span class="nt">-pPASSWORD</span>
+</code></pre></div></div>
+
+<p>Switch database</p>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>mysql&gt;USE openvpn<span class="p">;</span>
+</code></pre></div></div>
+
+<p>Create the user, log table and insert user data into it.
+User table creation</p>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>
+CREATE TABLE IF NOT EXISTS <span class="sb">`</span>user<span class="sb">`</span> <span class="o">(</span>
+    <span class="sb">`</span>user_id<span class="sb">`</span> varchar<span class="o">(</span>32<span class="o">)</span> COLLATE utf8_unicode_ci NOT NULL,
+    <span class="sb">`</span>user_pass<span class="sb">`</span> varchar<span class="o">(</span>32<span class="o">)</span> COLLATE utf8_unicode_ci NOT NULL DEFAULT <span class="s1">'1234'</span>,
+    <span class="sb">`</span>user_mail<span class="sb">`</span> varchar<span class="o">(</span>64<span class="o">)</span> COLLATE utf8_unicode_ci DEFAULT NULL,
+    <span class="sb">`</span>user_phone<span class="sb">`</span> varchar<span class="o">(</span>16<span class="o">)</span> COLLATE utf8_unicode_ci DEFAULT NULL,
+    <span class="sb">`</span>user_online<span class="sb">`</span> tinyint<span class="o">(</span>1<span class="o">)</span> NOT NULL DEFAULT <span class="s1">'0'</span>,
+    <span class="sb">`</span>user_enable<span class="sb">`</span> tinyint<span class="o">(</span>1<span class="o">)</span> NOT NULL DEFAULT <span class="s1">'1'</span>,
+    <span class="sb">`</span>user_start_date<span class="sb">`</span> <span class="nb">date </span>NOT NULL,
+    <span class="sb">`</span>user_end_date<span class="sb">`</span> <span class="nb">date </span>NOT NULL,
+PRIMARY KEY <span class="o">(</span><span class="sb">`</span>user_id<span class="sb">`</span><span class="o">)</span>,
+KEY <span class="sb">`</span>user_pass<span class="sb">`</span> <span class="o">(</span><span class="sb">`</span>user_pass<span class="sb">`</span><span class="o">)</span>
+<span class="o">)</span> <span class="nv">ENGINE</span><span class="o">=</span>MyISAM DEFAULT <span class="nv">CHARSET</span><span class="o">=</span>utf8 <span class="nv">COLLATE</span><span class="o">=</span>utf8_unicode_ci<span class="p">;</span>
+</code></pre></div></div>
+
+<p>Log table creation</p>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>
+CREATE TABLE IF NOT EXISTS <span class="sb">`</span>log<span class="sb">`</span> <span class="o">(</span>
+    <span class="sb">`</span>log_id<span class="sb">`</span> int<span class="o">(</span>10<span class="o">)</span> unsigned NOT NULL AUTO_INCREMENT,
+    <span class="sb">`</span>user_id<span class="sb">`</span> varchar<span class="o">(</span>32<span class="o">)</span> COLLATE utf8_unicode_ci NOT NULL,
+    <span class="sb">`</span>log_trusted_ip<span class="sb">`</span> varchar<span class="o">(</span>32<span class="o">)</span> COLLATE utf8_unicode_ci DEFAULT NULL,
+    <span class="sb">`</span>log_trusted_port<span class="sb">`</span> varchar<span class="o">(</span>16<span class="o">)</span> COLLATE utf8_unicode_ci DEFAULT NULL,
+    <span class="sb">`</span>log_remote_ip<span class="sb">`</span> varchar<span class="o">(</span>32<span class="o">)</span> COLLATE utf8_unicode_ci DEFAULT NULL,
+    <span class="sb">`</span>log_remote_port<span class="sb">`</span> varchar<span class="o">(</span>16<span class="o">)</span> COLLATE utf8_unicode_ci DEFAULT NULL,
+    <span class="sb">`</span>log_start_time<span class="sb">`</span> timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    <span class="sb">`</span>log_end_time<span class="sb">`</span> timestamp NOT NULL DEFAULT <span class="s1">'0000-00-00 00:00:00'</span>,
+    <span class="sb">`</span>log_received<span class="sb">`</span> float NOT NULL DEFAULT <span class="s1">'0'</span>,
+    <span class="sb">`</span>log_send<span class="sb">`</span> float NOT NULL DEFAULT <span class="s1">'0'</span>,
+PRIMARY KEY <span class="o">(</span><span class="sb">`</span>log_id<span class="sb">`</span><span class="o">)</span>,
+KEY <span class="sb">`</span>user_id<span class="sb">`</span> <span class="o">(</span><span class="sb">`</span>user_id<span class="sb">`</span><span class="o">)</span>
+<span class="o">)</span> <span class="nv">ENGINE</span><span class="o">=</span>MyISAM  DEFAULT <span class="nv">CHARSET</span><span class="o">=</span>utf8 <span class="nv">COLLATE</span><span class="o">=</span>utf8_unicode_ci<span class="p">;</span>
+</code></pre></div></div>
+
+<p>User data insertion</p>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>
+INSERT INTO <span class="sb">`</span>user<span class="sb">`</span> <span class="o">(</span>
+    <span class="sb">`</span>user_id<span class="sb">`</span>, <span class="sb">`</span>user_pass<span class="sb">`</span>, <span class="sb">`</span>user_mail<span class="sb">`</span>, <span class="sb">`</span>user_phone<span class="sb">`</span>,
+    <span class="sb">`</span>user_online<span class="sb">`</span>, <span class="sb">`</span>user_enable<span class="sb">`</span>, <span class="sb">`</span>user_start_date<span class="sb">`</span>, <span class="sb">`</span>user_end_date<span class="sb">`</span>
+<span class="o">)</span>
+VALUES <span class="o">(</span>
+    <span class="s1">'foobar'</span>, <span class="s1">'foo@123'</span>, <span class="s1">'foo.bar@foobar.com'</span>,
+    <span class="s1">'+1234567890'</span>, 0, 1, <span class="s1">'2014-01-01'</span>, <span class="s1">'0000-00-00'</span>
+<span class="o">)</span><span class="p">;</span><span class="sb">```</span>
+
+Now <span class="nb">let</span><span class="s1">'s have a look at the tables &amp;; user data we just created.
+Tabel view
+```bash
+mysql&gt;show tables;
++-------------------+
+| Tables_in_openvpn |
++-------------------+
+| log               |
+| user              |
++-------------------+
+</span></code></pre></div></div>
+
+<p>User data view</p>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>mysql&gt;select <span class="k">*</span> from user<span class="p">;</span>
++---------+-----------+---------------------+--------------+-------------+-------------+-----------------+---------------+
+| user_id | user_pass | user_mail           | user_phone   | user_online | user_enable | user_start_date | user_end_date |
++---------+-----------+---------------------+--------------+-------------+-------------+-----------------+---------------+
+| foobar    | foo@123      | foo.bar@foobar.com | +1234567890 |           0 |           1 | 2014-01-01      | 0000-00-00    |
++---------+-----------+---------------------+--------------+-------------+-------------+-----------------+---------------+
+</code></pre></div></div>
+
+<p>Everything seems to be OK now let’s logout of mysql</p>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>mysql&gt;exit
+</code></pre></div></div>
+
+<p>Edit file /etc/mysql/my.cnf using your favourite editor &amp;; insert # to line</p>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="o">[</span>root@localhost]# vi /etc/my.cnf
+bind-address  <span class="o">=</span> 127.0.0.1
+</code></pre></div></div>
+
+<p>Sample</p>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c">#bind-address  = 127.0.0.1</span>
+</code></pre></div></div>
+
+<p>OpenVPN Server Side Configuration
+Prerequisites
+OpenVPN and it’s dependencies are not available in CentOS default repositories. So, it is required to install the“EPEL” repo. in order to install OpenVPN and its dependencies.
+Lets start with the installation of EPEL repo first. Downloading &amp;; installing the rpm from the below link will enable the EPEL repo on your CentOS box.</p>
+<h2 id="rhelcentos-6-32-bit">RHEL/CentOS 6 32-Bit</h2>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>
+<span class="o">[</span>root@localhost]# wget http://download.fedoraproject.org/pub/epel/6/i386/epel-release-6-8.noarch.rpm
+<span class="o">[</span>root@localhost]# rpm <span class="nt">-ivh</span> epel-release-6-8.noarch.rpm
+</code></pre></div></div>
+
+<h2 id="rhelcentos-6-64-bit">RHEL/CentOS 6 64-Bit</h2>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>
+<span class="o">[</span>root@localhost]# wget http://download.fedoraproject.org/pub/epel/6/x86_64/epel-release-6-8.noarch.rpm
+<span class="o">[</span>root@localhost]# rpm <span class="nt">-ivh</span> epel-release-6-8.noarch.rpm
+</code></pre></div></div>
+
+<p>Its better to update the system using the following command:</p>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>
+yum update
+</code></pre></div></div>
+
+<p>Install OpenVPN Software
+Install the OpenVPN software using the following command:</p>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>
+yum <span class="nb">install </span>openvpn easy-rsa
+</code></pre></div></div>
+
+<p>The easy-rsa scripts by default are in the /usr/share/easy-rsa/ directory. Make a directory /easy-rsa/keys inside the /etc/openvpn directory and copy those scripts to that directory as shown below:</p>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>
+<span class="nb">mkdir</span> <span class="nt">-p</span> /etc/openvpn/easy-rsa/keys
+<span class="nb">cp</span> <span class="nt">-rf</span> /usr/share/easy-rsa/2.0/<span class="k">*</span> /etc/openvpn/easy-rsa/
+</code></pre></div></div>
+
+<p>Generate CA Certificate and CA key
+Edit file /etc/openvpn/easy-rsa/2.0/vars</p>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>
+<span class="o">[</span>root@localhost]vi /etc/openvpn/easy-rsa/vars
+</code></pre></div></div>
+
+<p>And, change the values that matches with your country, state, city, mail id etc.</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>
+<span class="c"># Don't leave any of these fields blank.</span>
+<span class="nb">export </span><span class="nv">KEY_COUNTRY</span><span class="o">=</span><span class="s2">"IN"</span>
+<span class="nb">export </span><span class="nv">KEY_PROVINCE</span><span class="o">=</span><span class="s2">"Delhi"</span>
+<span class="nb">export </span><span class="nv">KEY_CITY</span><span class="o">=</span><span class="s2">"New Delhi"</span>
+<span class="nb">export </span><span class="nv">KEY_ORG</span><span class="o">=</span><span class="s2">"Test_Lab"</span>
+<span class="nb">export </span><span class="nv">KEY_EMAIL</span><span class="o">=</span><span class="s2">"foo@foobar.com"</span>
+<span class="nb">export </span><span class="nv">KEY_OU</span><span class="o">=</span><span class="s2">"server"</span>
+</code></pre></div></div>
+
+<p>Go to the openvpn/easy-rsa directory:</p>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>
+<span class="nb">cd</span> /etc/openvpn/easy-rsa/
+</code></pre></div></div>
+
+<p>Enter the following commands one by one to initialize the certificate authority:</p>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>
+<span class="nb">cp </span>openssl-1.0.0.cnf openssl.cnfsource
+<span class="nb">source</span> ./vars
+./clean-all
+</code></pre></div></div>
+
+<p>Then, run the following command to generate CA certificate and CA key:</p>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>
+./build-ca
+</code></pre></div></div>
+
+<p>Sample output:</p>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>
+Generating a 2048 bit RSA private key
+......................................................+++
+............................................................+++
+writing new private key to <span class="s1">'ca.key'</span>
+<span class="nt">----</span>
+You are about to be asked to enter information that will be incorporated
+into your certificate request.
+What you are about to enter is what is called a Distinguished Name or a DN.
+There are quite a few fields but you can leave some blank
+For some fields there will be a default value,
+If you enter <span class="s1">'.'</span>, the field will be left blank.
+<span class="nt">-----</span>
+Country Name <span class="o">(</span>2 letter code<span class="o">)</span> <span class="o">[</span>IN]: <span class="nt">----</span><span class="o">&gt;</span> Press Enter
+State or Province Name <span class="o">(</span>full name<span class="o">)</span> <span class="o">[</span>DEL]:----&gt; Press Enter
+Locality Name <span class="o">(</span>eg, city<span class="o">)</span> <span class="o">[</span>New Delhi]: <span class="nt">----</span><span class="o">&gt;</span> Press Enter
+Organization Name <span class="o">(</span>eg, company<span class="o">)</span> <span class="o">[</span>Test_Lab]: <span class="nt">----</span><span class="o">&gt;</span> Press Enter
+Organizational Unit Name <span class="o">(</span>eg, section<span class="o">)</span> <span class="o">[</span>server]: <span class="nt">----</span><span class="o">&gt;</span> Press Enter
+Common Name <span class="o">(</span>eg, your name or your server<span class="s1">'s hostname) [server CA]: ----&gt; Press Enter
+Name [EasyRSA]: ----&gt; Press Enter
+Email Address [foo@foobar.com]: ----&gt; Press Enter
+
+
+We have now generated the CA certificate and CA key. Then create certificate and key for server using the following command:
+
+
+./build-key-server server
+</span></code></pre></div></div>
+
+<p>Sample output:</p>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Generating a 2048 bit RSA private key
+....................+++
+.............+++
+writing new private key to <span class="s1">'server.key'</span>
+<span class="nt">-----</span>
+You are about to be asked to enter information that will be incorporated
+into your certificate request.
+What you are about to enter is what is called a Distinguished Name or a DN.
+There are quite a few fields but you can leave some blank
+For some fields there will be a default value,
+If you enter <span class="s1">'.'</span>, the field will be left blank.
+<span class="nt">-----</span>
+Country Name <span class="o">(</span>2 letter code<span class="o">)</span> <span class="o">[</span>IN]: <span class="nt">----</span><span class="o">&gt;</span> Press Enter
+State or Province Name <span class="o">(</span>full name<span class="o">)</span> <span class="o">[</span>DEL]: <span class="nt">----</span><span class="o">&gt;</span> Press Enter
+Locality Name <span class="o">(</span>eg, city<span class="o">)</span> <span class="o">[</span>New Delhi]: <span class="nt">----</span><span class="o">&gt;</span> Press Enter
+Organization Name <span class="o">(</span>eg, company<span class="o">)</span> <span class="o">[</span>Test_Lab]: <span class="nt">----</span><span class="o">&gt;</span> Press Enter
+Organizational Unit Name <span class="o">(</span>eg, section<span class="o">)</span> <span class="o">[</span>server]: <span class="nt">----</span><span class="o">&gt;</span> Press Enter
+Common Name <span class="o">(</span>eg, your name or your server<span class="s1">'s hostname) [server]: ----&gt; Press Enter
+Name [EasyRSA]: ----&gt; Press Enter
+Email Address [foo@foobar.com]: ----&gt; Press Enter
+Please enter the following '</span>extra<span class="s1">' attributes
+to be sent with your certificate request
+A challenge password []: ----&gt; Press Enter
+An optional company name []: ----&gt; Press Enter
+Using configuration from /etc/openvpn/easy-rsa/openssl-1.0.0.cnf
+Check that the request matches the signature
+Signature ok
+The Subject'</span>s Distinguished Name is as follows
+countryName           :PRINTABLE:<span class="s1">'IN'</span>
+stateOrProvinceName   :PRINTABLE:<span class="s1">'DEL'</span>
+localityName          :PRINTABLE:<span class="s1">'New Delhi'</span>
+organizationName      :PRINTABLE:<span class="s1">'Test_Lab'</span>
+organizationalUnitName:PRINTABLE:<span class="s1">'server'</span>
+commonName            :PRINTABLE:<span class="s1">'server'</span>
+name                  :PRINTABLE:<span class="s1">'EasyRSA'</span>
+emailAddress          :IA5STRING:<span class="s1">'foo@foobar.com'</span>
+Certificate is to be certified <span class="k">until </span>Mar 23 12:21:34 2024 GMT <span class="o">(</span>3650 days<span class="o">)</span>
+Sign the certificate? <span class="o">[</span>y/n]:y <span class="nt">----</span><span class="o">&gt;</span> Type Y and Press Enter
+1 out of 1 certificate requests certified, commit? <span class="o">[</span>y/n]y <span class="nt">----</span><span class="o">&gt;</span> Type Y and Press Enter
+Write out database with 1 new entries
+Data Base Updated
+</code></pre></div></div>
+
+<p>Create certificate and key for VPN clients using the following command:</p>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>./build-key client
+</code></pre></div></div>
+
+<p>If you want to create certificate and key files for each client, you should replace the client parameter with an unique identifier.
+Sample output:</p>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Generating a 2048 bit RSA private key
+.......+++
+..................................................................................................+++
+writing new private key to <span class="s1">'client.key'</span>
+<span class="nt">-----</span>
+You are about to be asked to enter information that will be incorporated
+into your certificate request.
+What you are about to enter is what is called a Distinguished Name or a DN.
+There are quite a few fields but you can leave some blank
+For some fields there will be a default value,
+If you enter <span class="s1">'.'</span>, the field will be left blank.
+<span class="nt">-----</span>
+Country Name <span class="o">(</span>2 letter code<span class="o">)</span> <span class="o">[</span>IN]: <span class="nt">----</span><span class="o">&gt;</span> Press Enter
+State or Province Name <span class="o">(</span>full name<span class="o">)</span> <span class="o">[</span>DEL]: <span class="nt">----</span><span class="o">&gt;</span> Press Enter
+Locality Name <span class="o">(</span>eg, city<span class="o">)</span> <span class="o">[</span>New Delhi]: <span class="nt">----</span><span class="o">&gt;</span> Press Enter
+Organization Name <span class="o">(</span>eg, company<span class="o">)</span> <span class="o">[</span>Test_Lab]: <span class="nt">----</span><span class="o">&gt;</span> Press Enter
+Organizational Unit Name <span class="o">(</span>eg, section<span class="o">)</span> <span class="o">[</span>server]:----&gt; Press Enter
+Common Name <span class="o">(</span>eg, your name or your server<span class="s1">'s hostname) [client]: ----&gt; Press Enter
+Name [EasyRSA]: ----&gt; Press Enter
+Email Address [foo@foobar.com]: ----&gt; Press Enter
+Please enter the following '</span>extra<span class="s1">' attributes
+to be sent with your certificate request
+A challenge password []: ----&gt; Press Enter
+An optional company name []: ----&gt; Press Enter
+Using configuration from /etc/openvpn/easy-rsa/openssl-1.0.0.cnf
+Check that the request matches the signature
+Signature ok
+The Subject'</span>s Distinguished Name is as follows
+countryName           :PRINTABLE:<span class="s1">'IN'</span>
+stateOrProvinceName   :PRINTABLE:<span class="s1">'DEL'</span>
+localityName          :PRINTABLE:<span class="s1">'New Delhi'</span>
+organizationName      :PRINTABLE:<span class="s1">'Test_Lab'</span>
+organizationalUnitName:PRINTABLE:<span class="s1">'server'</span>
+commonName            :PRINTABLE:<span class="s1">'client'</span>
+name                  :PRINTABLE:<span class="s1">'EasyRSA'</span>
+emailAddress          :IA5STRING:<span class="s1">'foo@foobar.com'</span>
+Certificate is to be certified <span class="k">until </span>Mar 23 12:23:44 2024 GMT <span class="o">(</span>3650 days<span class="o">)</span>
+Sign the certificate? <span class="o">[</span>y/n]:y <span class="nt">----</span><span class="o">&gt;</span> Type Y and Press Enter
+1 out of 1 certificate requests certified, commit? <span class="nt">----</span><span class="o">&gt;</span> Type Y and Press Enter
+Write out database with 1 new entries
+Data Base Updated
+</code></pre></div></div>
+
+<p>Generate Diffie Hellman (dh) Parameter
+Enter the following command to generate DH parameter.</p>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>./build-dh
+</code></pre></div></div>
+
+<p>Sample output:</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Generating DH parameters, 2048 bit long safe prime, generator 2This is going to take a long <span class="nb">time
+
+</span>The necessary keys and certificates will be generated <span class="k">in </span>the /etc/openvpn/easy-rsa/keys/ directory. Copy the following certificate and key files to the /etc/openvpn/keys directory.
+
+ca.crt
+dh2048.pem
+server.crt
+server.key
+</code></pre></div></div>
+
+<p>Go to the directory /etc/openvpn/easy-rsa/keys/ and enter the following command to transfer the above files to/etc/openvpn/keys directory.</p>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="o">[</span>root@localhost]# <span class="nb">mkdir</span> /etc/openvpn/keys
+<span class="o">[</span>root@localhost]#cd /etc/openvpn/easy-rsa/keys/
+<span class="o">[</span>root@localhost]#cp dh2048.pem ca.crt server.crt server.key /etc/openvpn/keys
+</code></pre></div></div>
+
+<p>And then, you must copy all client certificates and keys to the remote VPN clients in order to authenticate to the VPN server. In our case, we have generated certificates and keys to only one client, so we have to copy the following files to the VPN client.</p>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>
+ca.crt
+client.crt
+client.key
+</code></pre></div></div>
+
+<p>Now let’s tuneup the setup to use user authorization parameters.
+Customize shell script, IP = 192.168.1.2
+Create directory for script ’/etc/openvpn/script’</p>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="o">[</span>root@localhost]#mkdir /etc/openvpn/script
+<span class="o">[</span>root@localhost]#cd /etc/openvpn/script
+</code></pre></div></div>
+
+<p>Create file config.sh ’/etc/openvpn/script/config.sh’ </p>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="o">[</span>root@localhost]vi /etc/openvpn/script/config.sh
+</code></pre></div></div>
+
+<p>Insert the below code into the config.sh file</p>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c">#!/bin/bash</span>
+<span class="c">##Dababase Server</span>
+<span class="nv">HOST</span><span class="o">=</span><span class="s1">'192.168.1.2'</span>
+<span class="c">#Default port = 3306</span>
+<span class="nv">PORT</span><span class="o">=</span><span class="s1">'3306'</span>
+<span class="c">#Username</span>
+<span class="nv">USER</span><span class="o">=</span><span class="s1">'USERNAME'</span>
+<span class="c">#Password</span>
+<span class="nv">PASS</span><span class="o">=</span><span class="s1">'PASSWORD'</span>
+<span class="c">#database name</span>
+<span class="nv">DB</span><span class="o">=</span><span class="s1">'openvpn'</span>
+</code></pre></div></div>
+
+<p>Create file test_connect_db.sh’/etc/openvpn/script/test_connect_db.sh’</p>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="o">[</span>root@localhost]# vi test_connect_db.sh
+</code></pre></div></div>
+
+<p>Insert the below code into the test_connect_db.sh file</p>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c">#!/bin/bash</span>
+<span class="nb">.</span> /etc/openvpn/script/config.sh
+<span class="c">##Test Authentication</span>
+<span class="nv">username</span><span class="o">=</span><span class="nv">$1</span>
+<span class="nv">password</span><span class="o">=</span><span class="nv">$2</span>
+<span class="nv">user_id</span><span class="o">=</span><span class="si">$(</span>mysql <span class="nt">-h</span><span class="nv">$HOST</span> <span class="nt">-P</span><span class="nv">$PORT</span> <span class="nt">-u</span><span class="nv">$USER</span> <span class="nt">-p</span><span class="nv">$PASS</span> <span class="nv">$DB</span> <span class="nt">-sN</span> <span class="nt">-e</span> <span class="s2">"select user_id from user where user_id = '</span><span class="nv">$username</span><span class="s2">' AND user_pass = '</span><span class="nv">$password</span><span class="s2">' AND user_enable=1 AND user_start_date != user_end_date AND TO_DAYS(now()) &gt;= TO_DAYS(user_start_date) AND (TO_DAYS(now()) &amp;lt;= TO_DAYS(user_end_date) OR user_end_date='0000-00-00')"</span><span class="si">)</span>
+<span class="c">##Check user</span>
+<span class="o">[</span> <span class="s2">"</span><span class="nv">$user_id</span><span class="s2">"</span> <span class="o">!=</span> <span class="s1">''</span> <span class="o">]</span> &amp;<span class="p">;</span>&amp;<span class="p">;</span> <span class="o">[</span> <span class="s2">"</span><span class="nv">$user_id</span><span class="s2">"</span> <span class="o">=</span> <span class="s2">"</span><span class="nv">$username</span><span class="s2">"</span> <span class="o">]</span> &amp;<span class="p">;</span>&amp;<span class="p">;</span> <span class="nb">echo</span> <span class="s2">"user : </span><span class="nv">$username</span><span class="s2">"</span> &amp;<span class="p">;</span>&amp;<span class="p">;</span> <span class="nb">echo</span> <span class="s1">'authentication ok.'</span> &amp;<span class="p">;</span>&amp;<span class="p">;</span> <span class="nb">exit </span>0 <span class="o">||</span> <span class="nb">echo</span> <span class="s1">'authentication failed.'</span><span class="p">;</span> <span class="nb">exit </span>1
+</code></pre></div></div>
+<p>Create file login.sh ’/etc/openvpn/script/login.sh’</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="o">[</span>root@localhost]# vi /etc/openvpn/script/login.sh
+</code></pre></div></div>
+
+<p>Insert the below code into the login.sh file</p>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c">#!/bin/bash</span>
+<span class="nb">.</span> /etc/openvpn/script/config.sh
+<span class="c">##Authentication</span>
+<span class="nv">user_id</span><span class="o">=</span><span class="si">$(</span>mysql <span class="nt">-h</span><span class="nv">$HOST</span> <span class="nt">-P</span><span class="nv">$PORT</span> <span class="nt">-u</span><span class="nv">$USER</span> <span class="nt">-p</span><span class="nv">$PASS</span> <span class="nv">$DB</span> <span class="nt">-sN</span> <span class="nt">-e</span> <span class="s2">"select user_id from user where user_id = '</span><span class="nv">$username</span><span class="s2">' AND user_pass = '</span><span class="nv">$password</span><span class="s2">' AND user_enable=1 AND user_start_date != user_end_date AND TO_DAYS(now()) &gt;= TO_DAYS(user_start_date) AND (TO_DAYS(now()) &amp;lt;= TO_DAYS(user_end_date) OR user_end_date='0000-00-00')"</span><span class="si">)</span>
+<span class="c">##Check user</span>
+<span class="o">[</span> <span class="s2">"</span><span class="nv">$user_id</span><span class="s2">"</span> <span class="o">!=</span> <span class="s1">''</span> <span class="o">]</span> &amp;<span class="p">;</span>&amp;<span class="p">;</span> <span class="o">[</span> <span class="s2">"</span><span class="nv">$user_id</span><span class="s2">"</span> <span class="o">=</span> <span class="s2">"</span><span class="nv">$username</span><span class="s2">"</span> <span class="o">]</span> &amp;<span class="p">;</span>&amp;<span class="p">;</span> <span class="nb">echo</span> <span class="s2">"user : </span><span class="nv">$username</span><span class="s2">"</span> &amp;<span class="p">;</span>&amp;<span class="p">;</span> <span class="nb">echo</span> <span class="s1">'authentication ok.'</span> &amp;<span class="p">;</span>&amp;<span class="p">;</span> <span class="nb">exit </span>0 <span class="o">||</span> <span class="nb">echo</span> <span class="s1">'authentication failed.'</span><span class="p">;</span> <span class="nb">exit </span>1
+</code></pre></div></div>
+
+<p>Create file connect.sh ’/etc/openvpn/script/connect.sh’</p>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="o">[</span>root@localhost]# vi /etc/openvpn/script/connect.sh<span class="sb">```</span>
+
+Insert the below code into the file connect.sh
+<span class="sb">```</span>bash
+<span class="c">#!/bin/bash</span>
+<span class="nb">.</span> /etc/openvpn/script/config.sh
+<span class="c">##insert data connection to table log</span>
+mysql <span class="nt">-h</span><span class="nv">$HOST</span> <span class="nt">-P</span><span class="nv">$PORT</span> <span class="nt">-u</span><span class="nv">$USER</span> <span class="nt">-p</span><span class="nv">$PASS</span> <span class="nv">$DB</span> <span class="nt">-e</span> <span class="s2">"INSERT INTO log (log_id,user_id,log_trusted_ip,log_trusted_port,log_remote_ip,log_remote_port,log_start_time,log_end_time,log_received,log_send) VALUES(NULL,'</span><span class="nv">$common_name</span><span class="s2">','</span><span class="nv">$trusted_ip</span><span class="s2">','</span><span class="nv">$trusted_port</span><span class="s2">','</span><span class="nv">$ifconfig_pool_remote_ip</span><span class="s2">','</span><span class="nv">$remote_port_1</span><span class="s2">',now(),'0000-00-00 00:00:00','</span><span class="nv">$bytes_received</span><span class="s2">','</span><span class="nv">$bytes_sent</span><span class="s2">')"</span>
+<span class="c">##set status online to user connected</span>
+mysql <span class="nt">-h</span><span class="nv">$HOST</span> <span class="nt">-P</span><span class="nv">$PORT</span> <span class="nt">-u</span><span class="nv">$USER</span> <span class="nt">-p</span><span class="nv">$PASS</span> <span class="nv">$DB</span> <span class="nt">-e</span> <span class="s2">"UPDATE user SET user_online=1 WHERE ser_id='</span><span class="nv">$common_name</span><span class="s2">'"</span>
+</code></pre></div></div>
+
+<p>Create file disconnect.sh ’/etc/openvpn/script/disconnect.sh’</p>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="o">[</span>root@localhost]# vi /etc/openvpn/script/disconnect.sh
+</code></pre></div></div>
+
+<p>Insert the below code into the disconnect.sh file</p>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c">#!/bin/bash</span>
+<span class="nb">.</span> /etc/openvpn/script/config.sh
+<span class="c">##set status offline to user disconnected</span>
+mysql <span class="nt">-h</span><span class="nv">$HOST</span> <span class="nt">-P</span><span class="nv">$PORT</span> <span class="nt">-u</span><span class="nv">$USER</span> <span class="nt">-p</span><span class="nv">$PASS</span> <span class="nv">$DB</span> <span class="nt">-e</span> <span class="s2">"UPDATE user SET user_online=0 WHERE user_id='</span><span class="nv">$common_name</span><span class="s2">'"</span>
+<span class="c">##insert data disconnected to table log</span>
+mysql <span class="nt">-h</span><span class="nv">$HOST</span> <span class="nt">-P</span><span class="nv">$PORT</span> <span class="nt">-u</span><span class="nv">$USER</span> <span class="nt">-p</span><span class="nv">$PASS</span> <span class="nv">$DB</span> <span class="nt">-e</span> <span class="s2">"UPDATE log SET log_end_time=now(),log_received='</span><span class="nv">$bytes_received</span><span class="s2">',log_send='</span><span class="nv">$bytes_sent</span><span class="s2">' WHERE log_trusted_ip='</span><span class="nv">$trusted_ip</span><span class="s2">' AND log_trusted_port='</span><span class="nv">$trusted_port</span><span class="s2">' AND user_id='</span><span class="nv">$common_name</span><span class="s2">' AND log_end_time='0000-00-00 00:00:00'"</span>
+</code></pre></div></div>
+
+<p>Compose OpenVPN configuration files, OpenVPN server will scan the .conf files in /etc/openvpn when it starts. For each file, it forks a daemon. In this system, we need both UDP and TCP support. I created two configuration files for two daemons in charge of UDP and TCP respectively.
+Create file server-tcp-443.conf ’/etc/openvpn/server-tcp-443.conf’ for Server Port:443</p>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>
+<span class="c">##protocol port</span>
+port 443
+proto tcp
+dev tun
+<span class="c">##ip server client</span>
+server 10.4.0.0 255.255.255.0
+<span class="c">##key</span>
+ca /etc/openvpn/keys/ca.crt
+cert /etc/openvpn/keys/server.crt
+key /etc/openvpn/keys/server.key
+dh /etc/openvpn/keys/dh1024.pem
+<span class="c">##option</span>
+persist-key
+persist-tun
+keepalive 5 60
+reneg-sec 432000
+<span class="c">##option authen.</span>
+comp-lzo
+user nobody
+<span class="c">#group nogroup</span>
+client-to-client
+username-as-common-name
+client-cert-not-required
+auth-user-pass-verify /etc/openvpn/script/login.sh via-env
+<span class="c">##push to client</span>
+max-clients 50
+push <span class="s2">"persist-key"</span>
+push <span class="s2">"persist-tun"</span>
+push <span class="s2">"redirect-gateway def1"</span>
+<span class="c">#push "explicit-exit-notify 1"</span>
+<span class="c">##DNS-Server</span>
+push <span class="s2">"dhcp-option DNS 8.8.8.8"</span>
+push <span class="s2">"dhcp-option DNS 8.8.4.4"</span>
+<span class="c">##script connect-disconnect</span>
+script-security 3 system
+client-connect /etc/openvpn/script/connect.sh
+client-disconnect /etc/openvpn/script/disconnect.sh
+<span class="c">##log-status</span>
+status /etc/openvpn/log/tcp_443.log
+log-append /etc/openvpn/log/openvpn.log
+verb 3
+</code></pre></div></div>
+
+<p>Create file server-udp-53.conf ’/etc/openvpn/server-udp-53.conf’ for Server Port:53</p>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="o">[</span>root@localhost]# vi /etc/openvpnserver-udp-53.conf
+</code></pre></div></div>
+
+<p>Insert the below lines to the server-udp-53.conf</p>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c">##protocol port</span>
+port 53
+proto udp
+dev tun
+<span class="c">##ip server client</span>
+server 10.5.0.0 255.255.255.0
+<span class="c">##key</span>
+ca /etc/openvpn/keys/ca.crt
+cert /etc/openvpn/keys/server.crt
+key /etc/openvpn/keys/server.key
+dh /etc/openvpn/keys/dh1024.pem
+<span class="c">##option</span>
+persist-key
+persist-tun
+keepalive 5 60
+reneg-sec 432000
+<span class="c">##option authen.</span>
+comp-lzo
+user nobody
+<span class="c">#group nogroup</span>
+client-to-client
+username-as-common-name
+client-cert-not-required
+auth-user-pass-verify /etc/openvpn/script/login.sh via-env
+<span class="c">##push to client</span>
+max-clients 50
+push <span class="s2">"persist-key"</span>
+push <span class="s2">"persist-tun"</span>
+push <span class="s2">"redirect-gateway def1"</span>
+push <span class="s2">"explicit-exit-notify 1"</span>
+<span class="c">##DNS-Server</span>
+push <span class="s2">"dhcp-option DNS 8.8.8.8"</span>
+push <span class="s2">"dhcp-option DNS 8.8.4.4"</span>
+<span class="c">##script connect-disconnect</span>
+script-security 3 system
+client-connect /etc/openvpn/script/connect.sh
+client-disconnect /etc/openvpn/script/disconnect.sh
+<span class="c">##log-status</span>
+status /etc/openvpn/log/udp_53.log
+log-append /etc/openvpn/log/openvpn.log
+verb 3
+</code></pre></div></div>
+
+<p>Create directory for log ’/etc/openvpn/log’</p>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="o">[</span>root@localhost]# mkdir /etc/openvpn/log
+<span class="o">[</span>root@localhost]# <span class="nb">touch</span> /etc/openvpn/log/openvpn.log
+<span class="o">[</span>root@localhost]# <span class="nb">touch</span> /etc/openvpn/log/tcp_443.log
+<span class="o">[</span>root@localhost]# <span class="nb">touch</span> /etc/openvpn/log/udp_53.log
+</code></pre></div></div>
+
+<p>Changes the permission of files</p>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nb">chmod</span> <span class="nt">-R</span> 755 /etc/openvpn
+</code></pre></div></div>
+
+<p>Test authentication username ’foobar’ and password ’foo@123’</p>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="o">[</span>root@localhost]# /etc/openvpn/script/test_connect_db.sh foobar foo@123
+<span class="c"># user : test</span>
+<span class="c"># authentication ok.</span>
+<span class="c"># if authentication failed. check user and password in database</span>
+<span class="c"># or detail database server in /etc/openvpn/script/config.sh</span>
+</code></pre></div></div>
+
+<p>Start serviece OpenVPN</p>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="o">[</span>root@localhost]# /etc/init.d/openvpn start
+</code></pre></div></div>
+
+<p>Edit file /etc/sysctl.conf Remove # In line : #net.ipv4.ip_forward=1</p>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="o">[</span>root@localhost]#vi /etc/sysctl.conf
+net.ipv4.ip_forward<span class="o">=</span>1
+</code></pre></div></div>
+
+<p>Execute the sysctl -p command for the changes to take effect</p>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="o">[</span>root@localhost]# sysctl <span class="nt">-p</span>
+</code></pre></div></div>
+
+<p>Edit file /etc/rc.local Add before exit 0; the below code</p>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>
+<span class="nb">echo</span> <span class="s2">"1"</span> <span class="o">&gt;</span> /proc/sys/net/ipv4/ip_forward
+<span class="nb">echo</span> <span class="s2">"1"</span> <span class="o">&gt;</span> /proc/sys/net/ipv4/ip_dynaddr
+iptables <span class="nt">-A</span> INPUT <span class="nt">-i</span> tun0 <span class="nt">-j</span> ACCEPT
+iptables <span class="nt">-A</span> FORWARD <span class="nt">-i</span> tun0 <span class="nt">-j</span> ACCEPT
+iptables <span class="nt">-A</span> INPUT <span class="nt">-i</span> tun1 <span class="nt">-j</span> ACCEPT
+iptables <span class="nt">-A</span> FORWARD <span class="nt">-i</span> tun1 <span class="nt">-j</span> ACCEPT
+iptables <span class="nt">-A</span> INPUT <span class="nt">-p</span> udp <span class="nt">--dport</span> 53 <span class="nt">-j</span> ACCEPT
+iptables <span class="nt">-A</span> INPUT <span class="nt">-i</span> eth0 <span class="nt">-p</span> tcp <span class="nt">-m</span> tcp <span class="nt">--dport</span> 3306 <span class="nt">-j</span> ACCEPT
+iptables <span class="nt">-t</span> nat <span class="nt">-A</span> POSTROUTING <span class="nt">-s</span> 10.4.0.0/24 <span class="nt">-o</span> eth0 <span class="nt">-j</span> MASQUERADE
+iptables <span class="nt">-t</span> nat <span class="nt">-A</span> POSTROUTING <span class="nt">-s</span> 10.5.0.0/24 <span class="nt">-o</span> eth0 <span class="nt">-j</span> MASQUERADE
+iptables <span class="nt">-A</span> INPUT <span class="nt">-i</span> eth0 <span class="nt">-p</span> tcp <span class="nt">-m</span> tcp <span class="nt">--dport</span> 3306 <span class="nt">-j</span> ACCEPT
+</code></pre></div></div>
+
+<p>Run Script Iptables</p>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="o">[</span>root@localhost]# /etc/rc.local
+<span class="o">[</span>root@localhost]# iptables-save
+</code></pre></div></div>
+
+<p>Config for Client
+Config for port TCP port 443</p>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>
+client
+dev tun
+proto tcp
+remote 192.168.1.2 443
+nobind
+auth-user-pass
+reneg-sec 432000
+resolv-retry infinite
+ca ca.crt
+comp-lzo
+verb 1
+</code></pre></div></div>
+
+<p>Config for port UDP port 53</p>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>
+client
+dev tun
+proto udp
+remote 1.1.1.1 53
+nobind
+auth-user-pass
+reneg-sec 432000
+resolv-retry infinite
+ca ca.crt
+comp-lzo
+verb 1
+</code></pre></div></div>
+
+<p>That’s it, all done
+Test it &amp;; share your feedback.  :)</p>]]></content><author><name>Shivam Shukla</name></author><summary type="html"><![CDATA[System details:-]]></summary></entry><entry><title type="html">Secure Your Ssh With Two Step Authentication Using Google Authenticator</title><link href="http://localhost:4000/2014/11/17/secure-your-ssh-with-two-step-authentication-using-google-authenticator.html" rel="alternate" type="text/html" title="Secure Your Ssh With Two Step Authentication Using Google Authenticator" /><published>2014-11-17T00:00:00+05:30</published><updated>2014-11-17T00:00:00+05:30</updated><id>http://localhost:4000/2014/11/17/secure-your-ssh-with-two-step-authentication-using-google-authenticator</id><content type="html" xml:base="http://localhost:4000/2014/11/17/secure-your-ssh-with-two-step-authentication-using-google-authenticator.html"><![CDATA[<p>Hey Guy’s</p>
+
+<p>Here my new post about the Google Authenticator, its really a very good &amp; effective tool.</p>
+
+<p>Hope you will find this post useful.</p>
+
+<p>Google Two-Factor Authentication provides next level of security from intruders to SSH server. This article will help you understand the process &amp; how to protect your SSH server with a two-factor authentication using Google Authenticator &amp; PAM module. Now Every time when you try to SSH to your server, you have to generate code using your phone or other devices to login the server.</p>
+
+<p><strong>Step 1:</strong> EPEL Repository Installation</p>
+
+<p>First we need to add EPEL yum repository on the system. Follow this link on how to install EPEL repository.</p>
+
+<p><a href="https://shivamshukla.wordpress.com/2014/11/17/how-to-install-epel-repository-on-centos-6/"><strong>Click here to view the setup guide</strong></a></p>
+
+<p>then proceed ahead with the step 2</p>
+
+<p><strong>Step 2:</strong> Google Authenticator Installation</p>
+
+<p>Install Google Authenticator using yum command line tool.</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="o">[</span>root@localhost]# yum <span class="nb">install</span> google-authenticator
+
+</code></pre></div></div>
+
+<p><strong>Step 3:</strong> Configure Google authenticator</p>
+
+<p>For this tutorial, we will use demo account for testing.</p>
+
+<p>Use below steps to configure google-authenticator for user demouser.</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>
+
+<span class="o">[</span>root@localhost]# su - demouser
+
+<span class="o">[</span>demouser@localhost]<span class="nv">$ </span>google-authenticator
+
+
+</code></pre></div></div>
+
+<p>now you will get the secret key &amp; emergency codes please write them down &amp; keep them safe. Emergency codes can only be used one time in case if your secret key is lost.</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>
+https://www.google.com/chart?chs<span class="o">=</span>200x200&amp;chld<span class="o">=</span>M|0&amp;cht<span class="o">=</span>qr&amp;chl<span class="o">=</span>otpauth://totp/demouser@localhost%3Fsecret%3DW2CUM37JJKN2KF2S
+
+Your new secret key is: W2CUM37JJKN2KF2S
+
+Your verification code is 357458
+
+Your emergency scratch codes are:
+
+56071230
+
+90988902
+
+61142941
+
+30330862
+
+64907016
+
+
+</code></pre></div></div>
+
+<p>After the secret codes the authenticator will ask few questions respond to them as yes if you don’t want any specific changes.</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>
+
+Do you want me to update your <span class="s2">"~/.google_authenticator"</span> file <span class="o">(</span>y/n<span class="o">)</span> y
+
+Do you want to disallow multiple uses of the same authentication
+
+token? This restricts you to one login about every 30s, but it increases
+
+your chances to notice or even prevent man-in-the-middle attacks <span class="o">(</span>y/n<span class="o">)</span> y
+
+By default, tokens are good <span class="k">for </span>30 seconds and <span class="k">in </span>order to compensate <span class="k">for
+
+</span>possible time-skew between the client and the server, we allow an extra
+
+token before and after the current time. If you experience problems with poor
+
+<span class="nb">time </span>synchronization, you can increase the window from its default
+
+size of 1:30min to about 4min. Do you want to <span class="k">do </span>so <span class="o">(</span>y/n<span class="o">)</span> y
+
+If the computer that you are logging into isn<span class="s1">'t hardened against brute-force
+
+login attempts, you can enable rate-limiting for the authentication module.
+
+By default, this limits attackers to no more than 3 login attempts every 30s.
+
+Do you want to enable rate-limiting (y/n) y
+
+[demouser@localhost]$
+
+
+</span></code></pre></div></div>
+
+<p>Use Google Authenticator Application in your Android, iPhone or Blackberry phones to generate verification code by entering secret key. You can also use the add on available for firefox browser.</p>
+
+<p>After installing the application on your phone here’s how you can add the details on it.</p>
+
+<p>Select “Enter provided key” option</p>
+
+<p><a href="https://shivamshukla.wordpress.com/wp-content/uploads/2014/11/gsnap1.png"><img src="/assets/2014/11/gsnap1.png" alt="gsnap1" /></a></p>
+
+<p> </p>
+
+<p>Enter the details required here like demouser &amp; the secret key</p>
+
+<p><a href="https://shivamshukla.wordpress.com/wp-content/uploads/2014/11/gsnap1.png"><img src="/assets/2014/11/gsnap2.png" alt="gsnap2" /></a></p>
+
+<p> </p>
+
+<p>After adding the details you will get the vitrification codes here.</p>
+
+<p><a href="https://shivamshukla.wordpress.com/wp-content/uploads/2014/11/gsnap1.png"><img src="/assets/2014/11/gsnap3.png" alt="gsnap3" /></a></p>
+
+<p><strong>Step 4:</strong> Activate Google authenticator</p>
+
+<p>To enable google authenticator edit <strong>/etc/pam.d/sshd</strong> using your favorite editor.</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="o">[</span>root@localhost]# vi /etc/pam.d/sshd
+</code></pre></div></div>
+
+<p>Add the below line to the start of the file just below the first line</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>auth required pam_google_authenticator.so
+</code></pre></div></div>
+
+<p>Now edit <strong>/etc/ssh/sshd_config</strong>  and Change <strong>ChallengeResponseAuthentication</strong> option value to <strong>‘yes’</strong>. On enabling this, openssh could ask a user any number of multi-facited (Like google authenticator) questions. Generally the system asks only for the user’s password.</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="o">[</span>root@localhost]# vi /etc/ssh/sshd_config
+</code></pre></div></div>
+
+<p>Change the value from NO to YES</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>ChallengeResponseAuthentication <span class="nb">yes</span>
+</code></pre></div></div>
+
+<p>Restart the SSH service</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="o">[</span>root@localhost]# service sshd restart
+</code></pre></div></div>
+
+<p>Now SSH your server &amp; you will be asked for verification code first then the password.</p>
+
+<p>Note: you will have to generate the secret code for each user separately &amp; add them separately on application as well.</p>
+
+<p>have fun let &amp; me know your suggestions.</p>
+
+<p>:)</p>]]></content><author><name>Shivam Shukla</name></author><summary type="html"><![CDATA[Hey Guy’s]]></summary></entry><entry><title type="html">How To Solve The Epel Error Error Cannot Retrieve Metalink For Repository Epel Please Verify Its Path And Try Again</title><link href="http://localhost:4000/2014/11/17/how-to-solve-the-epel-error-error-cannot-retrieve-metalink-for-repository-epel-please-verify-its-path-and-try-again.html" rel="alternate" type="text/html" title="How To Solve The Epel Error Error Cannot Retrieve Metalink For Repository Epel Please Verify Its Path And Try Again" /><published>2014-11-17T00:00:00+05:30</published><updated>2014-11-17T00:00:00+05:30</updated><id>http://localhost:4000/2014/11/17/how-to-solve-the-epel-error-error-cannot-retrieve-metalink-for-repository-epel-please-verify-its-path-and-try-again</id><content type="html" xml:base="http://localhost:4000/2014/11/17/how-to-solve-the-epel-error-error-cannot-retrieve-metalink-for-repository-epel-please-verify-its-path-and-try-again.html"><![CDATA[<p>Hi Guys,</p>
+
+<p>I have been working on the EPEL repository these day’s &amp; at times I got around with the following error.</p>
+
+<p><strong>Error: Cannot retrieve metalink for repository: epel. Please verify its path and try again</strong></p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="o">[</span>root@localhost]# yum list
+
+Loaded plugins: fastestmirror
+
+Determining fastest mirrors
+
+Error: Cannot retrieve metalink <span class="k">for </span>repository: epel. Please verify its path and try again
+
+<span class="o">[</span>root@localhost]
+
+
+</code></pre></div></div>
+
+<p>Here’s how you can solve this error if you come across this error.</p>
+
+<p>edit the file epel.repo which is located in the /etc/yum.repos.d/ using your favorite editor.</p>
+
+<p>&amp; change the https link to http as show below.</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="o">[</span>root@localhost]# vi /ete/yum.repos.d/epel.repo
+
+
+</code></pre></div></div>
+
+<p>now change the https to http</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">mirrorlist</span><span class="o">=</span>https://mirrors.fedoraproject.org/metalink?repo<span class="o">=</span>epel-6&amp;arch<span class="o">=</span><span class="nv">$basearch</span>
+
+
+</code></pre></div></div>
+
+<p>to</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">mirrorlist</span><span class="o">=</span>http://mirrors.fedoraproject.org/metalink?repo<span class="o">=</span>epel-6&amp;arch<span class="o">=</span><span class="nv">$basearch</span>
+
+
+</code></pre></div></div>
+
+<p>do this for all the links present in  the file.</p>
+
+<p>then check the yum again</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="o">[</span>root@localhost]# yum list
+
+Loaded plugins: fastestmirror
+
+Loading mirror speeds from cached hostfile
+
+<span class="k">*</span> base: mirror.nbrc.ac.in
+
+<span class="k">*</span> epel: mirrors.123host.vn
+
+<span class="k">*</span> extras: mirror.nbrc.ac.in
+
+<span class="k">*</span> rpmforge: archive.cs.uu.nl
+
+<span class="nb">.</span>
+
+<span class="nb">.</span>
+
+
+</code></pre></div></div>
+
+<p>That’s it the issue is solved</p>
+
+<p>hope you find this post helpful please don’t forget to share you feedback or comments about my post.</p>]]></content><author><name>Shivam Shukla</name></author><summary type="html"><![CDATA[Hi Guys,]]></summary></entry><entry><title type="html">How To Install Epel Repository On Centos 6</title><link href="http://localhost:4000/2014/11/17/how-to-install-epel-repository-on-centos-6.html" rel="alternate" type="text/html" title="How To Install Epel Repository On Centos 6" /><published>2014-11-17T00:00:00+05:30</published><updated>2014-11-17T00:00:00+05:30</updated><id>http://localhost:4000/2014/11/17/how-to-install-epel-repository-on-centos-6</id><content type="html" xml:base="http://localhost:4000/2014/11/17/how-to-install-epel-repository-on-centos-6.html"><![CDATA[<p>Hey guys,</p>
+
+<p>Hope you are having fun these day’s  today we are going to try on the EPEL repository installation on CentOS 6.</p>
+
+<p>For 32/64 Bit Operating system.</p>
+
+<p>use the below link &amp; install it as show below.</p>
+
+<p>http://dl.fedoraproject.org/pub/epel/6Server/i386/epel-release-6-8.noarch.rpm</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>
+<span class="o">[</span>root@localhost]# rpm <span class="nt">-ivh</span> http://dl.fedoraproject.org/pub/epel/6Server/i386/epel-release-6-8.noarch.rpm
+
+Retrieving http://dl.fedoraproject.org/pub/epel/6Server/i386/epel-release-6-8.noarch.rpm
+
+Preparing...                <span class="c">########################################### [100%]</span>
+
+1:epel-release           <span class="c">########################################### [100%]</span>
+
+<span class="o">[</span>root@localhost]#
+</code></pre></div></div>
+
+<p>Now lets verify weather our repository has been installed or not</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>
+
+<span class="o">[</span>root@localhost]# rpm –qa |grep epel
+
+epel-release-6-8.noarch
+
+<span class="o">[</span>root@localhost]
+
+
+</code></pre></div></div>
+
+<p>yeah that’s all the installation is complete.</p>
+
+<p>Enjoy :)</p>]]></content><author><name>Shivam Shukla</name></author><summary type="html"><![CDATA[Hey guys,]]></summary></entry><entry><title type="html">Functions In A Bash Script</title><link href="http://localhost:4000/2014/11/11/functions-in-a-bash-script.html" rel="alternate" type="text/html" title="Functions In A Bash Script" /><published>2014-11-11T00:00:00+05:30</published><updated>2014-11-11T00:00:00+05:30</updated><id>http://localhost:4000/2014/11/11/functions-in-a-bash-script</id><content type="html" xml:base="http://localhost:4000/2014/11/11/functions-in-a-bash-script.html"><![CDATA[<p>Hey friends here’s an other blog regarding BASH in which my aim is to help you understand basics about functions in BASH</p>
+
+<p>The thing which I like about functions in BASH is that you can create/define a function at any point in your script &amp; call it as per your requirement in the script.</p>
+
+<p>Basic structure of a function in bash is as show below.</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">function </span>hello<span class="o">{</span>
+
+your code or messages here
+
+<span class="o">}</span>
+
+<span class="nb">.</span>
+
+<span class="nb">.</span>
+
+<span class="nb">.</span>
+
+hello
+
+
+</code></pre></div></div>
+
+<p>Calling the function by its name where ever needed</p>
+
+<p>Let’s have a look at a simple example using a script in which we will print a greeting message using function.</p>
+
+<p>Create a file using your favorite editor, paste the below lines into it &amp; exit saving changes. assign executable permissions to the file.</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c">#!/bin/bash</span>
+
+<span class="k">function </span>hello <span class="o">{</span>
+
+<span class="nb">echo</span> <span class="s2">"Hello there this is my first bash function…"</span>
+
+<span class="o">}</span>
+
+hello
+
+<span class="nb">echo</span> <span class="s2">"Bye for now…."</span>
+
+
+</code></pre></div></div>
+
+<p>As soon as you execute this script the following output will appear</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Hello there this is my first bash <span class="k">function</span>…
+
+Bye <span class="k">for </span>now….
+</code></pre></div></div>
+
+<p>You can use multiple functions in a single script &amp; use them as per your requirement.</p>
+
+<p>Let’s use this same script &amp; make two different functions for each message that means one for hello the other for bye.</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c">#!/bin/bash</span>
+
+<span class="k">function </span>hello <span class="o">{</span>
+
+<span class="nb">echo</span> <span class="s2">"Hello there this is my first bash function…"</span>
+
+<span class="o">}</span>
+
+<span class="k">function </span>bye <span class="o">{</span>
+
+<span class="nb">echo</span> <span class="s2">"Bye for now…."</span>
+
+<span class="o">}</span>
+
+hello
+
+bye
+</code></pre></div></div>
+
+<p> </p>
+
+<p>The output remains same as above.</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Hello there this is my first bash <span class="k">function</span>…
+
+Bye <span class="k">for </span>now….
+</code></pre></div></div>
+
+<p> </p>
+
+<p>Hope you find this post helpful let me know if you have any queries.. :)</p>]]></content><author><name>Shivam Shukla</name></author><summary type="html"><![CDATA[Hey friends here’s an other blog regarding BASH in which my aim is to help you understand basics about functions in BASH]]></summary></entry><entry><title type="html">Shebang Basics Of Bash</title><link href="http://localhost:4000/2014/11/10/shebang-basics-of-bash.html" rel="alternate" type="text/html" title="Shebang Basics Of Bash" /><published>2014-11-10T00:00:00+05:30</published><updated>2014-11-10T00:00:00+05:30</updated><id>http://localhost:4000/2014/11/10/shebang-basics-of-bash</id><content type="html" xml:base="http://localhost:4000/2014/11/10/shebang-basics-of-bash.html"><![CDATA[<p>Hi guys here’s my new post about Shebang &amp; some basics about BASH &amp; creation of first bash script.</p>
+
+<p><strong>What is Shebang?</strong>
+This symbol <strong>#!</strong> (Hash with Exclamation mark) is known as <strong>shebang</strong>,</p>
+
+<p><strong>What Shebang does?</strong>
+It tells the shell what program to interpret the script with, when executed.</p>
+
+<p><strong>Few</strong> <strong>examples</strong>:</p>
+
+<p><strong>#!/bin/bash</strong>                   — Execute the file using bash, the Bourne again shell, or a compatible shell</p>
+
+<p><strong>#!/bin/sh</strong>                       — Execute the file using sh, the Bourne shell, or a compatible shell</p>
+
+<p><strong>#!/bin/csh</strong>                     — Execute the file using csh, the C shell, or a compatible shell</p>
+
+<p><strong>#!/usr/bin/perl –T</strong>         — Execute using Perl with the option for taint checks</p>
+
+<p><strong>#!/usr/bin/php</strong>              — Execute the file using the PHP command line interpreter</p>
+
+<p><strong>#!/usr/bin/python -O</strong>    — Execute using Python with optimizations to code</p>
+
+<p><strong>#!/usr/bin/ruby</strong>             — Execute using Ruby
+ 
+Some commands to learn more about the shell you have on your system.
+To check the shell type &amp; path</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c">#echo $SHELL</span>
+/bin/bash
+
+</code></pre></div></div>
+<p>OR</p>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c">#which bash</span>
+/bin/bash
+
+</code></pre></div></div>
+<p>To check if the shell is interactive or non-interactive</p>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c">#echo $-</span>
+himBH
+</code></pre></div></div>
+<p>when the <strong>$</strong> - variable contains <strong>i</strong> in its output it means the shell is interactive.
+ 
+Let’s try out some fun filled bash script examples.</p>
+
+<p>Create any file say myscript using your favorite editor like vi/vim write down the script as show below &amp; set the executable permission to the file.</p>
+
+<p> </p>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c">#!/bin/bash</span>
+<span class="nb">echo</span> <span class="nt">-e</span> <span class="s2">"Hello World.....:)</span><span class="se">\n</span><span class="s2">This is my first bash script.."</span>
+
+</code></pre></div></div>
+<p>OR</p>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c">#!/bin/bash</span>
+<span class="nb">echo</span> <span class="s2">"Hello World..... :)"</span>
+<span class="nb">echo</span> <span class="s2">"This is my first bash script.."</span>
+</code></pre></div></div>
+<p>Both the above script will print the message in two different lines.</p>
+
+<p>The difference between the two is that in the first script both messages are used within the same echo command with additional options like “-e &amp; \n”</p>
+
+<p><strong>-e</strong>         is used to enable interpretation of backslash escapes.</p>
+
+<p><strong>\n</strong>         is used to change the output to new line.
+ </p>
+
+<p>In this second example we will greet the user with a welcome message whenever he access the terminal.</p>
+
+<p> 
+Edit the <strong>~/.bash_profile</strong> using your favorite editor</p>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c">#vi ~/.bash_profile</span>
+
+</code></pre></div></div>
+<p>add the below lines to the end of the file</p>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>
+<span class="nv">hname</span><span class="o">=</span><span class="sb">`</span><span class="nb">hostname</span><span class="sb">`</span>
+<span class="nv">usern</span><span class="o">=</span><span class="sb">`</span><span class="nb">whoami</span><span class="sb">`</span>
+<span class="nb">echo</span> <span class="s2">"Hello </span><span class="nv">$usern</span><span class="s2"> welcome to </span><span class="nv">$hname</span><span class="s2">"</span>
+
+</code></pre></div></div>
+<p>Now let’s understand what’s happing in the above script
+ </p>
+
+<p>The <strong>~/.bash_profile</strong> is executed when BASH is invoked as a login shell, certain environment variables are set here or can be set here for that particular user.</p>
+
+<p>Adding the above lines will greet the user with those messages whenever he logins the terminal.</p>
+
+<p>Example:
+Username: admin
+Hostname: testhost
+ 
+The output after adding those lines will be</p>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Hello admin welcome to testhost
+
+</code></pre></div></div>]]></content><author><name>Shivam Shukla</name></author><summary type="html"><![CDATA[Hi guys here’s my new post about Shebang &amp; some basics about BASH &amp; creation of first bash script.]]></summary></entry><entry><title type="html">Mrtg Rrd Installation Script For Centos</title><link href="http://localhost:4000/2014/11/07/mrtg-rrd-installation-script-for-centos.html" rel="alternate" type="text/html" title="Mrtg Rrd Installation Script For Centos" /><published>2014-11-07T00:00:00+05:30</published><updated>2014-11-07T00:00:00+05:30</updated><id>http://localhost:4000/2014/11/07/mrtg-rrd-installation-script-for-centos</id><content type="html" xml:base="http://localhost:4000/2014/11/07/mrtg-rrd-installation-script-for-centos.html"><![CDATA[<p>Hey guys here’s a script to help you install MRTG+RRD on a CentOS box</p>
+
+<p>The script has been tested on  CentOS 6.4 (Final) Desktop, you can use this script to install on a Minimal Desktop or Minimal system as well.</p>
+
+<p>If you choose to install MRTG+RRD on a Minimal Desktop or Minimal version you may face issue with fonts during Graph creation. The fonts issue may get resolved by itself or if not then you might have to install font packages manually that is not included into the script.</p>
+
+<p><strong>Note:</strong></p>
+
+<p><strong>1) SELniux will be disabled if you run this script.</strong></p>
+
+<p><strong>2) Port 80 (HTTP) will be allowed or IPTables would be disabled as per your choice. If you are running HTTP service on some custom port make sure to allow that manually if you choose not to disable IPTables.</strong></p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c">#!/bin/bash</span>
+
+<span class="c">#########################################</span>
+
+<span class="c">##Author: Shivam Shukla ##</span>
+
+<span class="c">##Build Date: 26-10-2014 ##</span>
+
+<span class="c">##Modification Date: 03-11-2014 ##</span>
+
+<span class="c">##Version: 1.0.0 ##</span>
+
+<span class="c">##Tool: MRTG+RRD Installer for CentOS ##</span>
+
+<span class="c">#########################################</span>
+
+<span class="c">##### User Variable #####</span>
+
+<span class="nv">ipadd</span><span class="o">=</span><span class="sb">`</span>ifconfig |grep inet | <span class="nb">cut</span> <span class="nt">-b</span> 21-32 |head <span class="nt">-n1</span><span class="sb">`</span>
+
+<span class="c">#### User Functions####</span>
+
+<span class="k">function </span>fn_SELinux<span class="o">()</span>
+
+<span class="o">{</span>
+
+getenforce |grep Enforcing <span class="o">&gt;</span>/dev/null 2&gt;&amp;1 <span class="o">&amp;&amp;</span> <span class="nv">se_l</span><span class="o">=</span>1 <span class="o">||</span> <span class="nv">se_l</span><span class="o">=</span>0
+
+<span class="k">if</span> <span class="o">[</span> <span class="nv">$se_l</span> <span class="nt">-eq</span> 1 <span class="o">]</span>
+
+<span class="k">then
+
+</span><span class="nb">echo</span> <span class="s2">"SELinux is Enforcing..."</span>
+
+<span class="nb">echo</span> <span class="s2">"Disabling SELinux...."</span>
+
+setenforce 0
+
+<span class="nb">sed</span> <span class="nt">-i</span> <span class="s1">'s/SELINUX=enforcing/SELINUX=disabled/g'</span> /etc/selinux/config
+
+<span class="nb">echo</span> <span class="s2">"SELinux is Disabled...:)"</span>
+
+<span class="k">else
+
+</span><span class="nb">echo</span> <span class="s2">"SELinux is Disabled :)"</span>
+
+<span class="k">fi</span>
+
+<span class="o">}</span>
+
+<span class="k">function </span>fn_IPTable<span class="o">()</span>
+
+<span class="o">{</span>
+
+/etc/init.d/iptables status |grep not <span class="o">&amp;&amp;</span> <span class="nv">ipt</span><span class="o">=</span>1 <span class="o">||</span> <span class="nv">ipt</span><span class="o">=</span>0
+
+<span class="k">if</span> <span class="o">[</span> <span class="nv">$ipt</span> <span class="nt">-eq</span> 1 <span class="o">]</span>
+
+<span class="k">then
+
+</span><span class="nb">echo</span> <span class="s2">"IPtables is already disabled...."</span>
+
+<span class="k">else
+
+</span><span class="nb">echo</span> <span class="s2">""</span>
+
+<span class="nb">echo</span> <span class="s2">"IPtables service is running on the system..."</span>
+
+<span class="nb">echo</span> <span class="s2">""</span>
+
+<span class="nb">echo</span> <span class="s2">"If you want I can stop the IPtable service for you or if you don't want to stop the IPtable service i will allow the httpd service in IPtables."</span>
+
+<span class="nb">echo</span><span class="s2">""</span>
+
+<span class="nb">echo</span> <span class="s2">"Do you want me to stop the IPtable service [y/n]..."</span>
+
+<span class="nb">read </span>response
+
+<span class="k">fi
+
+</span><span class="nb">echo</span> <span class="s2">"</span><span class="nv">$response</span><span class="s2">"</span> <span class="o">&gt;</span> respo<span class="p">;</span> <span class="nb">head</span> <span class="nt">-1</span> respo <span class="o">&gt;</span> res
+
+<span class="nb">cat </span>res | <span class="nb">grep </span>y <span class="o">&gt;</span>/dev/null 2&gt;&amp;1 <span class="o">&amp;&amp;</span> <span class="nv">sure</span><span class="o">=</span>1 <span class="o">||</span> <span class="nv">sure</span><span class="o">=</span>0
+
+<span class="k">if</span> <span class="o">[</span> <span class="nv">$sure</span> <span class="nt">-eq</span> 1 <span class="o">]</span>
+
+<span class="k">then
+
+</span><span class="nb">echo</span> <span class="s2">"Disabling IPTables..... "</span>
+
+/etc/init.d/iptables stop
+
+chkconfig iptables off
+
+<span class="nb">echo</span> <span class="s2">"IPTables service is disabled now...:)"</span>
+
+<span class="nb">rm</span> <span class="nt">-f</span> res respo
+
+<span class="k">else
+
+</span><span class="nb">echo</span> <span class="s2">"Checking if http service is allowed in IPtable..."</span>
+
+iptables <span class="nt">-L</span> |grep http <span class="o">&gt;</span>/dev/null 2&gt;&amp;1 <span class="o">&amp;&amp;</span> <span class="nv">ena</span><span class="o">=</span>1 <span class="o">||</span> <span class="nv">ena</span><span class="o">=</span>0
+
+<span class="k">if</span> <span class="o">[</span> <span class="nv">$ena</span> <span class="nt">-eq</span> 1 <span class="o">]</span>
+
+<span class="k">then
+
+</span><span class="nb">echo</span> <span class="s2">"http service is already allowed in IPtable :)"</span>
+
+<span class="k">else
+
+</span><span class="nb">echo</span> <span class="s2">"Adding httpd service to iptables..."</span>
+
+iptables <span class="nt">-I</span> INPUT 5 <span class="nt">-i</span> eth0 <span class="nt">-p</span> tcp <span class="nt">--dport</span> 80 <span class="nt">-m</span> state <span class="nt">--state</span> NEW,ESTABLISHED <span class="nt">-j</span> ACCEPT
+
+/etc/init.d/iptables save
+
+<span class="nb">echo</span> <span class="s2">"httpd service has been allowed in IPtables... :)"</span>
+
+<span class="nb">rm</span> <span class="nt">-f</span> res respo
+
+<span class="k">fi
+
+fi</span>
+
+<span class="o">}</span>
+
+<span class="c">####### Information Collection #######</span>
+
+<span class="nb">echo</span> <span class="s2">"Please enter the network IP you want to add example 192.168.1.0/24"</span>
+
+<span class="nb">read </span>netwo
+
+<span class="nb">echo</span> <span class="s2">"please enter the state/province name where system is located"</span>
+
+<span class="nb">read </span>state
+
+<span class="nb">echo</span> <span class="s2">"Please enter the country name where system is located"</span>
+
+<span class="nb">read </span>country
+
+<span class="nb">echo</span> <span class="s2">"Please enter the system administrators name"</span>
+
+<span class="nb">read </span>contact
+
+<span class="nb">echo</span> <span class="s2">"Please enter the system administrators email"</span>
+
+<span class="nb">read </span>contactmail
+
+<span class="c">####### Preparing the server for MRTG installation ######</span>
+
+<span class="nb">echo</span> <span class="s2">"Checking prerequisites...."</span>
+
+fn_SELinux<span class="p">;</span>
+
+fn_IPTable<span class="p">;</span>
+
+<span class="nb">echo</span> <span class="s2">"Checking for wget package..."</span>
+
+wget |grep Usage <span class="o">&gt;</span>/dev/null 2&gt;&amp;1 <span class="o">&amp;&amp;</span> <span class="nv">wgt</span><span class="o">=</span>1 <span class="o">||</span> <span class="nv">wgt</span><span class="o">=</span>0
+
+<span class="k">if</span> <span class="o">[</span> <span class="nv">$wgt</span> <span class="nt">-eq</span> 1 <span class="o">]</span>
+
+<span class="k">then
+
+</span><span class="nb">echo</span> <span class="s2">"wget is already installed"</span>
+
+<span class="k">else
+
+</span><span class="nb">echo</span> <span class="s2">"Installing wget"</span>
+
+yum <span class="nb">install</span> <span class="nt">-y</span> wget
+
+<span class="k">fi
+
+</span><span class="nb">echo</span> <span class="s2">"Installing other required packages..."</span>
+
+<span class="c">###### Necessary Package Installation ######</span>
+
+yum <span class="nb">install</span> <span class="nt">-y</span> httpd gcc gd gd-devel perl libpng libxml2-devel cairo-devel glib2-devel pango-devel perl-devel perl-CGI net-snmp net-snmp-utils
+
+<span class="c">###### SNMP Configuration #######</span>
+
+<span class="nb">mv</span> /etc/snmp/snmpd.conf /etc/snmp/snmpd.conf.orig
+
+<span class="nb">echo</span> <span class="s2">"com2sec local localhost public
+
+com2sec mynetwork </span><span class="nv">$netwo</span><span class="s2"> public
+
+group MyRWGroup v1 local
+
+group MyRWGroup v2c local
+
+group MyRWGroup usm local
+
+group MyROGroup v1 mynetwork
+
+group MyROGroup v2c mynetwork
+
+group MyROGroup usm mynetwork
+
+view all included .1 80
+
+access MyROGroup </span><span class="se">\"\"</span><span class="s2"> any noauth exact all none none
+
+access MyRWGroup </span><span class="se">\"\"</span><span class="s2"> any noauth exact all all none
+
+syslocation </span><span class="nv">$state</span><span class="s2">, </span><span class="nv">$country</span><span class="s2">
+
+syscontact </span><span class="nv">$contact</span><span class="s2"> &lt;</span><span class="nv">$contactmail</span><span class="s2">&gt;
+
+"</span> <span class="o">&gt;</span> /etc/snmp/snmpd.conf
+
+/etc/init.d/snmpd restart
+
+chkconfig snmpd on
+
+<span class="c">##### MRTG Installation #######</span>
+
+<span class="nb">cd</span> /tmp
+
+wget http://oss.oetiker.ch/mrtg/pub/mrtg.tar.gz
+
+<span class="nb">tar </span>zfx mrtg.tar.gz <span class="o">&gt;</span>/dev/null 2&gt;&amp;1
+
+<span class="nb">tar</span> <span class="nt">-ztf</span> mrtg.tar.gz |head <span class="nt">-n1</span> |awk <span class="nt">-F</span> <span class="s2">"/THANKS"</span> <span class="s1">'{print $1}'</span> <span class="o">&gt;</span> mrtgvers
+
+<span class="nv">mrtver</span><span class="o">=</span><span class="s2">"</span><span class="si">$(</span><span class="nb">cat</span> /tmp/mrtgvers<span class="si">)</span><span class="s2">"</span>
+
+<span class="nb">cd</span> <span class="nv">$mrtver</span>
+
+./configure <span class="nt">--prefix</span><span class="o">=</span>/usr/local/mrtg2
+
+make
+
+make <span class="nb">install
+
+cd</span> /tmp
+
+wget http://oss.oetiker.ch/rrdtool/pub/rrdtool.tar.gz
+
+<span class="nb">tar </span>zfx rrdtool.tar.gz <span class="o">&gt;</span>/dev/null 2&gt;&amp;1
+
+<span class="nb">tar</span> <span class="nt">-ztf</span> rrdtool.tar.gz |head <span class="nt">-n1</span> |awk <span class="nt">-F</span> <span class="s2">"/THANKS"</span> <span class="s1">'{print $1}'</span> <span class="o">&gt;</span> rrdvers
+
+<span class="nv">rrdver</span><span class="o">=</span><span class="s2">"</span><span class="si">$(</span><span class="nb">cat</span> /tmp/rrdvers<span class="si">)</span><span class="s2">"</span>
+
+<span class="nb">cd</span> <span class="nv">$rrdver</span>
+
+./configure <span class="nt">--prefix</span><span class="o">=</span>/usr/local/rrdtool
+
+make
+
+make <span class="nb">install
+
+mkdir</span> /var/www/mrtg
+
+<span class="nb">mkdir</span> /home/mrtg
+
+/usr/local/mrtg2/bin/cfgmaker <span class="nt">--global</span> <span class="s2">"WorkDir: /var/www/mrtg"</span> <span class="nt">--global</span> <span class="s2">"Options[_]: growright, bits"</span> <span class="nt">--global</span> <span class="s2">"RunAsDaemon: Yes"</span> <span class="nt">--global</span> <span class="s2">"LogFormat: rrdtool"</span> <span class="nt">--global</span> <span class="s2">"PathAdd: /usr/local/rrdtool/bin"</span> <span class="nt">--global</span> <span class="s2">"LibAdd: /usr/local/rrdtool/lib/perl/5.10.1"</span> <span class="nt">-ifref</span><span class="o">=</span>ip <span class="nt">--output</span> /home/mrtg/mrtg.cfg public@localhost
+
+<span class="nb">env </span><span class="nv">LANG</span><span class="o">=</span>C /usr/local/mrtg2/bin/mrtg /home/mrtg/mrtg.cfg
+
+<span class="nb">echo</span> <span class="s2">"*/5 * * * * root env LANG=C /usr/local/mrtg2/bin/mrtg /home/mrtg/mrtg.cfg --logging /var/log/mrtg.log "</span> <span class="o">&gt;</span> /etc/cron.d/mrtg
+
+chkconfig crond on
+
+/usr/local/mrtg2/bin/indexmaker <span class="nt">--output</span><span class="o">=</span>/var/www/mrtg/index.html /home/mrtg/mrtg.cfg
+
+<span class="nb">echo</span> <span class="s2">"
+
+# This configuration file maps the mrtg output (generated daily)
+
+# into the URL space. By default these results are only accessible
+
+# from the local host.
+
+#
+
+Alias /mrtg /var/www/mrtg
+
+&lt;Location /mrtg&gt;
+
+Order deny,allow
+
+#Deny from all
+
+Allow from 127.0.0.1
+
+Allow from ::1
+
+# Allow from .example.com
+
+Allow from all
+
+&lt;/Location&gt;
+
+"</span> <span class="o">&gt;</span> /etc/httpd/conf.d/mrtg.conf
+
+chkconfig httpd on
+
+service httpd restart
+
+<span class="nb">cd</span> /tmp
+
+wget https://shivamshukla.wordpress.com/wp-content/uploads/2014/10/14all-cgi1.key <span class="o">&gt;</span>/dev/null 2&gt;&amp;1
+
+<span class="nb">mv</span> /tmp/14all-cgi1.key /var/www/cgi-bin/14all.cgi
+
+<span class="nb">chmod </span>777 /var/www/cgi-bin/14all.cgi
+
+<span class="nb">echo</span> <span class="s2">"MRTG Installation Completed.... :)"</span>
+
+<span class="nb">echo</span> <span class="s2">"Click the link to open the MRTG page http://</span><span class="nv">$ipadd</span><span class="s2">/mrtg"</span>
+
+
+</code></pre></div></div>
+
+<p><a href="https://shivamshukla.wordpress.com/wp-content/uploads/2014/11/mrtg.key"><strong>Click here to download the script</strong></a></p>]]></content><author><name>Shivam Shukla</name></author><summary type="html"><![CDATA[Hey guys here’s a script to help you install MRTG+RRD on a CentOS box]]></summary></entry></feed>

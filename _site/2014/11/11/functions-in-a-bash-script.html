@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Functions In A Bash Script</title>
+
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Oregano&display=swap" rel="stylesheet" />
+
+    <!-- Main CSS -->
+    <link rel="stylesheet" href="/assets/css/main.css">
+  </head>
+
+  <body class="layout--single">
+    <!-- Header -->
+    <header class="site-header">
+      <div class="container">
+        <h1><a href="/">Shivam's Tech Blog</a></h1>
+        <nav class="site-nav">
+          <a href="/">Home</a>
+          <a href="/about/">About</a>
+          <a href="/categories/">Categories</a>
+        </nav>
+      </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="page">
+      
+
+
+
+
+
+<div id="main" role="main">
+  
+  <div class="sidebar sticky">
+  
+
+
+<div itemscope itemtype="https://schema.org/Person" class="h-card">
+
+  
+
+  <div class="author__content">
+    <h3 class="author__name p-name" itemprop="name">
+      <a class="u-url" rel="me" href="http://localhost:4000/" itemprop="url">Shivam Shukla</a>
+    </h3>
+    
+      <div class="author__bio p-note" itemprop="description">
+        <table>
+  <tbody>
+    <tr>
+      <td>Engineer</td>
+      <td>Monitoring &amp; Automation</td>
+      <td>14+ years</td>
+    </tr>
+  </tbody>
+</table>
+
+      </div>
+    
+  </div>
+
+  <div class="author__urls-wrapper">
+    <button class="btn btn--inverse">Follow</button>
+    <ul class="author__urls social-icons">
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      <!--
+  <li>
+    <a href="http://link-to-whatever-social-network.com/user/" itemprop="sameAs" rel="nofollow noopener noreferrer me">
+      <i class="fas fa-fw" aria-hidden="true"></i> Custom Social Profile Link
+    </a>
+  </li>
+-->
+    </ul>
+  </div>
+</div>
+
+  
+  </div>
+
+
+
+  <article class="page" itemscope itemtype="https://schema.org/CreativeWork">
+    <meta itemprop="headline" content="Functions In A Bash Script">
+    <meta itemprop="description" content="Hey friends here’s an other blog regarding BASH in which my aim is to help you understand basics about functions in BASH">
+    <meta itemprop="datePublished" content="2014-11-11T00:00:00+05:30">
+    
+
+    <div class="page__inner-wrap">
+      
+        <header>
+          <h1 id="page-title" class="page__title" itemprop="headline">
+            <a href="http://localhost:4000/2014/11/11/functions-in-a-bash-script.html" itemprop="url">Functions In A Bash Script
+</a>
+          </h1>
+          
+
+
+        </header>
+      
+
+      <section class="page__content" itemprop="text">
+        
+        <p>Hey friends here’s an other blog regarding BASH in which my aim is to help you understand basics about functions in BASH</p>
+
+<p>The thing which I like about functions in BASH is that you can create/define a function at any point in your script &amp; call it as per your requirement in the script.</p>
+
+<p>Basic structure of a function in bash is as show below.</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">function </span>hello<span class="o">{</span>
+
+your code or messages here
+
+<span class="o">}</span>
+
+<span class="nb">.</span>
+
+<span class="nb">.</span>
+
+<span class="nb">.</span>
+
+hello
+
+
+</code></pre></div></div>
+
+<p>Calling the function by its name where ever needed</p>
+
+<p>Let’s have a look at a simple example using a script in which we will print a greeting message using function.</p>
+
+<p>Create a file using your favorite editor, paste the below lines into it &amp; exit saving changes. assign executable permissions to the file.</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c">#!/bin/bash</span>
+
+<span class="k">function </span>hello <span class="o">{</span>
+
+<span class="nb">echo</span> <span class="s2">"Hello there this is my first bash function…"</span>
+
+<span class="o">}</span>
+
+hello
+
+<span class="nb">echo</span> <span class="s2">"Bye for now…."</span>
+
+
+</code></pre></div></div>
+
+<p>As soon as you execute this script the following output will appear</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Hello there this is my first bash <span class="k">function</span>…
+
+Bye <span class="k">for </span>now….
+</code></pre></div></div>
+
+<p>You can use multiple functions in a single script &amp; use them as per your requirement.</p>
+
+<p>Let’s use this same script &amp; make two different functions for each message that means one for hello the other for bye.</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c">#!/bin/bash</span>
+
+<span class="k">function </span>hello <span class="o">{</span>
+
+<span class="nb">echo</span> <span class="s2">"Hello there this is my first bash function…"</span>
+
+<span class="o">}</span>
+
+<span class="k">function </span>bye <span class="o">{</span>
+
+<span class="nb">echo</span> <span class="s2">"Bye for now…."</span>
+
+<span class="o">}</span>
+
+hello
+
+bye
+</code></pre></div></div>
+
+<p> </p>
+
+<p>The output remains same as above.</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Hello there this is my first bash <span class="k">function</span>…
+
+Bye <span class="k">for </span>now….
+</code></pre></div></div>
+
+<p> </p>
+
+<p>Hope you find this post helpful let me know if you have any queries.. :)</p>
+
+        
+      </section>
+
+      <footer class="page__meta">
+        
+        
+
+
+        
+
+  <p class="page__date"><strong><i class="fas fa-fw fa-calendar-alt" aria-hidden="true"></i> Updated:</strong> <time class="dt-published" datetime="2014-11-11T00:00:00+05:30">November 11, 2014</time></p>
+
+      </footer>
+
+      
+
+      
+  <nav class="pagination">
+    
+      <a href="/2014/11/10/shebang-basics-of-bash.html" class="pagination--pager" title="Shebang Basics Of Bash">Previous</a>
+    
+    
+      <a href="/2014/11/17/how-to-install-epel-repository-on-centos-6.html" class="pagination--pager" title="How To Install Epel Repository On Centos 6">Next</a>
+    
+  </nav>
+
+
+    </div>
+
+    
+  </article>
+
+  
+  
+</div>
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="site-footer">
+      <p>&copy; 2025 Shivam's Tech Blog</p>
+    </footer>
+  </body>
+</html>

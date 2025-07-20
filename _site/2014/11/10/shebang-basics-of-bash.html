@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Shebang Basics Of Bash</title>
+
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Oregano&display=swap" rel="stylesheet" />
+
+    <!-- Main CSS -->
+    <link rel="stylesheet" href="/assets/css/main.css">
+  </head>
+
+  <body class="layout--single">
+    <!-- Header -->
+    <header class="site-header">
+      <div class="container">
+        <h1><a href="/">Shivam's Tech Blog</a></h1>
+        <nav class="site-nav">
+          <a href="/">Home</a>
+          <a href="/about/">About</a>
+          <a href="/categories/">Categories</a>
+        </nav>
+      </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="page">
+      
+
+
+
+
+
+<div id="main" role="main">
+  
+  <div class="sidebar sticky">
+  
+
+
+<div itemscope itemtype="https://schema.org/Person" class="h-card">
+
+  
+
+  <div class="author__content">
+    <h3 class="author__name p-name" itemprop="name">
+      <a class="u-url" rel="me" href="http://localhost:4000/" itemprop="url">Shivam Shukla</a>
+    </h3>
+    
+      <div class="author__bio p-note" itemprop="description">
+        <table>
+  <tbody>
+    <tr>
+      <td>Engineer</td>
+      <td>Monitoring &amp; Automation</td>
+      <td>14+ years</td>
+    </tr>
+  </tbody>
+</table>
+
+      </div>
+    
+  </div>
+
+  <div class="author__urls-wrapper">
+    <button class="btn btn--inverse">Follow</button>
+    <ul class="author__urls social-icons">
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      <!--
+  <li>
+    <a href="http://link-to-whatever-social-network.com/user/" itemprop="sameAs" rel="nofollow noopener noreferrer me">
+      <i class="fas fa-fw" aria-hidden="true"></i> Custom Social Profile Link
+    </a>
+  </li>
+-->
+    </ul>
+  </div>
+</div>
+
+  
+  </div>
+
+
+
+  <article class="page" itemscope itemtype="https://schema.org/CreativeWork">
+    <meta itemprop="headline" content="Shebang Basics Of Bash">
+    <meta itemprop="description" content="Hi guys here’s my new post about Shebang &amp; some basics about BASH &amp; creation of first bash script.">
+    <meta itemprop="datePublished" content="2014-11-10T00:00:00+05:30">
+    
+
+    <div class="page__inner-wrap">
+      
+        <header>
+          <h1 id="page-title" class="page__title" itemprop="headline">
+            <a href="http://localhost:4000/2014/11/10/shebang-basics-of-bash.html" itemprop="url">Shebang Basics Of Bash
+</a>
+          </h1>
+          
+
+
+        </header>
+      
+
+      <section class="page__content" itemprop="text">
+        
+        <p>Hi guys here’s my new post about Shebang &amp; some basics about BASH &amp; creation of first bash script.</p>
+
+<p><strong>What is Shebang?</strong>
+This symbol <strong>#!</strong> (Hash with Exclamation mark) is known as <strong>shebang</strong>,</p>
+
+<p><strong>What Shebang does?</strong>
+It tells the shell what program to interpret the script with, when executed.</p>
+
+<p><strong>Few</strong> <strong>examples</strong>:</p>
+
+<p><strong>#!/bin/bash</strong>                   — Execute the file using bash, the Bourne again shell, or a compatible shell</p>
+
+<p><strong>#!/bin/sh</strong>                       — Execute the file using sh, the Bourne shell, or a compatible shell</p>
+
+<p><strong>#!/bin/csh</strong>                     — Execute the file using csh, the C shell, or a compatible shell</p>
+
+<p><strong>#!/usr/bin/perl –T</strong>         — Execute using Perl with the option for taint checks</p>
+
+<p><strong>#!/usr/bin/php</strong>              — Execute the file using the PHP command line interpreter</p>
+
+<p><strong>#!/usr/bin/python -O</strong>    — Execute using Python with optimizations to code</p>
+
+<p><strong>#!/usr/bin/ruby</strong>             — Execute using Ruby
+ 
+Some commands to learn more about the shell you have on your system.
+To check the shell type &amp; path</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c">#echo $SHELL</span>
+/bin/bash
+
+</code></pre></div></div>
+<p>OR</p>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c">#which bash</span>
+/bin/bash
+
+</code></pre></div></div>
+<p>To check if the shell is interactive or non-interactive</p>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c">#echo $-</span>
+himBH
+</code></pre></div></div>
+<p>when the <strong>$</strong> - variable contains <strong>i</strong> in its output it means the shell is interactive.
+ 
+Let’s try out some fun filled bash script examples.</p>
+
+<p>Create any file say myscript using your favorite editor like vi/vim write down the script as show below &amp; set the executable permission to the file.</p>
+
+<p> </p>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c">#!/bin/bash</span>
+<span class="nb">echo</span> <span class="nt">-e</span> <span class="s2">"Hello World.....:)</span><span class="se">\n</span><span class="s2">This is my first bash script.."</span>
+
+</code></pre></div></div>
+<p>OR</p>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c">#!/bin/bash</span>
+<span class="nb">echo</span> <span class="s2">"Hello World..... :)"</span>
+<span class="nb">echo</span> <span class="s2">"This is my first bash script.."</span>
+</code></pre></div></div>
+<p>Both the above script will print the message in two different lines.</p>
+
+<p>The difference between the two is that in the first script both messages are used within the same echo command with additional options like “-e &amp; \n”</p>
+
+<p><strong>-e</strong>         is used to enable interpretation of backslash escapes.</p>
+
+<p><strong>\n</strong>         is used to change the output to new line.
+ </p>
+
+<p>In this second example we will greet the user with a welcome message whenever he access the terminal.</p>
+
+<p> 
+Edit the <strong>~/.bash_profile</strong> using your favorite editor</p>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c">#vi ~/.bash_profile</span>
+
+</code></pre></div></div>
+<p>add the below lines to the end of the file</p>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>
+<span class="nv">hname</span><span class="o">=</span><span class="sb">`</span><span class="nb">hostname</span><span class="sb">`</span>
+<span class="nv">usern</span><span class="o">=</span><span class="sb">`</span><span class="nb">whoami</span><span class="sb">`</span>
+<span class="nb">echo</span> <span class="s2">"Hello </span><span class="nv">$usern</span><span class="s2"> welcome to </span><span class="nv">$hname</span><span class="s2">"</span>
+
+</code></pre></div></div>
+<p>Now let’s understand what’s happing in the above script
+ </p>
+
+<p>The <strong>~/.bash_profile</strong> is executed when BASH is invoked as a login shell, certain environment variables are set here or can be set here for that particular user.</p>
+
+<p>Adding the above lines will greet the user with those messages whenever he logins the terminal.</p>
+
+<p>Example:
+Username: admin
+Hostname: testhost
+ 
+The output after adding those lines will be</p>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Hello admin welcome to testhost
+
+</code></pre></div></div>
+
+
+        
+      </section>
+
+      <footer class="page__meta">
+        
+        
+
+
+        
+
+  <p class="page__date"><strong><i class="fas fa-fw fa-calendar-alt" aria-hidden="true"></i> Updated:</strong> <time class="dt-published" datetime="2014-11-10T00:00:00+05:30">November 10, 2014</time></p>
+
+      </footer>
+
+      
+
+      
+  <nav class="pagination">
+    
+      <a href="/2014/11/07/mrtg-rrd-installation-script-for-centos.html" class="pagination--pager" title="Mrtg Rrd Installation Script For Centos">Previous</a>
+    
+    
+      <a href="/2014/11/11/functions-in-a-bash-script.html" class="pagination--pager" title="Functions In A Bash Script">Next</a>
+    
+  </nav>
+
+
+    </div>
+
+    
+  </article>
+
+  
+  
+</div>
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="site-footer">
+      <p>&copy; 2025 Shivam's Tech Blog</p>
+    </footer>
+  </body>
+</html>

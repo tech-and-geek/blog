@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Fixing Mysql After Encountering Cannot Proceed Because System Tables Used By Event Scheduler Were Found Damaged At Server Start When Running Sql Queries To Create Events</title>
+
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Oregano&display=swap" rel="stylesheet" />
+
+    <!-- Main CSS -->
+    <link rel="stylesheet" href="/assets/css/main.css">
+  </head>
+
+  <body class="layout--single">
+    <!-- Header -->
+    <header class="site-header">
+      <div class="container">
+        <h1><a href="/">Shivam's Tech Blog</a></h1>
+        <nav class="site-nav">
+          <a href="/">Home</a>
+          <a href="/about/">About</a>
+          <a href="/categories/">Categories</a>
+        </nav>
+      </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="page">
+      
+
+
+
+
+
+<div id="main" role="main">
+  
+  <div class="sidebar sticky">
+  
+
+
+<div itemscope itemtype="https://schema.org/Person" class="h-card">
+
+  
+
+  <div class="author__content">
+    <h3 class="author__name p-name" itemprop="name">
+      <a class="u-url" rel="me" href="http://localhost:4000/" itemprop="url">Shivam Shukla</a>
+    </h3>
+    
+      <div class="author__bio p-note" itemprop="description">
+        <table>
+  <tbody>
+    <tr>
+      <td>Engineer</td>
+      <td>Monitoring &amp; Automation</td>
+      <td>14+ years</td>
+    </tr>
+  </tbody>
+</table>
+
+      </div>
+    
+  </div>
+
+  <div class="author__urls-wrapper">
+    <button class="btn btn--inverse">Follow</button>
+    <ul class="author__urls social-icons">
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      <!--
+  <li>
+    <a href="http://link-to-whatever-social-network.com/user/" itemprop="sameAs" rel="nofollow noopener noreferrer me">
+      <i class="fas fa-fw" aria-hidden="true"></i> Custom Social Profile Link
+    </a>
+  </li>
+-->
+    </ul>
+  </div>
+</div>
+
+  
+  </div>
+
+
+
+  <article class="page" itemscope itemtype="https://schema.org/CreativeWork">
+    <meta itemprop="headline" content="Fixing Mysql After Encountering Cannot Proceed Because System Tables Used By Event Scheduler Were Found Damaged At Server Start When Running Sql Queries To Create Events">
+    <meta itemprop="description" content="Hi Guys.">
+    <meta itemprop="datePublished" content="2014-07-08T00:00:00+05:30">
+    
+
+    <div class="page__inner-wrap">
+      
+        <header>
+          <h1 id="page-title" class="page__title" itemprop="headline">
+            <a href="http://localhost:4000/2014/07/08/fixing-mysql-after-encountering-cannot-proceed-because-system-tables-used-by-event-scheduler-were-found-damaged-at-server-start-when-running-sql-queries-to-create-events.html" itemprop="url">Fixing Mysql After Encountering Cannot Proceed Because System Tables Used By Event Scheduler Were Found Damaged At Server Start When Running Sql Queries To Create Events
+</a>
+          </h1>
+          
+
+
+        </header>
+      
+
+      <section class="page__content" itemprop="text">
+        
+        <p>Hi Guys.</p>
+
+<p>This post is about MySQL error “Cannot proceed because system tables used by Event Scheduler were found damaged at server start”.</p>
+
+<p>This error was encountered by me while trying to upgrade the MySQL version  in CentOS</p>
+
+<p>The reason for the upgrade being the old MySQL version was not having support for event scheduling.</p>
+
+<p>After the upgrade was completed when I tried to create the events table the error popped up.</p>
+
+<p>Here is work around which worked out for me.</p>
+
+<p><strong>Step 1:</strong> open the terminal</p>
+
+<p><strong>Step 2:</strong> execute the command</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>_mysql_upgrade <span class="nt">-p</span> <span class="nt">--force_</span>
+
+<span class="k">**</span>Step 3:<span class="k">**</span> after the second step execute this <span class="nb">command</span> 
+
+<span class="sb">```</span>bash
+_service mysql restart_
+</code></pre></div></div>
+<p>or</p>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>_service mysqld restart_ 
+</code></pre></div></div>
+<p>now try to recreate the events table that should work out now.</p>
+
+<p>Please do let me know if you found this post useful.</p>
+
+<p>Thanks…</p>
+
+        
+      </section>
+
+      <footer class="page__meta">
+        
+        
+
+
+        
+
+  <p class="page__date"><strong><i class="fas fa-fw fa-calendar-alt" aria-hidden="true"></i> Updated:</strong> <time class="dt-published" datetime="2014-07-08T00:00:00+05:30">July 8, 2014</time></p>
+
+      </footer>
+
+      
+
+      
+  <nav class="pagination">
+    
+      <a href="/2012/08/22/hello-world.html" class="pagination--pager" title="Hello World">Previous</a>
+    
+    
+      <a href="/2014/07/11/how-to-disable-ipv6-in-ubuntu.html" class="pagination--pager" title="How To Disable Ipv6 In Ubuntu">Next</a>
+    
+  </nav>
+
+
+    </div>
+
+    
+  </article>
+
+  
+  
+</div>
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="site-footer">
+      <p>&copy; 2025 Shivam's Tech Blog</p>
+    </footer>
+  </body>
+</html>

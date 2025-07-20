@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Ipv6 Disabling Script For Ubuntu</title>
+
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Oregano&display=swap" rel="stylesheet" />
+
+    <!-- Main CSS -->
+    <link rel="stylesheet" href="/assets/css/main.css">
+  </head>
+
+  <body class="layout--single">
+    <!-- Header -->
+    <header class="site-header">
+      <div class="container">
+        <h1><a href="/">Shivam's Tech Blog</a></h1>
+        <nav class="site-nav">
+          <a href="/">Home</a>
+          <a href="/about/">About</a>
+          <a href="/categories/">Categories</a>
+        </nav>
+      </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="page">
+      
+
+
+
+
+
+<div id="main" role="main">
+  
+  <div class="sidebar sticky">
+  
+
+
+<div itemscope itemtype="https://schema.org/Person" class="h-card">
+
+  
+
+  <div class="author__content">
+    <h3 class="author__name p-name" itemprop="name">
+      <a class="u-url" rel="me" href="http://localhost:4000/" itemprop="url">Shivam Shukla</a>
+    </h3>
+    
+      <div class="author__bio p-note" itemprop="description">
+        <table>
+  <tbody>
+    <tr>
+      <td>Engineer</td>
+      <td>Monitoring &amp; Automation</td>
+      <td>14+ years</td>
+    </tr>
+  </tbody>
+</table>
+
+      </div>
+    
+  </div>
+
+  <div class="author__urls-wrapper">
+    <button class="btn btn--inverse">Follow</button>
+    <ul class="author__urls social-icons">
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      <!--
+  <li>
+    <a href="http://link-to-whatever-social-network.com/user/" itemprop="sameAs" rel="nofollow noopener noreferrer me">
+      <i class="fas fa-fw" aria-hidden="true"></i> Custom Social Profile Link
+    </a>
+  </li>
+-->
+    </ul>
+  </div>
+</div>
+
+  
+  </div>
+
+
+
+  <article class="page" itemscope itemtype="https://schema.org/CreativeWork">
+    <meta itemprop="headline" content="Ipv6 Disabling Script For Ubuntu">
+    <meta itemprop="description" content="Hey Guys…">
+    <meta itemprop="datePublished" content="2014-07-26T00:00:00+05:30">
+    
+
+    <div class="page__inner-wrap">
+      
+        <header>
+          <h1 id="page-title" class="page__title" itemprop="headline">
+            <a href="http://localhost:4000/2014/07/26/ipv6-disabling-script-for-ubuntu.html" itemprop="url">Ipv6 Disabling Script For Ubuntu
+</a>
+          </h1>
+          
+
+
+        </header>
+      
+
+      <section class="page__content" itemprop="text">
+        
+        <p>Hey Guys…</p>
+
+<p>Hope you are doing well here’s a small script to help you to disable IPv6 on your Ubuntu Box.</p>
+
+<p>hope you will find this helpful, let me know if you face any issue with this.</p>
+
+<p> </p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c">#########################################</span>
+
+<span class="c">##Author: Shivam Shukla ##</span>
+
+<span class="c">##Build Date: 22-07-2014 ##</span>
+
+<span class="c">##Modification Date: NA ##</span>
+
+<span class="c">##Version: 1.0.0 ##</span>
+
+<span class="c">##Tool: Ubuntu IPv6 Disabler ##</span>
+
+<span class="c">#########################################</span>
+
+<span class="c">#!/bin/bash</span>
+
+clear
+
+<span class="nv">int</span><span class="o">=</span><span class="si">$(</span>netstat <span class="nt">-i</span> | <span class="nb">cut</span> <span class="nt">-d</span><span class="s2">" "</span> <span class="nt">-f1</span> | egrep <span class="nt">-v</span> <span class="s2">"^Kernel|Iface|lo|:"</span> |head <span class="nt">-1</span><span class="si">)</span>
+
+ip <span class="nt">-6</span> addr show dev <span class="nv">$int</span> |cut <span class="nt">-b</span> 5-9 <span class="o">&gt;</span>/tmp/ipp
+
+<span class="nb">grep</span> <span class="s2">"inet6"</span> /tmp/ipp <span class="o">&gt;</span>/dev/null 2&gt;&amp;1 <span class="o">&amp;&amp;</span> <span class="nv">ip_v</span><span class="o">=</span>1 <span class="o">||</span> <span class="nv">ip_v</span><span class="o">=</span>0
+
+<span class="nv">i6</span><span class="o">=</span><span class="si">$(</span>ip addr show dev <span class="nv">$int</span> | <span class="nb">sed</span> <span class="nt">-e</span><span class="s1">'s/^.*inet6 \([^ ]*\)\/.*$/\1/;t;d'</span><span class="si">)</span>
+
+<span class="k">if</span> <span class="o">[</span> <span class="nv">$ip_v</span> <span class="nt">-eq</span> 1 <span class="o">]</span>
+
+<span class="k">then
+
+</span><span class="nb">echo</span> <span class="s2">"echo IPv6 found..."</span><span class="p">;</span>
+
+<span class="nb">echo</span> <span class="s2">"The IPv6 address is </span><span class="nv">$i6</span><span class="s2">"</span><span class="p">;</span>
+
+<span class="nb">echo</span> <span class="s2">"Disabling IPv6 address..."</span><span class="p">;</span>
+
+<span class="nb">echo</span> <span class="s2">"net.ipv6.conf.all.disable_ipv6 = 1"</span> <span class="o">&gt;&gt;</span> /etc/sysctl.conf
+
+<span class="nb">echo</span> <span class="s2">"net.ipv6.conf.default.disable_ipv6 = 1"</span> <span class="o">&gt;&gt;</span> /etc/sysctl.conf
+
+<span class="nb">echo</span> <span class="s2">"net.ipv6.conf.lo.disable_ipv6 = 1"</span> <span class="o">&gt;&gt;</span> /etc/sysctl.conf
+
+sysctl <span class="nt">-p</span>
+
+<span class="nb">echo</span> <span class="s2">"IPv6 address disable success... :)"</span>
+
+<span class="k">else
+
+</span><span class="nb">echo</span> <span class="s2">"IPv6 is already disabled."</span>
+
+<span class="k">fi
+
+</span><span class="nb">rm</span> <span class="nt">-f</span> /tmp/ipp
+</code></pre></div></div>
+
+        
+      </section>
+
+      <footer class="page__meta">
+        
+        
+
+
+        
+
+  <p class="page__date"><strong><i class="fas fa-fw fa-calendar-alt" aria-hidden="true"></i> Updated:</strong> <time class="dt-published" datetime="2014-07-26T00:00:00+05:30">July 26, 2014</time></p>
+
+      </footer>
+
+      
+
+      
+  <nav class="pagination">
+    
+      <a href="/2014/07/11/how-to-disable-ipv6-in-ubuntu.html" class="pagination--pager" title="How To Disable Ipv6 In Ubuntu">Previous</a>
+    
+    
+      <a href="/2014/08/21/installing-jboss-7-1-1-final-on-centos-6-x.html" class="pagination--pager" title="Installing Jboss 7 1 1 Final On Centos 6 X">Next</a>
+    
+  </nav>
+
+
+    </div>
+
+    
+  </article>
+
+  
+  
+</div>
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="site-footer">
+      <p>&copy; 2025 Shivam's Tech Blog</p>
+    </footer>
+  </body>
+</html>

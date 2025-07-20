@@ -1,0 +1,350 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Ubuntu Ipv6 Disable Script</title>
+
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Oregano&display=swap" rel="stylesheet" />
+
+    <!-- Main CSS -->
+    <link rel="stylesheet" href="/assets/css/main.css">
+  </head>
+
+  <body class="layout--single">
+    <!-- Header -->
+    <header class="site-header">
+      <div class="container">
+        <h1><a href="/">Shivam's Tech Blog</a></h1>
+        <nav class="site-nav">
+          <a href="/">Home</a>
+          <a href="/about/">About</a>
+          <a href="/categories/">Categories</a>
+        </nav>
+      </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="page">
+      
+
+
+
+
+
+<div id="main" role="main">
+  
+  <div class="sidebar sticky">
+  
+
+
+<div itemscope itemtype="https://schema.org/Person" class="h-card">
+
+  
+
+  <div class="author__content">
+    <h3 class="author__name p-name" itemprop="name">
+      <a class="u-url" rel="me" href="http://localhost:4000/" itemprop="url">Shivam Shukla</a>
+    </h3>
+    
+      <div class="author__bio p-note" itemprop="description">
+        <table>
+  <tbody>
+    <tr>
+      <td>Engineer</td>
+      <td>Monitoring &amp; Automation</td>
+      <td>14+ years</td>
+    </tr>
+  </tbody>
+</table>
+
+      </div>
+    
+  </div>
+
+  <div class="author__urls-wrapper">
+    <button class="btn btn--inverse">Follow</button>
+    <ul class="author__urls social-icons">
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      <!--
+  <li>
+    <a href="http://link-to-whatever-social-network.com/user/" itemprop="sameAs" rel="nofollow noopener noreferrer me">
+      <i class="fas fa-fw" aria-hidden="true"></i> Custom Social Profile Link
+    </a>
+  </li>
+-->
+    </ul>
+  </div>
+</div>
+
+  
+  </div>
+
+
+
+  <article class="page" itemscope itemtype="https://schema.org/CreativeWork">
+    <meta itemprop="headline" content="Ubuntu Ipv6 Disable Script">
+    <meta itemprop="description" content="Hey friends! 👋">
+    <meta itemprop="datePublished" content="2014-08-21T00:00:00+05:30">
+    
+
+    <div class="page__inner-wrap">
+      
+        <header>
+          <h1 id="page-title" class="page__title" itemprop="headline">
+            <a href="http://localhost:4000/2014/08/21/ubuntu-ipv6-disable-script.html" itemprop="url">Ubuntu Ipv6 Disable Script
+</a>
+          </h1>
+          
+
+
+        </header>
+      
+
+      <section class="page__content" itemprop="text">
+        
+        <p>Hey friends! 👋</p>
+
+<p>Check out this <strong>menu-driven Bash script</strong> that helps you <strong>disable IPv6</strong> from your Ubuntu box.</p>
+
+<hr />
+
+<h2 id="-what-this-script-does">🔧 What This Script Does</h2>
+
+<ul>
+  <li>Detects if IPv6 is enabled</li>
+  <li>Displays your active IPv6 address (if any)</li>
+  <li>Disables it safely using <code class="language-plaintext highlighter-rouge">sysctl.conf</code></li>
+  <li>Includes an “About” menu section</li>
+  <li>Clean, interactive CLI interface</li>
+</ul>
+
+<hr />
+
+<h2 id="-the-script">📜 The Script</h2>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c">#!/bin/bash</span>
+<span class="c">#################################</span>
+<span class="c"># Author: Shivam Shukla</span>
+<span class="c"># Build Date: 02-10-2014</span>
+<span class="c"># Modification Date: 11-11-2014</span>
+<span class="c"># Version: 1.0.0</span>
+<span class="c">#################################</span>
+
+<span class="nv">build</span><span class="o">=</span><span class="s2">"02/10/2014"</span>
+<span class="nv">version</span><span class="o">=</span><span class="s2">"1.0.0"</span>
+<span class="nv">modified</span><span class="o">=</span><span class="s2">"NA"</span>
+
+<span class="c"># Step #1: Define variables</span>
+pause<span class="o">(){</span>
+  <span class="nb">read</span> <span class="nt">-p</span> <span class="s2">"Press [Enter] key to continue..."</span> fackEnterKey
+<span class="o">}</span>
+
+<span class="k">function </span>fn_ipv6disable<span class="o">()</span> <span class="o">{</span>
+  <span class="nv">int</span><span class="o">=</span><span class="si">$(</span>netstat <span class="nt">-i</span> | <span class="nb">cut</span> <span class="nt">-d</span><span class="s2">" "</span> <span class="nt">-f1</span> | egrep <span class="nt">-v</span> <span class="s2">"^Kernel|Iface|lo|:"</span> | <span class="nb">head</span> <span class="nt">-1</span><span class="si">)</span>
+  ip <span class="nt">-6</span> addr show dev <span class="nv">$int</span> | <span class="nb">cut</span> <span class="nt">-b</span> 5-9 <span class="o">&gt;</span> /tmp/ipp
+  <span class="nb">grep</span> <span class="s2">"inet6"</span> /tmp/ipp <span class="o">&gt;</span>/dev/null 2&gt;&amp;1 <span class="o">&amp;&amp;</span> <span class="nv">ip_v</span><span class="o">=</span>1 <span class="o">||</span> <span class="nv">ip_v</span><span class="o">=</span>0
+  <span class="nv">i6</span><span class="o">=</span><span class="si">$(</span>ip addr show dev <span class="nv">$int</span> | <span class="nb">sed</span> <span class="nt">-e</span> <span class="s1">'s/^.*inet6 \([^ ]*\)\/.*$//;t;d'</span><span class="si">)</span>
+
+  <span class="k">if</span> <span class="o">[</span> <span class="nv">$ip_v</span> <span class="nt">-eq</span> 1 <span class="o">]</span><span class="p">;</span> <span class="k">then
+    </span><span class="nb">echo</span> <span class="s2">"IPv6 found..."</span>
+    <span class="nb">echo</span> <span class="s2">"The IPv6 address is </span><span class="nv">$i6</span><span class="s2">"</span>
+    <span class="nb">echo</span> <span class="s2">"Disabling IPv6..."</span>
+    <span class="nb">echo</span> <span class="s2">"net.ipv6.conf.all.disable_ipv6 = 1"</span> <span class="o">&gt;&gt;</span> /etc/sysctl.conf
+    <span class="nb">echo</span> <span class="s2">"net.ipv6.conf.default.disable_ipv6 = 1"</span> <span class="o">&gt;&gt;</span> /etc/sysctl.conf
+    <span class="nb">echo</span> <span class="s2">"net.ipv6.conf.lo.disable_ipv6 = 1"</span> <span class="o">&gt;&gt;</span> /etc/sysctl.conf
+    sysctl <span class="nt">-p</span>
+    <span class="nb">echo</span> <span class="s2">"IPv6 disable success ✅"</span>
+  <span class="k">else
+    </span><span class="nb">echo</span> <span class="s2">"IPv6 is already disabled ✅"</span>
+  <span class="k">fi</span>
+<span class="o">}</span>
+
+<span class="k">function </span>fn_about<span class="o">()</span> <span class="o">{</span>
+  <span class="nb">date</span> <span class="s1">'+%d/%m/%y %H:%M:%S'</span> <span class="o">&gt;</span> <span class="nb">time
+  </span><span class="nv">var_date_time</span><span class="o">=</span><span class="si">$(</span>&lt;<span class="nb">time</span><span class="si">)</span>
+  <span class="nb">echo</span> <span class="nt">-e</span> <span class="s2">"</span><span class="se">\0</span><span class="s2">33[34m###########################################################################"</span>
+  <span class="nb">echo</span> <span class="s2">"#                                                                         #"</span>
+  <span class="nb">echo</span> <span class="s2">"#                                 About                                  #"</span>
+  <span class="nb">echo</span> <span class="s2">"#-------------------------------------------------------------------------#"</span>
+  <span class="nb">echo</span> <span class="s2">"# Author         : Shivam Shukla                                          #"</span>
+  <span class="nb">echo</span> <span class="s2">"# Type           : IPv6 Disable Utility for Ubuntu                        #"</span>
+  <span class="nb">echo</span> <span class="s2">"# Version        : </span><span class="nv">$version</span><span class="s2">                                               #"</span>
+  <span class="nb">echo</span> <span class="s2">"# Build Date     : </span><span class="nv">$build</span><span class="s2">                                                 #"</span>
+  <span class="nb">echo</span> <span class="s2">"# Modified       : </span><span class="nv">$modified</span><span class="s2">                                              #"</span>
+  <span class="nb">echo</span> <span class="s2">"# Current Time   : </span><span class="nv">$var_date_time</span><span class="s2">                                         #"</span>
+  <span class="nb">echo</span> <span class="s2">"#                                                                         #"</span>
+  <span class="nb">echo</span> <span class="nt">-e</span> <span class="s2">"###########################################################################</span><span class="se">\0</span><span class="s2">33[0m"</span>
+<span class="o">}</span>
+
+one<span class="o">(){</span>
+  fn_ipv6disable
+  pause
+<span class="o">}</span>
+
+two<span class="o">(){</span>
+  fn_about
+  pause
+<span class="o">}</span>
+
+show_menus<span class="o">()</span> <span class="o">{</span>
+  clear
+  <span class="nb">echo</span> <span class="nt">-e</span> <span class="s1">'\E[0;34m'</span><span class="s2">"</span><span class="se">\0</span><span class="s2">33[1m~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~</span><span class="se">\0</span><span class="s2">33[0m"</span>
+  <span class="nb">echo</span> <span class="nt">-e</span> <span class="s1">'\E[0;34m'</span><span class="s2">"</span><span class="se">\0</span><span class="s2">33[1m~ WELCOME TO IPv6 TOOL FOR UBUNTU         ~</span><span class="se">\0</span><span class="s2">33[0m"</span>
+  <span class="nb">echo</span> <span class="nt">-e</span> <span class="s1">'\E[0;34m'</span><span class="s2">"</span><span class="se">\0</span><span class="s2">33[1m~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~</span><span class="se">\0</span><span class="s2">33[0m"</span>
+  <span class="nb">echo</span> <span class="nt">-e</span> <span class="s1">'\E[0;34m'</span><span class="s2">"</span><span class="se">\0</span><span class="s2">33[1m~ 1. Remove IPv6 From Ubuntu Machine       ~</span><span class="se">\0</span><span class="s2">33[0m"</span>
+  <span class="nb">echo</span> <span class="nt">-e</span> <span class="s1">'\E[0;34m'</span><span class="s2">"</span><span class="se">\0</span><span class="s2">33[1m~ 2. About                                 ~</span><span class="se">\0</span><span class="s2">33[0m"</span>
+  <span class="nb">echo</span> <span class="nt">-e</span> <span class="s1">'\E[0;34m'</span><span class="s2">"</span><span class="se">\0</span><span class="s2">33[1m~ 3. Exit                                  ~</span><span class="se">\0</span><span class="s2">33[0m"</span>
+  <span class="nb">echo</span> <span class="nt">-e</span> <span class="s1">'\E[0;34m'</span><span class="s2">"</span><span class="se">\0</span><span class="s2">33[1m~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~</span><span class="se">\0</span><span class="s2">33[0m"</span>
+<span class="o">}</span>
+
+read_options<span class="o">(){</span>
+  <span class="nb">local </span>choice
+  <span class="nb">read</span> <span class="nt">-p</span> <span class="s2">"Enter choice [ 1 - 3 ]: "</span> choice
+  <span class="k">case</span> <span class="nv">$choice</span> <span class="k">in
+    </span>1<span class="p">)</span> one <span class="p">;;</span>
+    2<span class="p">)</span> two <span class="p">;;</span>
+    3<span class="p">)</span> <span class="nb">exit </span>0 <span class="p">;;</span>
+    <span class="k">*</span><span class="p">)</span> <span class="nb">echo</span> <span class="nt">-e</span> <span class="s1">'\E[47;31m'</span><span class="s2">"</span><span class="se">\0</span><span class="s2">33[1mError... Invalid Option</span><span class="se">\0</span><span class="s2">33[0m"</span> <span class="o">&amp;&amp;</span> <span class="nb">sleep </span>2 <span class="p">;;</span>
+  <span class="k">esac</span>
+<span class="o">}</span>
+
+<span class="nb">trap</span> <span class="s1">''</span> SIGINT SIGQUIT SIGTSTP
+
+<span class="k">while </span><span class="nb">true</span><span class="p">;</span> <span class="k">do
+  </span>show_menus
+  read_options
+<span class="k">done</span>
+</code></pre></div></div>
+
+<hr />
+
+<h2 id="-how-to-use">🧪 How to Use</h2>
+
+<ol>
+  <li>Save the script as <code class="language-plaintext highlighter-rouge">ipv6_disable.sh</code></li>
+  <li>Give it execution permissions:</li>
+</ol>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nb">chmod</span> +x ipv6_disable.sh
+</code></pre></div></div>
+
+<ol>
+  <li>Run it with root privileges:</li>
+</ol>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nb">sudo</span> ./ipv6_disable.sh
+</code></pre></div></div>
+
+<hr />
+
+<h2 id="-notes">📝 Notes</h2>
+
+<ul>
+  <li>The script updates <code class="language-plaintext highlighter-rouge">/etc/sysctl.conf</code> to persist changes across reboots.</li>
+  <li>It’s safe to rerun — it won’t duplicate entries.</li>
+  <li>Tested on Ubuntu 14.x and 16.x (but should work on newer versions too).</li>
+</ul>
+
+<hr />
+
+<p>Hope you find this useful! 🚀 Feel free to fork or enhance it for your distro or version.</p>
+
+<p>Let me know in comments if you have questions or improvements!</p>
+
+        
+      </section>
+
+      <footer class="page__meta">
+        
+        
+
+
+        
+
+  <p class="page__date"><strong><i class="fas fa-fw fa-calendar-alt" aria-hidden="true"></i> Updated:</strong> <time class="dt-published" datetime="2014-08-21T00:00:00+05:30">August 21, 2014</time></p>
+
+      </footer>
+
+      
+
+      
+  <nav class="pagination">
+    
+      <a href="/2014/08/21/installing-jboss-7-1-1-final-on-centos-6-x.html" class="pagination--pager" title="Installing Jboss 7 1 1 Final On Centos 6 X">Previous</a>
+    
+    
+      <a href="/2014/09/15/how-to-install-tomcat-8-on-centos-rhel-multiple-instances.html" class="pagination--pager" title="How To Install Tomcat 8 On Centos Rhel Multiple Instances">Next</a>
+    
+  </nav>
+
+
+    </div>
+
+    
+  </article>
+
+  
+  
+</div>
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="site-footer">
+      <p>&copy; 2025 Shivam's Tech Blog</p>
+    </footer>
+  </body>
+</html>

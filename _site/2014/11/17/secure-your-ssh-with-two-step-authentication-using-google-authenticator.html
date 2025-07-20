@@ -1,0 +1,354 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Secure Your Ssh With Two Step Authentication Using Google Authenticator</title>
+
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Oregano&display=swap" rel="stylesheet" />
+
+    <!-- Main CSS -->
+    <link rel="stylesheet" href="/assets/css/main.css">
+  </head>
+
+  <body class="layout--single">
+    <!-- Header -->
+    <header class="site-header">
+      <div class="container">
+        <h1><a href="/">Shivam's Tech Blog</a></h1>
+        <nav class="site-nav">
+          <a href="/">Home</a>
+          <a href="/about/">About</a>
+          <a href="/categories/">Categories</a>
+        </nav>
+      </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="page">
+      
+
+
+
+
+
+<div id="main" role="main">
+  
+  <div class="sidebar sticky">
+  
+
+
+<div itemscope itemtype="https://schema.org/Person" class="h-card">
+
+  
+
+  <div class="author__content">
+    <h3 class="author__name p-name" itemprop="name">
+      <a class="u-url" rel="me" href="http://localhost:4000/" itemprop="url">Shivam Shukla</a>
+    </h3>
+    
+      <div class="author__bio p-note" itemprop="description">
+        <table>
+  <tbody>
+    <tr>
+      <td>Engineer</td>
+      <td>Monitoring &amp; Automation</td>
+      <td>14+ years</td>
+    </tr>
+  </tbody>
+</table>
+
+      </div>
+    
+  </div>
+
+  <div class="author__urls-wrapper">
+    <button class="btn btn--inverse">Follow</button>
+    <ul class="author__urls social-icons">
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      <!--
+  <li>
+    <a href="http://link-to-whatever-social-network.com/user/" itemprop="sameAs" rel="nofollow noopener noreferrer me">
+      <i class="fas fa-fw" aria-hidden="true"></i> Custom Social Profile Link
+    </a>
+  </li>
+-->
+    </ul>
+  </div>
+</div>
+
+  
+  </div>
+
+
+
+  <article class="page" itemscope itemtype="https://schema.org/CreativeWork">
+    <meta itemprop="headline" content="Secure Your Ssh With Two Step Authentication Using Google Authenticator">
+    <meta itemprop="description" content="Hey Guy’s">
+    <meta itemprop="datePublished" content="2014-11-17T00:00:00+05:30">
+    
+
+    <div class="page__inner-wrap">
+      
+        <header>
+          <h1 id="page-title" class="page__title" itemprop="headline">
+            <a href="http://localhost:4000/2014/11/17/secure-your-ssh-with-two-step-authentication-using-google-authenticator.html" itemprop="url">Secure Your Ssh With Two Step Authentication Using Google Authenticator
+</a>
+          </h1>
+          
+
+
+        </header>
+      
+
+      <section class="page__content" itemprop="text">
+        
+        <p>Hey Guy’s</p>
+
+<p>Here my new post about the Google Authenticator, its really a very good &amp; effective tool.</p>
+
+<p>Hope you will find this post useful.</p>
+
+<p>Google Two-Factor Authentication provides next level of security from intruders to SSH server. This article will help you understand the process &amp; how to protect your SSH server with a two-factor authentication using Google Authenticator &amp; PAM module. Now Every time when you try to SSH to your server, you have to generate code using your phone or other devices to login the server.</p>
+
+<p><strong>Step 1:</strong> EPEL Repository Installation</p>
+
+<p>First we need to add EPEL yum repository on the system. Follow this link on how to install EPEL repository.</p>
+
+<p><a href="https://shivamshukla.wordpress.com/2014/11/17/how-to-install-epel-repository-on-centos-6/"><strong>Click here to view the setup guide</strong></a></p>
+
+<p>then proceed ahead with the step 2</p>
+
+<p><strong>Step 2:</strong> Google Authenticator Installation</p>
+
+<p>Install Google Authenticator using yum command line tool.</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="o">[</span>root@localhost]# yum <span class="nb">install</span> google-authenticator
+
+</code></pre></div></div>
+
+<p><strong>Step 3:</strong> Configure Google authenticator</p>
+
+<p>For this tutorial, we will use demo account for testing.</p>
+
+<p>Use below steps to configure google-authenticator for user demouser.</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>
+
+<span class="o">[</span>root@localhost]# su - demouser
+
+<span class="o">[</span>demouser@localhost]<span class="nv">$ </span>google-authenticator
+
+
+</code></pre></div></div>
+
+<p>now you will get the secret key &amp; emergency codes please write them down &amp; keep them safe. Emergency codes can only be used one time in case if your secret key is lost.</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>
+https://www.google.com/chart?chs<span class="o">=</span>200x200&amp;chld<span class="o">=</span>M|0&amp;cht<span class="o">=</span>qr&amp;chl<span class="o">=</span>otpauth://totp/demouser@localhost%3Fsecret%3DW2CUM37JJKN2KF2S
+
+Your new secret key is: W2CUM37JJKN2KF2S
+
+Your verification code is 357458
+
+Your emergency scratch codes are:
+
+56071230
+
+90988902
+
+61142941
+
+30330862
+
+64907016
+
+
+</code></pre></div></div>
+
+<p>After the secret codes the authenticator will ask few questions respond to them as yes if you don’t want any specific changes.</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>
+
+Do you want me to update your <span class="s2">"~/.google_authenticator"</span> file <span class="o">(</span>y/n<span class="o">)</span> y
+
+Do you want to disallow multiple uses of the same authentication
+
+token? This restricts you to one login about every 30s, but it increases
+
+your chances to notice or even prevent man-in-the-middle attacks <span class="o">(</span>y/n<span class="o">)</span> y
+
+By default, tokens are good <span class="k">for </span>30 seconds and <span class="k">in </span>order to compensate <span class="k">for
+
+</span>possible time-skew between the client and the server, we allow an extra
+
+token before and after the current time. If you experience problems with poor
+
+<span class="nb">time </span>synchronization, you can increase the window from its default
+
+size of 1:30min to about 4min. Do you want to <span class="k">do </span>so <span class="o">(</span>y/n<span class="o">)</span> y
+
+If the computer that you are logging into isn<span class="s1">'t hardened against brute-force
+
+login attempts, you can enable rate-limiting for the authentication module.
+
+By default, this limits attackers to no more than 3 login attempts every 30s.
+
+Do you want to enable rate-limiting (y/n) y
+
+[demouser@localhost]$
+
+
+</span></code></pre></div></div>
+
+<p>Use Google Authenticator Application in your Android, iPhone or Blackberry phones to generate verification code by entering secret key. You can also use the add on available for firefox browser.</p>
+
+<p>After installing the application on your phone here’s how you can add the details on it.</p>
+
+<p>Select “Enter provided key” option</p>
+
+<p><a href="https://shivamshukla.wordpress.com/wp-content/uploads/2014/11/gsnap1.png"><img src="/assets/2014/11/gsnap1.png" alt="gsnap1" /></a></p>
+
+<p> </p>
+
+<p>Enter the details required here like demouser &amp; the secret key</p>
+
+<p><a href="https://shivamshukla.wordpress.com/wp-content/uploads/2014/11/gsnap1.png"><img src="/assets/2014/11/gsnap2.png" alt="gsnap2" /></a></p>
+
+<p> </p>
+
+<p>After adding the details you will get the vitrification codes here.</p>
+
+<p><a href="https://shivamshukla.wordpress.com/wp-content/uploads/2014/11/gsnap1.png"><img src="/assets/2014/11/gsnap3.png" alt="gsnap3" /></a></p>
+
+<p><strong>Step 4:</strong> Activate Google authenticator</p>
+
+<p>To enable google authenticator edit <strong>/etc/pam.d/sshd</strong> using your favorite editor.</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="o">[</span>root@localhost]# vi /etc/pam.d/sshd
+</code></pre></div></div>
+
+<p>Add the below line to the start of the file just below the first line</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>auth required pam_google_authenticator.so
+</code></pre></div></div>
+
+<p>Now edit <strong>/etc/ssh/sshd_config</strong>  and Change <strong>ChallengeResponseAuthentication</strong> option value to <strong>‘yes’</strong>. On enabling this, openssh could ask a user any number of multi-facited (Like google authenticator) questions. Generally the system asks only for the user’s password.</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="o">[</span>root@localhost]# vi /etc/ssh/sshd_config
+</code></pre></div></div>
+
+<p>Change the value from NO to YES</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>ChallengeResponseAuthentication <span class="nb">yes</span>
+</code></pre></div></div>
+
+<p>Restart the SSH service</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="o">[</span>root@localhost]# service sshd restart
+</code></pre></div></div>
+
+<p>Now SSH your server &amp; you will be asked for verification code first then the password.</p>
+
+<p>Note: you will have to generate the secret code for each user separately &amp; add them separately on application as well.</p>
+
+<p>have fun let &amp; me know your suggestions.</p>
+
+<p>:)</p>
+
+        
+      </section>
+
+      <footer class="page__meta">
+        
+        
+
+
+        
+
+  <p class="page__date"><strong><i class="fas fa-fw fa-calendar-alt" aria-hidden="true"></i> Updated:</strong> <time class="dt-published" datetime="2014-11-17T00:00:00+05:30">November 17, 2014</time></p>
+
+      </footer>
+
+      
+
+      
+  <nav class="pagination">
+    
+      <a href="/2014/11/17/how-to-solve-the-epel-error-error-cannot-retrieve-metalink-for-repository-epel-please-verify-its-path-and-try-again.html" class="pagination--pager" title="How To Solve The Epel Error Error Cannot Retrieve Metalink For Repository Epel Please Verify Its Path And Try Again">Previous</a>
+    
+    
+      <a href="/2014/11/27/openvpn-with-user-password-based-authentication.html" class="pagination--pager" title="Openvpn With User Password Based Authentication">Next</a>
+    
+  </nav>
+
+
+    </div>
+
+    
+  </article>
+
+  
+  
+</div>
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="site-footer">
+      <p>&copy; 2025 Shivam's Tech Blog</p>
+    </footer>
+  </body>
+</html>

@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>How To Install Epel Repository On Centos 6</title>
+
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Oregano&display=swap" rel="stylesheet" />
+
+    <!-- Main CSS -->
+    <link rel="stylesheet" href="/assets/css/main.css">
+  </head>
+
+  <body class="layout--single">
+    <!-- Header -->
+    <header class="site-header">
+      <div class="container">
+        <h1><a href="/">Shivam's Tech Blog</a></h1>
+        <nav class="site-nav">
+          <a href="/">Home</a>
+          <a href="/about/">About</a>
+          <a href="/categories/">Categories</a>
+        </nav>
+      </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="page">
+      
+
+
+
+
+
+<div id="main" role="main">
+  
+  <div class="sidebar sticky">
+  
+
+
+<div itemscope itemtype="https://schema.org/Person" class="h-card">
+
+  
+
+  <div class="author__content">
+    <h3 class="author__name p-name" itemprop="name">
+      <a class="u-url" rel="me" href="http://localhost:4000/" itemprop="url">Shivam Shukla</a>
+    </h3>
+    
+      <div class="author__bio p-note" itemprop="description">
+        <table>
+  <tbody>
+    <tr>
+      <td>Engineer</td>
+      <td>Monitoring &amp; Automation</td>
+      <td>14+ years</td>
+    </tr>
+  </tbody>
+</table>
+
+      </div>
+    
+  </div>
+
+  <div class="author__urls-wrapper">
+    <button class="btn btn--inverse">Follow</button>
+    <ul class="author__urls social-icons">
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      <!--
+  <li>
+    <a href="http://link-to-whatever-social-network.com/user/" itemprop="sameAs" rel="nofollow noopener noreferrer me">
+      <i class="fas fa-fw" aria-hidden="true"></i> Custom Social Profile Link
+    </a>
+  </li>
+-->
+    </ul>
+  </div>
+</div>
+
+  
+  </div>
+
+
+
+  <article class="page" itemscope itemtype="https://schema.org/CreativeWork">
+    <meta itemprop="headline" content="How To Install Epel Repository On Centos 6">
+    <meta itemprop="description" content="Hey guys,">
+    <meta itemprop="datePublished" content="2014-11-17T00:00:00+05:30">
+    
+
+    <div class="page__inner-wrap">
+      
+        <header>
+          <h1 id="page-title" class="page__title" itemprop="headline">
+            <a href="http://localhost:4000/2014/11/17/how-to-install-epel-repository-on-centos-6.html" itemprop="url">How To Install Epel Repository On Centos 6
+</a>
+          </h1>
+          
+
+
+        </header>
+      
+
+      <section class="page__content" itemprop="text">
+        
+        <p>Hey guys,</p>
+
+<p>Hope you are having fun these day’s  today we are going to try on the EPEL repository installation on CentOS 6.</p>
+
+<p>For 32/64 Bit Operating system.</p>
+
+<p>use the below link &amp; install it as show below.</p>
+
+<p>http://dl.fedoraproject.org/pub/epel/6Server/i386/epel-release-6-8.noarch.rpm</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>
+<span class="o">[</span>root@localhost]# rpm <span class="nt">-ivh</span> http://dl.fedoraproject.org/pub/epel/6Server/i386/epel-release-6-8.noarch.rpm
+
+Retrieving http://dl.fedoraproject.org/pub/epel/6Server/i386/epel-release-6-8.noarch.rpm
+
+Preparing...                <span class="c">########################################### [100%]</span>
+
+1:epel-release           <span class="c">########################################### [100%]</span>
+
+<span class="o">[</span>root@localhost]#
+</code></pre></div></div>
+
+<p>Now lets verify weather our repository has been installed or not</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>
+
+<span class="o">[</span>root@localhost]# rpm –qa |grep epel
+
+epel-release-6-8.noarch
+
+<span class="o">[</span>root@localhost]
+
+
+</code></pre></div></div>
+
+<p>yeah that’s all the installation is complete.</p>
+
+<p>Enjoy :)</p>
+
+        
+      </section>
+
+      <footer class="page__meta">
+        
+        
+
+
+        
+
+  <p class="page__date"><strong><i class="fas fa-fw fa-calendar-alt" aria-hidden="true"></i> Updated:</strong> <time class="dt-published" datetime="2014-11-17T00:00:00+05:30">November 17, 2014</time></p>
+
+      </footer>
+
+      
+
+      
+  <nav class="pagination">
+    
+      <a href="/2014/11/11/functions-in-a-bash-script.html" class="pagination--pager" title="Functions In A Bash Script">Previous</a>
+    
+    
+      <a href="/2014/11/17/how-to-solve-the-epel-error-error-cannot-retrieve-metalink-for-repository-epel-please-verify-its-path-and-try-again.html" class="pagination--pager" title="How To Solve The Epel Error Error Cannot Retrieve Metalink For Repository Epel Please Verify Its Path And Try Again">Next</a>
+    
+  </nav>
+
+
+    </div>
+
+    
+  </article>
+
+  
+  
+</div>
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="site-footer">
+      <p>&copy; 2025 Shivam's Tech Blog</p>
+    </footer>
+  </body>
+</html>

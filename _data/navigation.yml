@@ -1,12 +1,20 @@
-# main links
 main:
-  - title: "Quick-Start Guide"
-    url: https://mmistakes.github.io/minimal-mistakes/docs/quick-start-guide/
-  # - title: "About"
-  #   url: https://mmistakes.github.io/minimal-mistakes/about/
-  # - title: "Sample Posts"
-  #   url: /year-archive/
-  # - title: "Sample Collections"
-  #   url: /collection-archive/
-  # - title: "Sitemap"
-  #   url: /sitemap/
+  - title: "Home"
+    url: /
+
+  - title: "About"
+    url: /about/
+
+  - title: "Categories"
+    url: /categories/        # <-- ✅ Add this line
+    children:
+      - title: "DevOps"
+        url: /categories/#devops
+      - title: "Monitoring"
+        url: /categories/#monitoring
+      - title: "Automation"
+        url: /categories/#automation
+      - title: "Tutorials"
+        url: /categories/#tutorials
+      - title: "Intro"
+        url: /categories/#intro

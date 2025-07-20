@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>How To Solve The Epel Error Error Cannot Retrieve Metalink For Repository Epel Please Verify Its Path And Try Again</title>
+
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Oregano&display=swap" rel="stylesheet" />
+
+    <!-- Main CSS -->
+    <link rel="stylesheet" href="/assets/css/main.css">
+  </head>
+
+  <body class="layout--single">
+    <!-- Header -->
+    <header class="site-header">
+      <div class="container">
+        <h1><a href="/">Shivam's Tech Blog</a></h1>
+        <nav class="site-nav">
+          <a href="/">Home</a>
+          <a href="/about/">About</a>
+          <a href="/categories/">Categories</a>
+        </nav>
+      </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="page">
+      
+
+
+
+
+
+<div id="main" role="main">
+  
+  <div class="sidebar sticky">
+  
+
+
+<div itemscope itemtype="https://schema.org/Person" class="h-card">
+
+  
+
+  <div class="author__content">
+    <h3 class="author__name p-name" itemprop="name">
+      <a class="u-url" rel="me" href="http://localhost:4000/" itemprop="url">Shivam Shukla</a>
+    </h3>
+    
+      <div class="author__bio p-note" itemprop="description">
+        <table>
+  <tbody>
+    <tr>
+      <td>Engineer</td>
+      <td>Monitoring &amp; Automation</td>
+      <td>14+ years</td>
+    </tr>
+  </tbody>
+</table>
+
+      </div>
+    
+  </div>
+
+  <div class="author__urls-wrapper">
+    <button class="btn btn--inverse">Follow</button>
+    <ul class="author__urls social-icons">
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      <!--
+  <li>
+    <a href="http://link-to-whatever-social-network.com/user/" itemprop="sameAs" rel="nofollow noopener noreferrer me">
+      <i class="fas fa-fw" aria-hidden="true"></i> Custom Social Profile Link
+    </a>
+  </li>
+-->
+    </ul>
+  </div>
+</div>
+
+  
+  </div>
+
+
+
+  <article class="page" itemscope itemtype="https://schema.org/CreativeWork">
+    <meta itemprop="headline" content="How To Solve The Epel Error Error Cannot Retrieve Metalink For Repository Epel Please Verify Its Path And Try Again">
+    <meta itemprop="description" content="Hi Guys,">
+    <meta itemprop="datePublished" content="2014-11-17T00:00:00+05:30">
+    
+
+    <div class="page__inner-wrap">
+      
+        <header>
+          <h1 id="page-title" class="page__title" itemprop="headline">
+            <a href="http://localhost:4000/2014/11/17/how-to-solve-the-epel-error-error-cannot-retrieve-metalink-for-repository-epel-please-verify-its-path-and-try-again.html" itemprop="url">How To Solve The Epel Error Error Cannot Retrieve Metalink For Repository Epel Please Verify Its Path And Try Again
+</a>
+          </h1>
+          
+
+
+        </header>
+      
+
+      <section class="page__content" itemprop="text">
+        
+        <p>Hi Guys,</p>
+
+<p>I have been working on the EPEL repository these day’s &amp; at times I got around with the following error.</p>
+
+<p><strong>Error: Cannot retrieve metalink for repository: epel. Please verify its path and try again</strong></p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="o">[</span>root@localhost]# yum list
+
+Loaded plugins: fastestmirror
+
+Determining fastest mirrors
+
+Error: Cannot retrieve metalink <span class="k">for </span>repository: epel. Please verify its path and try again
+
+<span class="o">[</span>root@localhost]
+
+
+</code></pre></div></div>
+
+<p>Here’s how you can solve this error if you come across this error.</p>
+
+<p>edit the file epel.repo which is located in the /etc/yum.repos.d/ using your favorite editor.</p>
+
+<p>&amp; change the https link to http as show below.</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="o">[</span>root@localhost]# vi /ete/yum.repos.d/epel.repo
+
+
+</code></pre></div></div>
+
+<p>now change the https to http</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">mirrorlist</span><span class="o">=</span>https://mirrors.fedoraproject.org/metalink?repo<span class="o">=</span>epel-6&amp;arch<span class="o">=</span><span class="nv">$basearch</span>
+
+
+</code></pre></div></div>
+
+<p>to</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">mirrorlist</span><span class="o">=</span>http://mirrors.fedoraproject.org/metalink?repo<span class="o">=</span>epel-6&amp;arch<span class="o">=</span><span class="nv">$basearch</span>
+
+
+</code></pre></div></div>
+
+<p>do this for all the links present in  the file.</p>
+
+<p>then check the yum again</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="o">[</span>root@localhost]# yum list
+
+Loaded plugins: fastestmirror
+
+Loading mirror speeds from cached hostfile
+
+<span class="k">*</span> base: mirror.nbrc.ac.in
+
+<span class="k">*</span> epel: mirrors.123host.vn
+
+<span class="k">*</span> extras: mirror.nbrc.ac.in
+
+<span class="k">*</span> rpmforge: archive.cs.uu.nl
+
+<span class="nb">.</span>
+
+<span class="nb">.</span>
+
+
+</code></pre></div></div>
+
+<p>That’s it the issue is solved</p>
+
+<p>hope you find this post helpful please don’t forget to share you feedback or comments about my post.</p>
+
+        
+      </section>
+
+      <footer class="page__meta">
+        
+        
+
+
+        
+
+  <p class="page__date"><strong><i class="fas fa-fw fa-calendar-alt" aria-hidden="true"></i> Updated:</strong> <time class="dt-published" datetime="2014-11-17T00:00:00+05:30">November 17, 2014</time></p>
+
+      </footer>
+
+      
+
+      
+  <nav class="pagination">
+    
+      <a href="/2014/11/17/how-to-install-epel-repository-on-centos-6.html" class="pagination--pager" title="How To Install Epel Repository On Centos 6">Previous</a>
+    
+    
+      <a href="/2014/11/17/secure-your-ssh-with-two-step-authentication-using-google-authenticator.html" class="pagination--pager" title="Secure Your Ssh With Two Step Authentication Using Google Authenticator">Next</a>
+    
+  </nav>
+
+
+    </div>
+
+    
+  </article>
+
+  
+  
+</div>
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="site-footer">
+      <p>&copy; 2025 Shivam's Tech Blog</p>
+    </footer>
+  </body>
+</html>

@@ -1,0 +1,16 @@
+<p>Here is a basic Ansible playbook to install Apache:</p>
+
+<h2 id="yaml">```yaml</h2>
+<ul>
+  <li>name: Install Apache Web Server
+hosts: webservers
+become: true
+tasks:
+    <ul>
+      <li>name: Install Apache
+apt:
+  name: apache2
+  state: present</li>
+    </ul>
+  </li>
+</ul>

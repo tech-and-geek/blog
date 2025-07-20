@@ -1,7 +1,38 @@
 ---
-layout: archive
+layout: default
+title: Categories
+description: Posts grouped by topic
 ---
 
-{{ content }}
+<div class="page-content">
+  <h1>{{ page.title }}</h1>
+  <p>{{ page.description }}</p>
 
-{% include posts-taxonomy.html taxonomies=site.categories %}
+  <div class="row">
+    <div class="col-8">
+      {% assign sorted_categories = site.categories | sort %}
+      {% for category in sorted_categories %}
+        <h2 id="{{ category[0] | slugify }}">{{ category[0] | capitalize }}</h2>
+        <ul>
+          {% for post in category[1] %}
+            <li>
+              <a href="{{ post.url | relative_url }}">{{ post.title }}</a>
+              <small>({{ post.date | date: "%b %-d, %Y" }})</small>
+            </li>
+          {% endfor %}
+        </ul>
+      {% endfor %}
+    </div>
+
+    <div class="col-4">
+      <div class="sidebar">
+        <h3>Filter by Topic</h3>
+        <ul>
+          {% for category in site.categories %}
+            <li><a href="#{{ category[0] | slugify }}">{{ category[0] | capitalize }}</a></li>
+          {% endfor %}
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>

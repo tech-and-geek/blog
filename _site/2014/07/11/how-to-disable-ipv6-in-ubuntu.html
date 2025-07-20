@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>How To Disable Ipv6 In Ubuntu</title>
+
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Oregano&display=swap" rel="stylesheet" />
+
+    <!-- Main CSS -->
+    <link rel="stylesheet" href="/assets/css/main.css">
+  </head>
+
+  <body class="layout--single">
+    <!-- Header -->
+    <header class="site-header">
+      <div class="container">
+        <h1><a href="/">Shivam's Tech Blog</a></h1>
+        <nav class="site-nav">
+          <a href="/">Home</a>
+          <a href="/about/">About</a>
+          <a href="/categories/">Categories</a>
+        </nav>
+      </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="page">
+      
+
+
+
+
+
+<div id="main" role="main">
+  
+  <div class="sidebar sticky">
+  
+
+
+<div itemscope itemtype="https://schema.org/Person" class="h-card">
+
+  
+
+  <div class="author__content">
+    <h3 class="author__name p-name" itemprop="name">
+      <a class="u-url" rel="me" href="http://localhost:4000/" itemprop="url">Shivam Shukla</a>
+    </h3>
+    
+      <div class="author__bio p-note" itemprop="description">
+        <table>
+  <tbody>
+    <tr>
+      <td>Engineer</td>
+      <td>Monitoring &amp; Automation</td>
+      <td>14+ years</td>
+    </tr>
+  </tbody>
+</table>
+
+      </div>
+    
+  </div>
+
+  <div class="author__urls-wrapper">
+    <button class="btn btn--inverse">Follow</button>
+    <ul class="author__urls social-icons">
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      <!--
+  <li>
+    <a href="http://link-to-whatever-social-network.com/user/" itemprop="sameAs" rel="nofollow noopener noreferrer me">
+      <i class="fas fa-fw" aria-hidden="true"></i> Custom Social Profile Link
+    </a>
+  </li>
+-->
+    </ul>
+  </div>
+</div>
+
+  
+  </div>
+
+
+
+  <article class="page" itemscope itemtype="https://schema.org/CreativeWork">
+    <meta itemprop="headline" content="How To Disable Ipv6 In Ubuntu">
+    <meta itemprop="description" content="Hey Guys…">
+    <meta itemprop="datePublished" content="2014-07-11T00:00:00+05:30">
+    
+
+    <div class="page__inner-wrap">
+      
+        <header>
+          <h1 id="page-title" class="page__title" itemprop="headline">
+            <a href="http://localhost:4000/2014/07/11/how-to-disable-ipv6-in-ubuntu.html" itemprop="url">How To Disable Ipv6 In Ubuntu
+</a>
+          </h1>
+          
+
+
+        </header>
+      
+
+      <section class="page__content" itemprop="text">
+        
+        <p>Hey Guys…</p>
+
+<p>Welcome back again, in this post I will be guiding you on how to disable IPv6 on your Ubuntu box.</p>
+
+<p><strong>Step 1:</strong> login to the Ubuntu terminal.</p>
+
+<p><strong>Step 2:</strong> use command _ifconfig _to check the status of IPv6 on the machine.</p>
+
+<p>If the IPv6 address is assigned then the output is as shown below.</p>
+
+<p><a href="https://shivamshukla.wordpress.com/wp-content/uploads/2014/07/u2.png"><img src="/assets/2014/07/u2.png" alt="u2" /></a></p>
+
+<p><strong>Step 3:</strong> Now to disable the IPv6 use the below command.</p>
+
+<p>Edit the _/etc/sysctl.conf _file by the command</p>
+
+<p><em>sudo vi /etc/sysctl.conf or sudo gedit </em> /etc/sysctl.conf__</p>
+
+<p>Add the below lines to the end of the file &amp; save it.</p>
+
+<p><em>net.ipv6.conf.all.disable_ipv6 = 1</em></p>
+
+<p><em>net.ipv6.conf.default.disable_ipv6 = 1</em></p>
+
+<p><em>net.ipv6.conf.lo.disable_ipv6 = 1</em></p>
+
+<p>After saving the file use the below command to make the new settings effective.</p>
+
+<p><em>sudo sysctl –p</em></p>
+
+<p><strong>Step 4:</strong> After disabling the IPv6 cross-check the status by the command <em>ifconfig.</em></p>
+
+<p>The sample output is shown below.</p>
+
+<p><a href="https://shivamshukla.wordpress.com/wp-content/uploads/2014/07/u5.png"><img src="/assets/2014/07/u5.png" alt="u5" /></a></p>
+
+<p>hope you will find this post useful..</p>
+
+<p>Thanks…</p>
+
+        
+      </section>
+
+      <footer class="page__meta">
+        
+        
+
+
+        
+
+  <p class="page__date"><strong><i class="fas fa-fw fa-calendar-alt" aria-hidden="true"></i> Updated:</strong> <time class="dt-published" datetime="2014-07-11T00:00:00+05:30">July 11, 2014</time></p>
+
+      </footer>
+
+      
+
+      
+  <nav class="pagination">
+    
+      <a href="/2014/07/08/fixing-mysql-after-encountering-cannot-proceed-because-system-tables-used-by-event-scheduler-were-found-damaged-at-server-start-when-running-sql-queries-to-create-events.html" class="pagination--pager" title="Fixing Mysql After Encountering Cannot Proceed Because System Tables Used By Event Scheduler Were Found Damaged At Server Start When Running Sql Queries To Create Events">Previous</a>
+    
+    
+      <a href="/2014/07/26/ipv6-disabling-script-for-ubuntu.html" class="pagination--pager" title="Ipv6 Disabling Script For Ubuntu">Next</a>
+    
+  </nav>
+
+
+    </div>
+
+    
+  </article>
+
+  
+  
+</div>
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="site-footer">
+      <p>&copy; 2025 Shivam's Tech Blog</p>
+    </footer>
+  </body>
+</html>

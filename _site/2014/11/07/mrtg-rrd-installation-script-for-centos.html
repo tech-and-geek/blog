@@ -1,0 +1,535 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Mrtg Rrd Installation Script For Centos</title>
+
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Oregano&display=swap" rel="stylesheet" />
+
+    <!-- Main CSS -->
+    <link rel="stylesheet" href="/assets/css/main.css">
+  </head>
+
+  <body class="layout--single">
+    <!-- Header -->
+    <header class="site-header">
+      <div class="container">
+        <h1><a href="/">Shivam's Tech Blog</a></h1>
+        <nav class="site-nav">
+          <a href="/">Home</a>
+          <a href="/about/">About</a>
+          <a href="/categories/">Categories</a>
+        </nav>
+      </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="page">
+      
+
+
+
+
+
+<div id="main" role="main">
+  
+  <div class="sidebar sticky">
+  
+
+
+<div itemscope itemtype="https://schema.org/Person" class="h-card">
+
+  
+
+  <div class="author__content">
+    <h3 class="author__name p-name" itemprop="name">
+      <a class="u-url" rel="me" href="http://localhost:4000/" itemprop="url">Shivam Shukla</a>
+    </h3>
+    
+      <div class="author__bio p-note" itemprop="description">
+        <table>
+  <tbody>
+    <tr>
+      <td>Engineer</td>
+      <td>Monitoring &amp; Automation</td>
+      <td>14+ years</td>
+    </tr>
+  </tbody>
+</table>
+
+      </div>
+    
+  </div>
+
+  <div class="author__urls-wrapper">
+    <button class="btn btn--inverse">Follow</button>
+    <ul class="author__urls social-icons">
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      <!--
+  <li>
+    <a href="http://link-to-whatever-social-network.com/user/" itemprop="sameAs" rel="nofollow noopener noreferrer me">
+      <i class="fas fa-fw" aria-hidden="true"></i> Custom Social Profile Link
+    </a>
+  </li>
+-->
+    </ul>
+  </div>
+</div>
+
+  
+  </div>
+
+
+
+  <article class="page" itemscope itemtype="https://schema.org/CreativeWork">
+    <meta itemprop="headline" content="Mrtg Rrd Installation Script For Centos">
+    <meta itemprop="description" content="Hey guys here’s a script to help you install MRTG+RRD on a CentOS box">
+    <meta itemprop="datePublished" content="2014-11-07T00:00:00+05:30">
+    
+
+    <div class="page__inner-wrap">
+      
+        <header>
+          <h1 id="page-title" class="page__title" itemprop="headline">
+            <a href="http://localhost:4000/2014/11/07/mrtg-rrd-installation-script-for-centos.html" itemprop="url">Mrtg Rrd Installation Script For Centos
+</a>
+          </h1>
+          
+
+
+        </header>
+      
+
+      <section class="page__content" itemprop="text">
+        
+        <p>Hey guys here’s a script to help you install MRTG+RRD on a CentOS box</p>
+
+<p>The script has been tested on  CentOS 6.4 (Final) Desktop, you can use this script to install on a Minimal Desktop or Minimal system as well.</p>
+
+<p>If you choose to install MRTG+RRD on a Minimal Desktop or Minimal version you may face issue with fonts during Graph creation. The fonts issue may get resolved by itself or if not then you might have to install font packages manually that is not included into the script.</p>
+
+<p><strong>Note:</strong></p>
+
+<p><strong>1) SELniux will be disabled if you run this script.</strong></p>
+
+<p><strong>2) Port 80 (HTTP) will be allowed or IPTables would be disabled as per your choice. If you are running HTTP service on some custom port make sure to allow that manually if you choose not to disable IPTables.</strong></p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c">#!/bin/bash</span>
+
+<span class="c">#########################################</span>
+
+<span class="c">##Author: Shivam Shukla ##</span>
+
+<span class="c">##Build Date: 26-10-2014 ##</span>
+
+<span class="c">##Modification Date: 03-11-2014 ##</span>
+
+<span class="c">##Version: 1.0.0 ##</span>
+
+<span class="c">##Tool: MRTG+RRD Installer for CentOS ##</span>
+
+<span class="c">#########################################</span>
+
+<span class="c">##### User Variable #####</span>
+
+<span class="nv">ipadd</span><span class="o">=</span><span class="sb">`</span>ifconfig |grep inet | <span class="nb">cut</span> <span class="nt">-b</span> 21-32 |head <span class="nt">-n1</span><span class="sb">`</span>
+
+<span class="c">#### User Functions####</span>
+
+<span class="k">function </span>fn_SELinux<span class="o">()</span>
+
+<span class="o">{</span>
+
+getenforce |grep Enforcing <span class="o">&gt;</span>/dev/null 2&gt;&amp;1 <span class="o">&amp;&amp;</span> <span class="nv">se_l</span><span class="o">=</span>1 <span class="o">||</span> <span class="nv">se_l</span><span class="o">=</span>0
+
+<span class="k">if</span> <span class="o">[</span> <span class="nv">$se_l</span> <span class="nt">-eq</span> 1 <span class="o">]</span>
+
+<span class="k">then
+
+</span><span class="nb">echo</span> <span class="s2">"SELinux is Enforcing..."</span>
+
+<span class="nb">echo</span> <span class="s2">"Disabling SELinux...."</span>
+
+setenforce 0
+
+<span class="nb">sed</span> <span class="nt">-i</span> <span class="s1">'s/SELINUX=enforcing/SELINUX=disabled/g'</span> /etc/selinux/config
+
+<span class="nb">echo</span> <span class="s2">"SELinux is Disabled...:)"</span>
+
+<span class="k">else
+
+</span><span class="nb">echo</span> <span class="s2">"SELinux is Disabled :)"</span>
+
+<span class="k">fi</span>
+
+<span class="o">}</span>
+
+<span class="k">function </span>fn_IPTable<span class="o">()</span>
+
+<span class="o">{</span>
+
+/etc/init.d/iptables status |grep not <span class="o">&amp;&amp;</span> <span class="nv">ipt</span><span class="o">=</span>1 <span class="o">||</span> <span class="nv">ipt</span><span class="o">=</span>0
+
+<span class="k">if</span> <span class="o">[</span> <span class="nv">$ipt</span> <span class="nt">-eq</span> 1 <span class="o">]</span>
+
+<span class="k">then
+
+</span><span class="nb">echo</span> <span class="s2">"IPtables is already disabled...."</span>
+
+<span class="k">else
+
+</span><span class="nb">echo</span> <span class="s2">""</span>
+
+<span class="nb">echo</span> <span class="s2">"IPtables service is running on the system..."</span>
+
+<span class="nb">echo</span> <span class="s2">""</span>
+
+<span class="nb">echo</span> <span class="s2">"If you want I can stop the IPtable service for you or if you don't want to stop the IPtable service i will allow the httpd service in IPtables."</span>
+
+<span class="nb">echo</span><span class="s2">""</span>
+
+<span class="nb">echo</span> <span class="s2">"Do you want me to stop the IPtable service [y/n]..."</span>
+
+<span class="nb">read </span>response
+
+<span class="k">fi
+
+</span><span class="nb">echo</span> <span class="s2">"</span><span class="nv">$response</span><span class="s2">"</span> <span class="o">&gt;</span> respo<span class="p">;</span> <span class="nb">head</span> <span class="nt">-1</span> respo <span class="o">&gt;</span> res
+
+<span class="nb">cat </span>res | <span class="nb">grep </span>y <span class="o">&gt;</span>/dev/null 2&gt;&amp;1 <span class="o">&amp;&amp;</span> <span class="nv">sure</span><span class="o">=</span>1 <span class="o">||</span> <span class="nv">sure</span><span class="o">=</span>0
+
+<span class="k">if</span> <span class="o">[</span> <span class="nv">$sure</span> <span class="nt">-eq</span> 1 <span class="o">]</span>
+
+<span class="k">then
+
+</span><span class="nb">echo</span> <span class="s2">"Disabling IPTables..... "</span>
+
+/etc/init.d/iptables stop
+
+chkconfig iptables off
+
+<span class="nb">echo</span> <span class="s2">"IPTables service is disabled now...:)"</span>
+
+<span class="nb">rm</span> <span class="nt">-f</span> res respo
+
+<span class="k">else
+
+</span><span class="nb">echo</span> <span class="s2">"Checking if http service is allowed in IPtable..."</span>
+
+iptables <span class="nt">-L</span> |grep http <span class="o">&gt;</span>/dev/null 2&gt;&amp;1 <span class="o">&amp;&amp;</span> <span class="nv">ena</span><span class="o">=</span>1 <span class="o">||</span> <span class="nv">ena</span><span class="o">=</span>0
+
+<span class="k">if</span> <span class="o">[</span> <span class="nv">$ena</span> <span class="nt">-eq</span> 1 <span class="o">]</span>
+
+<span class="k">then
+
+</span><span class="nb">echo</span> <span class="s2">"http service is already allowed in IPtable :)"</span>
+
+<span class="k">else
+
+</span><span class="nb">echo</span> <span class="s2">"Adding httpd service to iptables..."</span>
+
+iptables <span class="nt">-I</span> INPUT 5 <span class="nt">-i</span> eth0 <span class="nt">-p</span> tcp <span class="nt">--dport</span> 80 <span class="nt">-m</span> state <span class="nt">--state</span> NEW,ESTABLISHED <span class="nt">-j</span> ACCEPT
+
+/etc/init.d/iptables save
+
+<span class="nb">echo</span> <span class="s2">"httpd service has been allowed in IPtables... :)"</span>
+
+<span class="nb">rm</span> <span class="nt">-f</span> res respo
+
+<span class="k">fi
+
+fi</span>
+
+<span class="o">}</span>
+
+<span class="c">####### Information Collection #######</span>
+
+<span class="nb">echo</span> <span class="s2">"Please enter the network IP you want to add example 192.168.1.0/24"</span>
+
+<span class="nb">read </span>netwo
+
+<span class="nb">echo</span> <span class="s2">"please enter the state/province name where system is located"</span>
+
+<span class="nb">read </span>state
+
+<span class="nb">echo</span> <span class="s2">"Please enter the country name where system is located"</span>
+
+<span class="nb">read </span>country
+
+<span class="nb">echo</span> <span class="s2">"Please enter the system administrators name"</span>
+
+<span class="nb">read </span>contact
+
+<span class="nb">echo</span> <span class="s2">"Please enter the system administrators email"</span>
+
+<span class="nb">read </span>contactmail
+
+<span class="c">####### Preparing the server for MRTG installation ######</span>
+
+<span class="nb">echo</span> <span class="s2">"Checking prerequisites...."</span>
+
+fn_SELinux<span class="p">;</span>
+
+fn_IPTable<span class="p">;</span>
+
+<span class="nb">echo</span> <span class="s2">"Checking for wget package..."</span>
+
+wget |grep Usage <span class="o">&gt;</span>/dev/null 2&gt;&amp;1 <span class="o">&amp;&amp;</span> <span class="nv">wgt</span><span class="o">=</span>1 <span class="o">||</span> <span class="nv">wgt</span><span class="o">=</span>0
+
+<span class="k">if</span> <span class="o">[</span> <span class="nv">$wgt</span> <span class="nt">-eq</span> 1 <span class="o">]</span>
+
+<span class="k">then
+
+</span><span class="nb">echo</span> <span class="s2">"wget is already installed"</span>
+
+<span class="k">else
+
+</span><span class="nb">echo</span> <span class="s2">"Installing wget"</span>
+
+yum <span class="nb">install</span> <span class="nt">-y</span> wget
+
+<span class="k">fi
+
+</span><span class="nb">echo</span> <span class="s2">"Installing other required packages..."</span>
+
+<span class="c">###### Necessary Package Installation ######</span>
+
+yum <span class="nb">install</span> <span class="nt">-y</span> httpd gcc gd gd-devel perl libpng libxml2-devel cairo-devel glib2-devel pango-devel perl-devel perl-CGI net-snmp net-snmp-utils
+
+<span class="c">###### SNMP Configuration #######</span>
+
+<span class="nb">mv</span> /etc/snmp/snmpd.conf /etc/snmp/snmpd.conf.orig
+
+<span class="nb">echo</span> <span class="s2">"com2sec local localhost public
+
+com2sec mynetwork </span><span class="nv">$netwo</span><span class="s2"> public
+
+group MyRWGroup v1 local
+
+group MyRWGroup v2c local
+
+group MyRWGroup usm local
+
+group MyROGroup v1 mynetwork
+
+group MyROGroup v2c mynetwork
+
+group MyROGroup usm mynetwork
+
+view all included .1 80
+
+access MyROGroup </span><span class="se">\"\"</span><span class="s2"> any noauth exact all none none
+
+access MyRWGroup </span><span class="se">\"\"</span><span class="s2"> any noauth exact all all none
+
+syslocation </span><span class="nv">$state</span><span class="s2">, </span><span class="nv">$country</span><span class="s2">
+
+syscontact </span><span class="nv">$contact</span><span class="s2"> &lt;</span><span class="nv">$contactmail</span><span class="s2">&gt;
+
+"</span> <span class="o">&gt;</span> /etc/snmp/snmpd.conf
+
+/etc/init.d/snmpd restart
+
+chkconfig snmpd on
+
+<span class="c">##### MRTG Installation #######</span>
+
+<span class="nb">cd</span> /tmp
+
+wget http://oss.oetiker.ch/mrtg/pub/mrtg.tar.gz
+
+<span class="nb">tar </span>zfx mrtg.tar.gz <span class="o">&gt;</span>/dev/null 2&gt;&amp;1
+
+<span class="nb">tar</span> <span class="nt">-ztf</span> mrtg.tar.gz |head <span class="nt">-n1</span> |awk <span class="nt">-F</span> <span class="s2">"/THANKS"</span> <span class="s1">'{print $1}'</span> <span class="o">&gt;</span> mrtgvers
+
+<span class="nv">mrtver</span><span class="o">=</span><span class="s2">"</span><span class="si">$(</span><span class="nb">cat</span> /tmp/mrtgvers<span class="si">)</span><span class="s2">"</span>
+
+<span class="nb">cd</span> <span class="nv">$mrtver</span>
+
+./configure <span class="nt">--prefix</span><span class="o">=</span>/usr/local/mrtg2
+
+make
+
+make <span class="nb">install
+
+cd</span> /tmp
+
+wget http://oss.oetiker.ch/rrdtool/pub/rrdtool.tar.gz
+
+<span class="nb">tar </span>zfx rrdtool.tar.gz <span class="o">&gt;</span>/dev/null 2&gt;&amp;1
+
+<span class="nb">tar</span> <span class="nt">-ztf</span> rrdtool.tar.gz |head <span class="nt">-n1</span> |awk <span class="nt">-F</span> <span class="s2">"/THANKS"</span> <span class="s1">'{print $1}'</span> <span class="o">&gt;</span> rrdvers
+
+<span class="nv">rrdver</span><span class="o">=</span><span class="s2">"</span><span class="si">$(</span><span class="nb">cat</span> /tmp/rrdvers<span class="si">)</span><span class="s2">"</span>
+
+<span class="nb">cd</span> <span class="nv">$rrdver</span>
+
+./configure <span class="nt">--prefix</span><span class="o">=</span>/usr/local/rrdtool
+
+make
+
+make <span class="nb">install
+
+mkdir</span> /var/www/mrtg
+
+<span class="nb">mkdir</span> /home/mrtg
+
+/usr/local/mrtg2/bin/cfgmaker <span class="nt">--global</span> <span class="s2">"WorkDir: /var/www/mrtg"</span> <span class="nt">--global</span> <span class="s2">"Options[_]: growright, bits"</span> <span class="nt">--global</span> <span class="s2">"RunAsDaemon: Yes"</span> <span class="nt">--global</span> <span class="s2">"LogFormat: rrdtool"</span> <span class="nt">--global</span> <span class="s2">"PathAdd: /usr/local/rrdtool/bin"</span> <span class="nt">--global</span> <span class="s2">"LibAdd: /usr/local/rrdtool/lib/perl/5.10.1"</span> <span class="nt">-ifref</span><span class="o">=</span>ip <span class="nt">--output</span> /home/mrtg/mrtg.cfg public@localhost
+
+<span class="nb">env </span><span class="nv">LANG</span><span class="o">=</span>C /usr/local/mrtg2/bin/mrtg /home/mrtg/mrtg.cfg
+
+<span class="nb">echo</span> <span class="s2">"*/5 * * * * root env LANG=C /usr/local/mrtg2/bin/mrtg /home/mrtg/mrtg.cfg --logging /var/log/mrtg.log "</span> <span class="o">&gt;</span> /etc/cron.d/mrtg
+
+chkconfig crond on
+
+/usr/local/mrtg2/bin/indexmaker <span class="nt">--output</span><span class="o">=</span>/var/www/mrtg/index.html /home/mrtg/mrtg.cfg
+
+<span class="nb">echo</span> <span class="s2">"
+
+# This configuration file maps the mrtg output (generated daily)
+
+# into the URL space. By default these results are only accessible
+
+# from the local host.
+
+#
+
+Alias /mrtg /var/www/mrtg
+
+&lt;Location /mrtg&gt;
+
+Order deny,allow
+
+#Deny from all
+
+Allow from 127.0.0.1
+
+Allow from ::1
+
+# Allow from .example.com
+
+Allow from all
+
+&lt;/Location&gt;
+
+"</span> <span class="o">&gt;</span> /etc/httpd/conf.d/mrtg.conf
+
+chkconfig httpd on
+
+service httpd restart
+
+<span class="nb">cd</span> /tmp
+
+wget https://shivamshukla.wordpress.com/wp-content/uploads/2014/10/14all-cgi1.key <span class="o">&gt;</span>/dev/null 2&gt;&amp;1
+
+<span class="nb">mv</span> /tmp/14all-cgi1.key /var/www/cgi-bin/14all.cgi
+
+<span class="nb">chmod </span>777 /var/www/cgi-bin/14all.cgi
+
+<span class="nb">echo</span> <span class="s2">"MRTG Installation Completed.... :)"</span>
+
+<span class="nb">echo</span> <span class="s2">"Click the link to open the MRTG page http://</span><span class="nv">$ipadd</span><span class="s2">/mrtg"</span>
+
+
+</code></pre></div></div>
+
+<p><a href="https://shivamshukla.wordpress.com/wp-content/uploads/2014/11/mrtg.key"><strong>Click here to download the script</strong></a></p>
+
+
+        
+      </section>
+
+      <footer class="page__meta">
+        
+        
+
+
+        
+
+  <p class="page__date"><strong><i class="fas fa-fw fa-calendar-alt" aria-hidden="true"></i> Updated:</strong> <time class="dt-published" datetime="2014-11-07T00:00:00+05:30">November 7, 2014</time></p>
+
+      </footer>
+
+      
+
+      
+  <nav class="pagination">
+    
+      <a href="/2014/10/24/mrtg-rrd-tool-installation-on-centos-6.html" class="pagination--pager" title="Mrtg Rrd Tool Installation On Centos 6">Previous</a>
+    
+    
+      <a href="/2014/11/10/shebang-basics-of-bash.html" class="pagination--pager" title="Shebang Basics Of Bash">Next</a>
+    
+  </nav>
+
+
+    </div>
+
+    
+  </article>
+
+  
+  
+</div>
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="site-footer">
+      <p>&copy; 2025 Shivam's Tech Blog</p>
+    </footer>
+  </body>
+</html>

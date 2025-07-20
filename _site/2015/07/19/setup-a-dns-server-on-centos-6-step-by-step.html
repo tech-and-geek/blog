@@ -1,0 +1,387 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Setup A Dns Server On Centos 6 Step By Step</title>
+
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Oregano&display=swap" rel="stylesheet" />
+
+    <!-- Main CSS -->
+    <link rel="stylesheet" href="/assets/css/main.css">
+  </head>
+
+  <body class="layout--single">
+    <!-- Header -->
+    <header class="site-header">
+      <div class="container">
+        <h1><a href="/">Shivam's Tech Blog</a></h1>
+        <nav class="site-nav">
+          <a href="/">Home</a>
+          <a href="/about/">About</a>
+          <a href="/categories/">Categories</a>
+        </nav>
+      </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="page">
+      
+
+
+
+
+
+<div id="main" role="main">
+  
+  <div class="sidebar sticky">
+  
+
+
+<div itemscope itemtype="https://schema.org/Person" class="h-card">
+
+  
+
+  <div class="author__content">
+    <h3 class="author__name p-name" itemprop="name">
+      <a class="u-url" rel="me" href="http://localhost:4000/" itemprop="url">Shivam Shukla</a>
+    </h3>
+    
+      <div class="author__bio p-note" itemprop="description">
+        <table>
+  <tbody>
+    <tr>
+      <td>Engineer</td>
+      <td>Monitoring &amp; Automation</td>
+      <td>14+ years</td>
+    </tr>
+  </tbody>
+</table>
+
+      </div>
+    
+  </div>
+
+  <div class="author__urls-wrapper">
+    <button class="btn btn--inverse">Follow</button>
+    <ul class="author__urls social-icons">
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      <!--
+  <li>
+    <a href="http://link-to-whatever-social-network.com/user/" itemprop="sameAs" rel="nofollow noopener noreferrer me">
+      <i class="fas fa-fw" aria-hidden="true"></i> Custom Social Profile Link
+    </a>
+  </li>
+-->
+    </ul>
+  </div>
+</div>
+
+  
+  </div>
+
+
+
+  <article class="page" itemscope itemtype="https://schema.org/CreativeWork">
+    <meta itemprop="headline" content="Setup A Dns Server On Centos 6 Step By Step">
+    <meta itemprop="description" content="Hi Guys, here’s my new post on how to set up a DNS server on a CentOS 6 box. Hope you will find this helpful.">
+    <meta itemprop="datePublished" content="2015-07-19T00:00:00+05:30">
+    
+
+    <div class="page__inner-wrap">
+      
+        <header>
+          <h1 id="page-title" class="page__title" itemprop="headline">
+            <a href="http://localhost:4000/2015/07/19/setup-a-dns-server-on-centos-6-step-by-step.html" itemprop="url">Setup A Dns Server On Centos 6 Step By Step
+</a>
+          </h1>
+          
+
+
+        </header>
+      
+
+      <section class="page__content" itemprop="text">
+        
+        <p>Hi Guys, here’s my new post on how to set up a DNS server on a CentOS 6 box. Hope you will find this helpful.</p>
+
+<h3 id="scenario">Scenario:</h3>
+
+<p>Here is my test setup scenario:</p>
+
+<p><strong>DNS Server Details:</strong></p>
+
+<table>
+  <thead>
+    <tr>
+      <th>Setting</th>
+      <th>Value</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>OS</td>
+      <td>CentOS release 6.4 (Final) 64-Bit</td>
+    </tr>
+    <tr>
+      <td>Hostname</td>
+      <td>dnsserver</td>
+    </tr>
+    <tr>
+      <td>IP Address</td>
+      <td>192.168.1.26/24</td>
+    </tr>
+    <tr>
+      <td>Domain Name</td>
+      <td>localdnstest.local</td>
+    </tr>
+  </tbody>
+</table>
+
+<blockquote>
+  <p><strong>Note</strong>: The IP address used here is a private IP and the domain name is for testing purposes only.</p>
+</blockquote>
+
+<p>Step 1: Install the packages required for DNS setup</p>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="o">[</span>root@dnsserver ~ <span class="o">]</span><span class="c">#yum -y install bind </span>
+</code></pre></div></div>
+<p>Step 2: Edit the “named.conf” file which is present in the “/etc/” directory the file looks somewhat like the one shown below, Edit/add the entries marked with comment to your file, make sure to use the details as per your requirement.</p>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="o">[</span>root@dnsserver ~ <span class="o">]</span><span class="c">#vi /etc/named.conf</span>
+</code></pre></div></div>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>
+// named.conf
+//
+// Provided by Red Hat <span class="nb">bind </span>package to configure the ISC BIND named<span class="o">(</span>8<span class="o">)</span> DNS
+// server as a caching only nameserver <span class="o">(</span>as a localhost DNS resolver only<span class="o">)</span><span class="nb">.</span>
+//
+// See /usr/share/doc/bind<span class="k">*</span>/sample/ <span class="k">for </span>example named configuration files.
+//
+options <span class="o">{</span>
+ listen-on port 53 <span class="o">{</span> 127.0.0.1<span class="p">;</span> 192.168.1.26<span class="p">;</span><span class="o">}</span><span class="p">;</span> <span class="c">#ADD/EDIT THE SERVER IP EXAMPLE 192.168.1.26</span>
+ listen-on-v6 port 53 <span class="o">{</span> ::1<span class="p">;</span> <span class="o">}</span><span class="p">;</span>
+ directory <span class="s2">"/var/named"</span><span class="p">;</span>
+ dump-file <span class="s2">"/var/named/data/cache_dump.db"</span><span class="p">;</span>
+ statistics-file <span class="s2">"/var/named/data/named_stats.txt"</span><span class="p">;</span>
+ memstatistics-file <span class="s2">"/var/named/data/named_mem_stats.txt"</span><span class="p">;</span>
+ allow-query <span class="o">{</span> localhost<span class="p">;</span> 192.168.1.0/24<span class="p">;</span><span class="o">}</span><span class="p">;</span> <span class="c">#ADD/EDIT THE IP RANGE HERE AS SHOWN</span>
+ recursion <span class="nb">yes</span><span class="p">;</span>
+ dnssec-enable <span class="nb">yes</span><span class="p">;</span>
+ dnssec-validation <span class="nb">yes</span><span class="p">;</span>
+ dnssec-lookaside auto<span class="p">;</span>
+ /<span class="k">*</span> Path to ISC DLV key <span class="k">*</span>/
+ bindkeys-file <span class="s2">"/etc/named.iscdlv.key"</span><span class="p">;</span>
+ managed-keys-directory <span class="s2">"/var/named/dynamic"</span><span class="p">;</span>
+<span class="o">}</span><span class="p">;</span>
+logging <span class="o">{</span>
+ channel default_debug <span class="o">{</span>
+ file <span class="s2">"data/named.run"</span><span class="p">;</span>
+ severity dynamic<span class="p">;</span>
+ <span class="o">}</span><span class="p">;</span>
+<span class="o">}</span><span class="p">;</span>
+zone <span class="s2">"."</span> IN <span class="o">{</span>
+ <span class="nb">type </span>hint<span class="p">;</span>
+ file <span class="s2">"named.ca"</span><span class="p">;</span>
+<span class="o">}</span><span class="p">;</span>
+<span class="c">#ADD THE FORWARD &amp;amp; REVERSE ZONE AS SHOWN BELOW</span>
+<span class="c">########Forward Zone#########################</span>
+zone <span class="s2">"localdnstest.local"</span> IN <span class="o">{</span>
+        <span class="nb">type </span>master<span class="p">;</span>
+        file <span class="s2">"fwd.localdnstest.local"</span><span class="p">;</span>
+        allow-update <span class="o">{</span> none<span class="p">;</span> <span class="o">}</span><span class="p">;</span>
+<span class="o">}</span><span class="p">;</span>
+<span class="c">#############################################</span>
+<span class="c">########Reverse Zone#######################</span>
+zone <span class="s2">"1.168.192.in-addr.arpa"</span> IN <span class="o">{</span>
+       type master<span class="p">;</span>
+       file <span class="s2">"rev.localdnstest.local"</span><span class="p">;</span>
+       allow-update <span class="o">{</span> none<span class="p">;</span> <span class="o">}</span><span class="p">;</span>
+<span class="o">}</span><span class="p">;</span>
+<span class="c">###########################################</span>
+include <span class="s2">"/etc/named.rfc1912.zones"</span><span class="p">;</span>
+include <span class="s2">"/etc/named.root.key"</span><span class="p">;</span>
+</code></pre></div></div>
+<p>Step 3: Creating zone files.
+We need to create forward &amp; reverse zone files which we mentioned in the “/etc/named.conf” file.
+Create the forward zone file “fwd.localdnstest.local” in the “/var/named” and add the entries for the forward zone as shown below.</p>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="o">[</span>root@dnsserver ~ <span class="o">]</span><span class="c">#vi /var/named/fwd.localdnstest.local</span>
+</code></pre></div></div>
+<p>Add the below lines make sure to modify them as per your requirement.</p>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$TTL</span> 600
+@ IN SOA  dnsserver.localdnstest.local. root.localdnstest.local. <span class="o">(</span>
+                                         2015022609  <span class="p">;</span> serial
+                                         3600    <span class="p">;</span> refresh
+                                         1800    <span class="p">;</span> retry
+                                         604800  <span class="p">;</span> expire
+                                         600 <span class="o">)</span>   <span class="p">;</span> minimum
+                IN NS   dnsserver.localdnstest.local.
+                IN MX   10 mail.localdnstest.local.
+dnsserver       IN A    192.168.1.26
+mail            IN A    192.168.1.26
+www             IN CNAME        dnsserver
+ftp             IN CNAME        dnsserver
+</code></pre></div></div>
+<p>Create the reverse zone file “rev.localdnstest.local” in the “/var/named” and add the entries for the reverse zone as shown below.</p>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="o">[</span>root@dnsserver ~ <span class="o">]</span><span class="c">#vi /var/named/rev.localdnstest.local</span>
+</code></pre></div></div>
+<p>Add the below lines make sure to modify them as per your requirement.</p>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$TTL</span> 600
+@ IN SOA dnsserver.localdnstest.local. root.localdnstest.local. <span class="o">(</span>
+                               2015022609 <span class="p">;</span> serial
+                               3600 <span class="p">;</span> refresh
+                               1800 <span class="p">;</span> retry
+                               604800 <span class="p">;</span> expire
+                               600 <span class="o">)</span> <span class="p">;</span> minimum
+            IN NS dnsserver.localdnstest.local.
+            IN MX 10 mail.localdnstest.local.
+dnsserver   IN A 192.168.1.26
+mail        IN A 192.168.1.26
+www         IN   CNAME    dnsserver
+ftp         IN   CNAME    dnsserver
+26          IN   PTR      dnsserver.localdnstest.local.
+</code></pre></div></div>
+<p>Step 4: After the creation of zone files, we need to start/restart the bind service. and allow it to start automatically.</p>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="o">[</span>root@dnsserver ~ <span class="o">]</span><span class="c">#service named start</span>
+<span class="o">[</span>root@dnsserver ~ <span class="o">]</span><span class="c">#chkconfig named on</span>
+</code></pre></div></div>
+<p>Step 5: Allow the DNS sever through IP tables.
+Edit the file “/etc/sysconfig/iptables” and add the below lines to the file</p>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="o">[</span>root@dnsserver ~ <span class="o">]</span><span class="c">#vi /etc/sysconfig/iptables</span>
+</code></pre></div></div>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nt">-A</span> INPUT <span class="nt">-p</span> udp <span class="nt">-m</span> state <span class="nt">--state</span> NEW <span class="nt">--dport</span> 53 <span class="nt">-j</span> ACCEPT
+<span class="nt">-A</span> INPUT <span class="nt">-p</span> tcp <span class="nt">-m</span> state <span class="nt">--state</span> NEW <span class="nt">--dport</span> 53 <span class="nt">-j</span> ACCEPT
+</code></pre></div></div>
+<p>Step 6: Restart the iptables service to save the changes.</p>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="o">[</span>root@dnsserver ~ <span class="o">]</span><span class="c">#service iptables restart</span>
+</code></pre></div></div>
+<p>Step 7: Now let’s test the DNS configuration &amp; zone files for syntax errors.
+Check DNS configuration files.</p>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="o">[</span>root@dnsserver ~ <span class="o">]</span><span class="c">#named-checkconf /etc/named.conf</span>
+<span class="o">[</span>root@dnsserver ~ <span class="o">]</span><span class="c">#named-checkconf /etc/named.rfc1912.zones</span>
+</code></pre></div></div>
+<p>Check zone files.</p>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="o">[</span>root@dnsserver ~ <span class="o">]</span><span class="c">#named-checkzone localdnstest.local /var/named/fwd.localdnstest.local</span>
+<span class="o">[</span>root@dnsserver ~ <span class="o">]</span><span class="c">#named-checkzone localdnstest.local /var/named/rev.localdnstest.local</span>
+</code></pre></div></div>
+<p>NOTE: As this is a test domain so this test my not work until you modify the “/etc/resolv.conf” file and add the new nameserver parameter “nameserver 192.168.1.26”</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="o">[</span>root@dnsserver ~ <span class="o">]</span><span class="c"># vi /etc/resolve.conf</span>
+</code></pre></div></div>
+
+<p>Add the below parameter.</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>nameserver 192.168.1.26
+</code></pre></div></div>
+
+<p>Step 8: Test the DNS server.</p>
+
+<p>Method 1:</p>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="o">[</span>root@dnsserver ~ <span class="o">]</span><span class="c">#dig localdnstest.local</span>
+</code></pre></div></div>
+
+<p>Method 2:</p>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="o">[</span>root@dnsserver ~ <span class="o">]</span><span class="c">#dig -x 192.168.1.26</span>
+</code></pre></div></div>
+
+<p>Method 3:</p>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="o">[</span>root@dnsserver ~ <span class="o">]</span><span class="c">#nslookup www.localdnstest.local</span>
+</code></pre></div></div>
+
+<p>Hope you find this interesting.
+Thanks</p>
+
+        
+      </section>
+
+      <footer class="page__meta">
+        
+        
+
+
+        
+
+  <p class="page__date"><strong><i class="fas fa-fw fa-calendar-alt" aria-hidden="true"></i> Updated:</strong> <time class="dt-published" datetime="2015-07-19T00:00:00+05:30">July 19, 2015</time></p>
+
+      </footer>
+
+      
+
+      
+  <nav class="pagination">
+    
+      <a href="/2014/11/27/openvpn-with-user-password-based-authentication.html" class="pagination--pager" title="Openvpn With User Password Based Authentication">Previous</a>
+    
+    
+      <a href="/intro/2025/07/05/welcome.html" class="pagination--pager" title="Welcome to My Tech Blog">Next</a>
+    
+  </nav>
+
+
+    </div>
+
+    
+  </article>
+
+  
+  
+</div>
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="site-footer">
+      <p>&copy; 2025 Shivam's Tech Blog</p>
+    </footer>
+  </body>
+</html>

@@ -1,0 +1,102 @@
+/* Import Google Font */
+@import url('https://fonts.googleapis.com/css2?family=Oregano&display=swap');
+
+/* Header: Sunrise gradient with left logo and right nav */
+.site-header {
+  background: linear-gradient(to right, #FFD700, #FF8C00, #DC143C); /* sunrise effect */
+  color: white;
+  padding: 1rem 2rem;
+  font-family: 'Oregano', cursive;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+}
+
+.site-header .container {
+  display: flex;
+  justify-content: space-between;
+  align-items: right;
+  flex-wrap: wrap;
+}
+
+.site-header h1 {
+  margin: 0;
+  font-size: 1.8rem;
+}
+
+.site-header h1 a {
+  color: white;
+  text-decoration: none;
+}
+
+/* Navigation */
+.site-nav a {
+  color: white;
+  text-decoration: none;
+  margin-left: 1rem;
+  font-weight: bold;
+  font-size: 1.1rem;
+}
+
+.site-nav a:hover {
+  color: #ffffcc;
+}
+
+/* Body layout */
+body.layout--single {
+  margin: 0;
+  padding: 0;
+  font-family: 'Oregano', cursive;
+  overflow-x: hidden;
+  background-color: #fdfdfd;
+}
+
+/* Page wrapper */
+.page {
+  display: flex;
+  justify-content: right;
+  padding: 2rem;
+  box-sizing: border-box;
+  width: 90%;
+}
+
+/* Post pages (with paper background) */
+body.layout--single.layout--post .page__inner-wrap {
+  width: 90%;
+  max-width: 900px;
+  margin: 0 auto;
+  background-image: url('/assets/images/paper-bg.png');
+  background-size: contain;
+  background-repeat: repeat-y;
+  background-position: top left;
+  background-attachment: scroll;
+  background-color: rgba(255, 255, 255, 0.25);
+  padding: 2rem;
+  border-radius: 15px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+  backdrop-filter: blur(2px);
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  font-family: 'Oregano', cursive;
+  box-sizing: border-box;
+}
+
+/* Other pages (e.g. About, Categories) */
+body.layout--single:not(.layout--post) .page__inner-wrap {
+  width: 90%;
+  max-width: 900px;
+  margin: 0 auto;
+  background-color: rgba(255, 255, 255, 0.8);
+  padding: 2rem;
+  border-radius: 15px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+  backdrop-filter: blur(2px);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  font-family: 'Oregano', cursive;
+  box-sizing: border-box;
+}
+
+/* Notebook-style left line */
+.page__content {
+  padding-left: 2rem;
+  border-left: 2px solid rgba(200, 200, 200, 0.2);
+  line-height: 1.8;
+  font-family: 'Oregano', cursive;
+}

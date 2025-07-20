@@ -1,0 +1,1233 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Mrtg Rrd Tool Installation On Centos 6</title>
+
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Oregano&display=swap" rel="stylesheet" />
+
+    <!-- Main CSS -->
+    <link rel="stylesheet" href="/assets/css/main.css">
+  </head>
+
+  <body class="layout--single">
+    <!-- Header -->
+    <header class="site-header">
+      <div class="container">
+        <h1><a href="/">Shivam's Tech Blog</a></h1>
+        <nav class="site-nav">
+          <a href="/">Home</a>
+          <a href="/about/">About</a>
+          <a href="/categories/">Categories</a>
+        </nav>
+      </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="page">
+      
+
+
+
+
+
+<div id="main" role="main">
+  
+  <div class="sidebar sticky">
+  
+
+
+<div itemscope itemtype="https://schema.org/Person" class="h-card">
+
+  
+
+  <div class="author__content">
+    <h3 class="author__name p-name" itemprop="name">
+      <a class="u-url" rel="me" href="http://localhost:4000/" itemprop="url">Shivam Shukla</a>
+    </h3>
+    
+      <div class="author__bio p-note" itemprop="description">
+        <table>
+  <tbody>
+    <tr>
+      <td>Engineer</td>
+      <td>Monitoring &amp; Automation</td>
+      <td>14+ years</td>
+    </tr>
+  </tbody>
+</table>
+
+      </div>
+    
+  </div>
+
+  <div class="author__urls-wrapper">
+    <button class="btn btn--inverse">Follow</button>
+    <ul class="author__urls social-icons">
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      <!--
+  <li>
+    <a href="http://link-to-whatever-social-network.com/user/" itemprop="sameAs" rel="nofollow noopener noreferrer me">
+      <i class="fas fa-fw" aria-hidden="true"></i> Custom Social Profile Link
+    </a>
+  </li>
+-->
+    </ul>
+  </div>
+</div>
+
+  
+  </div>
+
+
+
+  <article class="page" itemscope itemtype="https://schema.org/CreativeWork">
+    <meta itemprop="headline" content="Mrtg Rrd Tool Installation On Centos 6">
+    <meta itemprop="description" content="Hi Guys.We are going to discuss about installing the Multi Router Traffic Grapher (MRTG) Tool along with Round Robin Database (RRD) Tool on CentOS.Note: The following version were used during the installation.">
+    <meta itemprop="datePublished" content="2014-10-24T00:00:00+05:30">
+    
+
+    <div class="page__inner-wrap">
+      
+        <header>
+          <h1 id="page-title" class="page__title" itemprop="headline">
+            <a href="http://localhost:4000/2014/10/24/mrtg-rrd-tool-installation-on-centos-6.html" itemprop="url">Mrtg Rrd Tool Installation On Centos 6
+</a>
+          </h1>
+          
+
+
+        </header>
+      
+
+      <section class="page__content" itemprop="text">
+        
+        <p>Hi Guys.
+We are going to discuss about installing the Multi Router Traffic Grapher (MRTG) Tool along with Round Robin Database (RRD) Tool on CentOS.
+Note: The following version were used during the installation.</p>
+
+<p>Operating System: CentOS 4 (Final), Architecture X86_64
+MRTG: mrtg-2.17.4
+RRD Tool: rrdtool-1.4.9</p>
+
+<p>Certain commands need to be changed according to the versions (specifically the path of MRTG &amp; RRD Tools).</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="o">[</span>root@localhos]# yum <span class="nb">install</span> <span class="nt">-y</span> gcc gd gd-devel perl libpng libxml2-devel cairo-devel glib2-devel pango-devel perl-devel perl-CGI net-snmp net-snmp-utils
+</code></pre></div></div>
+<p>Create a backup of the original snmpd.conf file.</p>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="o">[</span>root@localhost]# <span class="nb">mv</span> /etc/snmp/snmpd.conf /etc/snmp/snmpd.conf.orig
+</code></pre></div></div>
+<p>Edit the snmpd.conf file</p>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="o">[</span>root@localhost]# vi /etc/snmp/snmpd.conf
+</code></pre></div></div>
+<p>Replace the contents of the snmpd.conf file with the below lines.</p>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>com2sec <span class="nb">local </span>localhost public
+com2sec mynetwork 192.168.1.0 public
+group MyRWGroup v1 <span class="nb">local
+</span>group MyRWGroup v2c <span class="nb">local
+</span>group MyRWGroup usm <span class="nb">local
+</span>group MyROGroup v1 mynetwork
+group MyROGroup v2c mynetwork
+group MyROGroup usm mynetwork
+view all included .1 80
+access MyROGroup <span class="s2">""</span> any noauth exact all none none
+access MyRWGroup <span class="s2">""</span> any noauth exact all all none
+syslocation New Delhi, INDIA
+syscontact FooBar &amp;lt<span class="p">;</span>foor.bar@foobar.com&amp;gt<span class="p">;</span>
+</code></pre></div></div>
+<p>Note : the above file parameters can be modified as per requirement.
+Restart the SNMP services.</p>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="o">[</span>root@localhost]# /etc/init.d/snmpd restart
+</code></pre></div></div>
+<p>MRTG &amp; RRD Installation.</p>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="o">[</span>root@localhost]# <span class="nb">cd</span> /tmp
+<span class="o">[</span>root@localhost]# wget http://oss.oetiker.ch/mrtg/pub/mrtg.tar.gz
+<span class="o">[</span>root@localhost]# <span class="nb">tar </span>zfx mrtg.tar.gz
+<span class="o">[</span>root@localhost]# <span class="nb">cd </span>mrtg-2.17.4
+<span class="o">[</span>root@localhost]# ./configure <span class="nt">--prefix</span><span class="o">=</span>/usr/local/mrtg2
+<span class="o">[</span>root@localhost]# make
+<span class="o">[</span>root@localhost]# make <span class="nb">install</span>
+<span class="o">[</span>root@localhost]# <span class="nb">cd</span> ..
+<span class="o">[</span>root@localhost]# wget http://oss.oetiker.ch/rrdtool/pub/rrdtool.tar.gz
+<span class="o">[</span>root@localhost]# <span class="nb">tar </span>zfx rrdtool.tar.gz
+<span class="o">[</span>root@localhost]# <span class="nb">cd </span>rrdtool-1.4.9/
+<span class="o">[</span>root@localhost]# ./configure <span class="nt">--prefix</span><span class="o">=</span>/usr/local/rrdtool
+<span class="o">[</span>root@localhost]# make
+<span class="o">[</span>root@localhost]# make <span class="nb">install</span>
+<span class="o">[</span>root@localhost]# <span class="nb">mkdir</span> /var/www/mrtg
+<span class="o">[</span>root@localhost]# <span class="nb">mkdir</span>/home/mrtg
+<span class="o">[</span>root@localhost]# /usr/local/mrtg2/bin/cfgmaker <span class="nt">--global</span> <span class="s2">"WorkDir: /var/www/mrtg"</span> <span class="nt">--global</span> <span class="s2">"Options[_]: growright, bits"</span> <span class="nt">--global</span> <span class="s2">"RunAsDaemon: Yes"</span> <span class="nt">--global</span> <span class="s2">"LogFormat: rrdtool"</span> <span class="nt">--global</span> <span class="s2">"PathAdd: /usr/local/rrdtool/bin"</span> <span class="nt">--global</span> <span class="s2">"LibAdd: /usr/local/rrdtool/lib/perl/5.10.1"</span> <span class="nt">-ifref</span><span class="o">=</span>ip <span class="nt">--output</span> /home/mrtg/mrtg.cfg public@localhost
+<span class="o">[</span>root@localhost]# <span class="nb">env </span><span class="nv">LANG</span><span class="o">=</span>C /usr/local/mrtg2/bin/mrtg /home/mrtg/mrtg.cfg
+</code></pre></div></div>
+<p>Create a cron job for MRTG to generate data at every 5 mins.</p>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="o">[</span>root@localhost]# vi /etc/cron.d/mrtg
+</code></pre></div></div>
+<p>Add the below lines to the MRTG cron file.</p>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">*</span>/5 <span class="k">*</span> <span class="k">*</span> <span class="k">*</span> <span class="k">*</span> root <span class="nb">env </span><span class="nv">LANG</span><span class="o">=</span>C /usr/local/mrtg2/bin/mrtg /home/mrtg/mrtg.cfg <span class="nt">--logging</span> /var/log/mrtg.log
+</code></pre></div></div>
+<p>Add the cron daemon to the server start-up.</p>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="o">[</span>root@localhost]# chkconfig crond on
+</code></pre></div></div>
+<p>Now lets create the index.html file.</p>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="o">[</span>root@localhost]# /usr/local/mrtg2/bin/indexmaker <span class="nt">--output</span><span class="o">=</span>/var/www/mrtg/index.html /home/mrtg/mrtg.cfg
+</code></pre></div></div>
+<p>Configure the Apache to handle MRTG. Create a mrtg.conf file in /etc/httpd/conf.d/</p>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="o">[</span>root@localhost]# vi /etc/httpd/conf.d/mrtg.conf
+</code></pre></div></div>
+<p>Add the following lines to the mrtg.conf file</p>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># This configuration file maps the mrtg output (generated daily)</span>
+<span class="c"># into the URL space. By default these results are only accessible</span>
+<span class="c"># from the local host.</span>
+<span class="c">#</span>
+Alias /mrtg /var/www/mrtg
+&amp;lt<span class="p">;</span>Location /mrtg&amp;gt<span class="p">;</span>
+Order deny,allow
+<span class="c">#Deny from all</span>
+Allow from 127.0.0.1
+Allow from ::1
+<span class="c"># Allow from .example.com</span>
+Allow from all
+&amp;lt<span class="p">;</span>/Location&amp;gt<span class="p">;</span>
+</code></pre></div></div>
+<p>Now add the httpd service to the server start-up &amp; restart the httpd service.</p>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="o">[</span>root@localhost]# chkconfig httpd on
+<span class="o">[</span>root@localhost]# service httpd restart
+</code></pre></div></div>
+<p>Implementing CGI, Create a cgi file in the /var/www/cgi-bin.</p>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="o">[</span>root@localhost]# vi /var/www/cgi-bin/14all.cgi
+</code></pre></div></div>
+<p>Now add the below lines to the CGI file /var/www/cgi-bin/14all.cgi</p>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c">#!/usr/bin/perl -w</span>
+<span class="c">#</span>
+<span class="c"># 14all.cgi</span>
+<span class="c">#</span>
+<span class="c"># create html pages and graphics with rrdtool for mrtg + rrdtool</span>
+<span class="c">#</span>
+<span class="c"># (c) 1999-2002 bawidama@users.sourceforge.net</span>
+<span class="c">#</span>
+<span class="c"># use freely, but: NO WARRANTY - USE AT YOUR OWN RISK!</span>
+<span class="c"># license: GPL</span>
+<span class="c"># if MRTG_lib.pm (from mrtg) is not in the module search path (@INC)</span>
+<span class="c"># uncomment the following line and change the path appropriatly:</span>
+<span class="c">#use lib qw(/usr/local/mrtg-2/lib/mrtg2);</span>
+use lib qw<span class="o">(</span>/usr/local/mrtg2/lib/mrtg2<span class="o">)</span><span class="p">;</span>
+<span class="c"># if RRDs (rrdtool perl module) is not in the module search path (@INC)</span>
+<span class="c"># uncomment the following line and change the path appropriatly</span>
+<span class="c"># or use a LibAdd: setting in the config file</span>
+<span class="c">#use lib qw(/usr/local/rrdtool-1.0.38/lib/perl);</span>
+<span class="c"># RCS History - removed as it's available on the web</span>
+my <span class="nv">$rcsid</span> <span class="o">=</span> <span class="s1">'$Id: 14all.cgi,v 2.25 2003/01/05 18:39:51 bawidama Exp $'</span><span class="p">;</span>
+my <span class="nv">$subversion</span> <span class="o">=</span> <span class="o">(</span><span class="nb">split</span><span class="o">(</span>/ /,<span class="nv">$rcsid</span><span class="o">))[</span>2]<span class="p">;</span>
+<span class="nv">$subversion</span> <span class="o">=</span>~ m/^<span class="se">\d</span>+<span class="se">\.</span><span class="o">(</span><span class="se">\d</span>+<span class="o">)</span><span class="nv">$/</span><span class="p">;</span>
+my <span class="nv">$version</span> <span class="o">=</span> <span class="s2">"14all.cgi 1.1p</span><span class="nv">$1</span><span class="s2">"</span><span class="p">;</span>
+<span class="c"># my $DEBUG = 0; has gone - use config "14all*GraphErrorsToBrowser: 1"</span>
+use strict<span class="p">;</span>
+use CGI<span class="p">;</span>
+BEGIN <span class="o">{</span> <span class="nb">eval</span> <span class="o">{</span> require CGI::Carp<span class="p">;</span> import CGI::Carp qw/fatalsToBrowser/ <span class="o">}</span>
+ <span class="k">if</span> <span class="nv">$^</span>O <span class="o">!</span>~ m/Win/i <span class="o">}</span><span class="p">;</span>
+use MRTG_lib <span class="s2">"2.090003"</span><span class="p">;</span>
+sub main<span class="o">()</span><span class="p">;</span>
+sub set_graph_params<span class="o">(</span><span class="nv">$$$$</span><span class="o">)</span><span class="p">;</span>
+sub show_graph<span class="o">(</span><span class="nv">$$$)</span><span class="p">;</span>
+sub show_log<span class="o">(</span><span class="nv">$$$)</span><span class="p">;</span>
+sub show_dir<span class="o">(</span><span class="nv">$$$)</span><span class="p">;</span>
+sub print_error<span class="o">(</span><span class="nv">$@</span><span class="o">)</span><span class="p">;</span>
+sub intmax<span class="o">(</span>@<span class="o">)</span><span class="p">;</span>
+sub yesorno<span class="o">(</span><span class="nv">$)</span><span class="p">;</span>
+sub get_graph_params<span class="o">(</span><span class="nv">$$$)</span><span class="p">;</span>
+sub getdirwriteable<span class="o">(</span><span class="nv">$$</span><span class="o">)</span><span class="p">;</span>
+sub getpngsize<span class="o">(</span><span class="nv">$)</span><span class="p">;</span>
+sub errorpng<span class="o">()</span><span class="p">;</span>
+sub gettextpic<span class="o">(</span><span class="nv">$)</span><span class="p">;</span>
+sub log_rrdtool_call<span class="o">(</span><span class="nv">$$</span>@<span class="o">)</span><span class="p">;</span>
+<span class="c"># global, static vars</span>
+<span class="c">#$cfgfile = 'mrtg.cfg';</span>
+<span class="c">#$cfgfiledir = '/home/mrtg';</span>
+my <span class="o">(</span><span class="nv">$cfgfile</span>, <span class="nv">$cfgfiledir</span><span class="o">)</span><span class="p">;</span>
+my <span class="o">(</span>@author, @style<span class="o">)</span><span class="p">;</span>
+<span class="c">### where the mrtg.cfg file is</span>
+<span class="c"># anywhere in the filespace</span>
+<span class="nv">$cfgfile</span> <span class="o">=</span> <span class="s1">'/home/mrtg/mrtg.cfg'</span><span class="p">;</span>
+<span class="c"># relative to the script</span>
+<span class="nv">$cfgfile</span> <span class="o">=</span> <span class="s1">'mrtg.cfg'</span><span class="p">;</span>
+<span class="c"># use this so 14all.cgi gets the cfgfile name from the script name</span>
+<span class="c"># (14all.cgi -&amp;gt; 14all.cfg)</span>
+<span class="nv">$cfgfile</span> <span class="o">=</span> <span class="s1">'mrtg.cfg'</span><span class="p">;</span>
+<span class="c"># if you want to store your config files in a different place than your cgis:</span>
+<span class="nv">$cfgfiledir</span> <span class="o">=</span> <span class="s1">'/home/mrtg'</span><span class="p">;</span>
+<span class="c">### customize the html pages</span>
+@author <span class="o">=</span> <span class="o">(</span> <span class="nt">-author</span> <span class="o">=</span>&amp;gt<span class="p">;</span> <span class="s1">'bawidama@users.sourceforge.net'</span><span class="o">)</span><span class="p">;</span>
+<span class="c"># one possibility to enable stylesheets (second is to use "AddHead[_]:..." in mrtg.cfg)</span>
+<span class="c">#@style = ( -style =&amp;gt; { -src =&amp;gt; 'general.css' });</span>
+<span class="c">###</span>
+<span class="c"># static data</span>
+my @headeropts <span class="o">=</span> <span class="o">(</span>@author, @style<span class="o">)</span><span class="p">;</span>
+my %myrules <span class="o">=</span> <span class="o">(</span>
+ <span class="s1">'14all*errorpic'</span> <span class="o">=</span>&amp;gt<span class="p">;</span>
+ <span class="o">[</span>sub<span class="o">{</span><span class="nv">$_</span><span class="o">[</span>0] &amp;amp<span class="p">;</span>&amp;amp<span class="p">;</span> <span class="o">(</span><span class="nt">-r</span> <span class="nv">$_</span><span class="o">[</span>0] <span class="o">)}</span>, sub<span class="o">{</span><span class="s2">"14all*ErrorPic '</span><span class="nv">$_</span><span class="s2">[0]' not found/readable"</span><span class="o">}]</span>,
+ <span class="s1">'14all*grapherrorstobrowser'</span> <span class="o">=</span>&amp;gt<span class="p">;</span> <span class="o">[</span>sub<span class="o">{</span>1<span class="o">}</span>, sub<span class="o">{</span><span class="s2">"Internal Error"</span><span class="o">}]</span>,
+ <span class="s1">'14all*columns'</span> <span class="o">=</span>&amp;gt<span class="p">;</span>
+ <span class="o">[</span>sub<span class="o">{</span>int<span class="o">(</span><span class="nv">$_</span><span class="o">[</span>0]<span class="o">)</span> &amp;gt<span class="p">;</span><span class="o">=</span> 1<span class="o">}</span>, sub<span class="o">{</span><span class="s2">"14all*Columns must be at least 1 (is '</span><span class="nv">$_</span><span class="s2">[0]')"</span><span class="o">}]</span>,
+ <span class="s1">'14all*rrdtoollog'</span> <span class="o">=</span>&amp;gt<span class="p">;</span>
+ <span class="o">[</span>sub<span class="o">{</span><span class="nv">$_</span><span class="o">[</span>0] &amp;amp<span class="p">;</span>&amp;amp<span class="p">;</span> <span class="o">(!</span><span class="nt">-d</span> <span class="nv">$_</span><span class="o">[</span>0] <span class="o">)}</span>, sub<span class="o">{</span><span class="s2">"14all*RRDToolLog must be a writable file"</span><span class="o">}]</span>,
+ <span class="s1">'14all*background'</span> <span class="o">=</span>&amp;gt<span class="p">;</span>
+ <span class="o">[</span>sub<span class="o">{</span><span class="nv">$_</span><span class="o">[</span>0] <span class="o">=</span>~ /^#[0-9a-f]<span class="o">{</span>6<span class="o">}</span><span class="nv">$/</span>i<span class="o">}</span>, sub<span class="o">{</span><span class="s2">"14all*background colour not in form '#xxxxxx', x in [a-f0-9]"</span><span class="o">}]</span>,
+ <span class="s1">'14all*logarithmic[]'</span> <span class="o">=</span>&amp;gt<span class="p">;</span> <span class="o">[</span>sub<span class="o">{</span>1<span class="o">}</span>, sub<span class="o">{</span><span class="s2">"Internal Error"</span><span class="o">}]</span>,
+ <span class="s1">'14all*graphtotal[]'</span> <span class="o">=</span>&amp;gt<span class="p">;</span> <span class="o">[</span>sub<span class="o">{</span>1<span class="o">}</span>, sub<span class="o">{</span><span class="s2">"Internal Error"</span><span class="o">}]</span>,
+ <span class="s1">'14all*dontshowindexgraph[]'</span> <span class="o">=</span>&amp;gt<span class="p">;</span> <span class="o">[</span>sub<span class="o">{</span>1<span class="o">}</span>, sub<span class="o">{</span><span class="s2">"Internal Error"</span><span class="o">}]</span>,
+ <span class="s1">'14all*indexgraph[]'</span> <span class="o">=</span>&amp;gt<span class="p">;</span> <span class="o">[</span>sub<span class="o">{</span>1<span class="o">}</span>, sub<span class="o">{</span><span class="s2">"Internal Error"</span><span class="o">}]</span>,
+ <span class="s1">'14all*indexgraphsize[]'</span> <span class="o">=</span>&amp;gt<span class="p">;</span>
+ <span class="o">[</span>sub<span class="o">{</span><span class="nv">$_</span><span class="o">[</span>0] <span class="o">=</span>~ m/^<span class="se">\d</span>+[,<span class="se">\s</span><span class="o">]</span>+<span class="se">\d</span>+<span class="nv">$/</span>o<span class="o">}</span>, sub<span class="o">{</span><span class="s2">"14all*indexgraphsize: need two numbers"</span><span class="o">}]</span>,
+ <span class="s1">'14all*maxrules[]'</span> <span class="o">=</span>&amp;gt<span class="p">;</span> <span class="o">[</span>sub<span class="o">{</span>1<span class="o">}</span>, sub<span class="o">{</span><span class="s2">"Internal Error"</span><span class="o">}]</span>,
+ <span class="s1">'14all*stackgraph[]'</span> <span class="o">=</span>&amp;gt<span class="p">;</span> <span class="o">[</span>sub<span class="o">{</span>1<span class="o">}</span>, sub<span class="o">{</span><span class="s2">"Internal Error"</span><span class="o">}]</span>,
+<span class="o">)</span><span class="p">;</span>
+my %graphparams <span class="o">=</span> <span class="o">(</span>
+ <span class="s1">'daily'</span> <span class="o">=</span>&amp;gt<span class="p">;</span> <span class="o">[</span><span class="s1">'-2000m'</span>, <span class="s1">'now'</span>, 300],
+ <span class="s1">'weekly'</span> <span class="o">=</span>&amp;gt<span class="p">;</span> <span class="o">[</span><span class="s1">'-12000m'</span>,<span class="s1">'now'</span>, 1800],
+ <span class="s1">'monthly'</span> <span class="o">=</span>&amp;gt<span class="p">;</span> <span class="o">[</span><span class="s1">'-800h'</span>, <span class="s1">'now'</span>, 7200],
+ <span class="s1">'yearly'</span> <span class="o">=</span>&amp;gt<span class="p">;</span> <span class="o">[</span><span class="s1">'-400d'</span>, <span class="s1">'now'</span>, 86400],
+ <span class="s1">'daily.s'</span> <span class="o">=</span>&amp;gt<span class="p">;</span> <span class="o">[</span><span class="s1">'-1250m'</span>, <span class="s1">'now'</span>, 300],
+<span class="o">)</span><span class="p">;</span>
+<span class="c"># the footer we print on every page</span>
+my <span class="nv">$footer_template</span> <span class="o">=</span> &amp;lt<span class="p">;</span>&amp;lt<span class="p">;</span><span class="s2">"EOT"</span><span class="p">;</span>
+&amp;lt<span class="p">;</span>TABLE <span class="nv">BORDER</span><span class="o">=</span>0 <span class="nv">CELLSPACING</span><span class="o">=</span>0 <span class="nv">CELLPADDING</span><span class="o">=</span>0&amp;gt<span class="p">;</span>
+ &amp;lt<span class="p">;</span>TR&amp;gt<span class="p">;</span>
+ &amp;lt<span class="p">;</span>TD <span class="nv">WIDTH</span><span class="o">=</span>63&amp;gt<span class="p">;</span>&amp;lt<span class="p">;</span>A <span class="nv">ALT</span><span class="o">=</span><span class="s2">"MRTG"</span>
+ <span class="nv">HREF</span><span class="o">=</span><span class="s2">"http://ee-staff.ethz.ch/~oetiker/webtools/mrtg/mrtg.html"</span>&amp;gt<span class="p">;</span>&amp;lt<span class="p">;</span>IMG
+ <span class="nv">BORDER</span><span class="o">=</span>0 <span class="nv">SRC</span><span class="o">=</span><span class="s2">"##ICONDIR##mrtg-l.gif"</span>&amp;gt<span class="p">;</span>&amp;lt<span class="p">;</span>/A&amp;gt<span class="p">;</span>&amp;lt<span class="p">;</span>/TD&amp;gt<span class="p">;</span>
+ &amp;lt<span class="p">;</span>TD <span class="nv">WIDTH</span><span class="o">=</span>25&amp;gt<span class="p">;</span>&amp;lt<span class="p">;</span>A <span class="nv">ALT</span><span class="o">=</span><span class="s2">""</span>
+ <span class="nv">HREF</span><span class="o">=</span><span class="s2">"http://ee-staff.ethz.ch/~oetiker/webtools/mrtg/mrtg.html"</span>&amp;gt<span class="p">;</span>&amp;lt<span class="p">;</span>IMG
+ <span class="nv">BORDER</span><span class="o">=</span>0 <span class="nv">SRC</span><span class="o">=</span><span class="s2">"##ICONDIR##mrtg-m.gif"</span>&amp;gt<span class="p">;</span>&amp;lt<span class="p">;</span>/A&amp;gt<span class="p">;</span>&amp;lt<span class="p">;</span>/TD&amp;gt<span class="p">;</span>
+ &amp;lt<span class="p">;</span>TD <span class="nv">WIDTH</span><span class="o">=</span>388&amp;gt<span class="p">;</span>&amp;lt<span class="p">;</span>A <span class="nv">ALT</span><span class="o">=</span><span class="s2">""</span>
+ <span class="nv">HREF</span><span class="o">=</span><span class="s2">"http://ee-staff.ethz.ch/~oetiker/webtools/mrtg/mrtg.html"</span>&amp;gt<span class="p">;</span>&amp;lt<span class="p">;</span>IMG
+ <span class="nv">BORDER</span><span class="o">=</span>0 <span class="nv">SRC</span><span class="o">=</span><span class="s2">"##ICONDIR##mrtg-r.gif"</span>&amp;gt<span class="p">;</span>&amp;lt<span class="p">;</span>/A&amp;gt<span class="p">;</span>&amp;lt<span class="p">;</span>/TD&amp;gt<span class="p">;</span>
+ &amp;lt<span class="p">;</span>/TR&amp;gt<span class="p">;</span>
+&amp;lt<span class="p">;</span>/TABLE&amp;gt<span class="p">;</span>
+&amp;lt<span class="p">;</span>TABLE <span class="nv">BORDER</span><span class="o">=</span>0 <span class="nv">CELLSPACING</span><span class="o">=</span>0 <span class="nv">CELLPADDING</span><span class="o">=</span>0&amp;gt<span class="p">;</span>
+ &amp;lt<span class="p">;</span>TR <span class="nv">VALIGN</span><span class="o">=</span>top&amp;gt<span class="p">;</span>
+ &amp;lt<span class="p">;</span>TD <span class="nv">WIDTH</span><span class="o">=</span>88 <span class="nv">ALIGN</span><span class="o">=</span>RIGHT&amp;gt<span class="p">;</span>&amp;lt<span class="p">;</span>FONT <span class="nv">FACE</span><span class="o">=</span><span class="s2">"Arial,Helvetica"</span> <span class="nv">SIZE</span><span class="o">=</span>2&amp;gt<span class="p">;</span>Version <span class="k">${</span><span class="nv">MRTG_lib</span>::VERSION<span class="k">}</span>&amp;lt<span class="p">;</span>/FONT&amp;gt<span class="p">;</span>&amp;lt<span class="p">;</span>/TD&amp;gt<span class="p">;</span>
+ &amp;lt<span class="p">;</span>TD <span class="nv">WIDTH</span><span class="o">=</span>388 <span class="nv">ALIGN</span><span class="o">=</span>RIGHT&amp;gt<span class="p">;</span>&amp;lt<span class="p">;</span>FONT <span class="nv">FACE</span><span class="o">=</span><span class="s2">"Arial,Helvetica"</span> <span class="nv">SIZE</span><span class="o">=</span>2&amp;gt<span class="p">;</span>
+ &amp;lt<span class="p">;</span>A <span class="nv">HREF</span><span class="o">=</span><span class="s2">"http://ee-staff.ethz.ch/~oetiker/"</span>&amp;gt<span class="p">;</span>Tobias Oetiker&amp;lt<span class="p">;</span>/A&amp;gt<span class="p">;</span>
+ &amp;lt<span class="p">;</span>A <span class="nv">HREF</span><span class="o">=</span><span class="s2">"mailto:oetiker</span><span class="se">\@</span><span class="s2">ee.ethz.ch"</span>&amp;gt<span class="p">;</span>&amp;amp<span class="p">;</span>lt<span class="p">;</span>oetiker<span class="se">\@</span>ee.ethz.ch&amp;amp<span class="p">;</span>gt<span class="p">;</span>&amp;lt<span class="p">;</span>/A&amp;gt<span class="p">;</span> and
+ &amp;lt<span class="p">;</span>A <span class="nv">HREF</span><span class="o">=</span><span class="s2">"http://www.bungi.com"</span>&amp;gt<span class="p">;</span>Dave&amp;amp<span class="p">;</span>nbsp<span class="p">;</span>Rand&amp;lt<span class="p">;</span>/A&amp;gt<span class="p">;</span>&amp;amp<span class="p">;</span>nbsp<span class="p">;</span>
+ &amp;lt<span class="p">;</span>A <span class="nv">HREF</span><span class="o">=</span><span class="s2">"mailto:dlr</span><span class="se">\@</span><span class="s2">bungi.com"</span>&amp;gt<span class="p">;</span>&amp;amp<span class="p">;</span>lt<span class="p">;</span>dlr<span class="se">\@</span>bungi.com&amp;amp<span class="p">;</span>gt<span class="p">;</span>&amp;lt<span class="p">;</span>/A&amp;gt<span class="p">;</span>
+ &amp;lt<span class="p">;</span>TR <span class="nv">VALIGN</span><span class="o">=</span>top&amp;gt<span class="p">;</span>
+ &amp;lt<span class="p">;</span>TD <span class="nv">WIDTH</span><span class="o">=</span>88 <span class="nv">ALIGN</span><span class="o">=</span>RIGHT&amp;gt<span class="p">;</span>&amp;lt<span class="p">;</span>FONT <span class="nv">FACE</span><span class="o">=</span><span class="s2">"Arial,Helvetica"</span> <span class="nv">SIZE</span><span class="o">=</span>2&amp;gt<span class="p">;</span>&amp;lt<span class="p">;</span>a
+ <span class="nv">href</span><span class="o">=</span><span class="s2">"http://my14all.sourceforge.net/"</span>&amp;gt<span class="p">;</span><span class="nv">$version</span>&amp;lt<span class="p">;</span>/a&amp;gt<span class="p">;</span>&amp;lt<span class="p">;</span>/FONT&amp;gt<span class="p">;</span>&amp;lt<span class="p">;</span>/TD&amp;gt<span class="p">;</span>
+ &amp;lt<span class="p">;</span>TD <span class="nv">WIDTH</span><span class="o">=</span>388 <span class="nv">ALIGN</span><span class="o">=</span>RIGHT&amp;gt<span class="p">;</span>&amp;lt<span class="p">;</span>FONT <span class="nv">FACE</span><span class="o">=</span><span class="s2">"Arial,Helvetica"</span> <span class="nv">SIZE</span><span class="o">=</span>2&amp;gt<span class="p">;</span>
+ Rainer&amp;amp<span class="p">;</span>nbsp<span class="p">;</span>Bawidamann&amp;amp<span class="p">;</span>nbsp<span class="p">;</span>
+ &amp;lt<span class="p">;</span>A <span class="nv">HREF</span><span class="o">=</span><span class="s2">"mailto:bawidama</span><span class="se">\@</span><span class="s2">users.sourceforge.net"</span>&amp;gt<span class="p">;</span>&amp;amp<span class="p">;</span>lt<span class="p">;</span>bawidama<span class="se">\@</span>users.sourceforge.net&amp;amp<span class="p">;</span>gt<span class="p">;</span>&amp;lt<span class="p">;</span>/A&amp;gt<span class="p">;</span>&amp;lt<span class="p">;</span>/FONT&amp;gt<span class="p">;</span>
+ &amp;lt<span class="p">;</span>/TD&amp;gt<span class="p">;</span>
+&amp;lt<span class="p">;</span>/TR&amp;gt<span class="p">;</span>
+&amp;lt<span class="p">;</span>/TABLE&amp;gt<span class="p">;</span>
+EOT
+<span class="c"># global vars, persistent for speecyCGI/mod_perl</span>
+%my14all::config_cache <span class="o">=</span> <span class="o">()</span><span class="p">;</span>
+<span class="nv">$my14all</span>::meurl <span class="o">=</span> <span class="s1">''</span><span class="p">;</span>
+<span class="c"># run main</span>
+main<span class="o">()</span><span class="p">;</span>
+<span class="nb">exit</span><span class="o">(</span>0<span class="o">)</span><span class="p">;</span>
+<span class="c"># end.</span>
+sub main<span class="o">()</span> <span class="o">{</span>
+ <span class="k">if</span> <span class="o">(!</span><span class="nv">$cfgfile</span> &amp;amp<span class="p">;</span>&amp;amp<span class="p">;</span> <span class="nv">$#ARGV</span> <span class="o">==</span> 0 &amp;amp<span class="p">;</span>&amp;amp<span class="p">;</span> <span class="nv">$ARGV</span><span class="o">[</span>0] <span class="o">!</span>~ m/<span class="o">=</span>/ &amp;amp<span class="p">;</span>&amp;amp<span class="p">;</span> <span class="o">!</span>exists<span class="o">(</span><span class="nv">$ENV</span><span class="o">{</span>QUERY_STRING<span class="o">}))</span> <span class="o">{</span>
+ <span class="nv">$cfgfile</span> <span class="o">=</span> <span class="nb">shift</span> @ARGV<span class="p">;</span>
+ <span class="o">}</span>
+ my %setup<span class="p">;</span>
+ <span class="c"># initialize CGI</span>
+ my <span class="nv">$q</span> <span class="o">=</span> new CGI<span class="p">;</span>
+ <span class="nv">$setup</span><span class="o">{</span>q<span class="o">}</span> <span class="o">=</span> <span class="nv">$q</span><span class="p">;</span>
+ <span class="c"># change for mrtg-2.9.*</span>
+ <span class="c"># look for the config file</span>
+ <span class="nv">$my14all</span>::meurl <span class="o">=</span> <span class="nv">$q</span>-&amp;gt<span class="p">;</span>url<span class="o">(</span><span class="nt">-relative</span> <span class="o">=</span>&amp;gt<span class="p">;</span> 1<span class="o">)</span><span class="p">;</span>
+ ensureSL<span class="o">(</span><span class="se">\$</span>cfgfiledir<span class="o">)</span><span class="p">;</span>
+ my <span class="nv">$l_cfgfile</span><span class="p">;</span> <span class="c"># don't change what is set above in the CGI</span>
+ <span class="k">if</span> <span class="o">(</span>defined <span class="nv">$q</span>-&amp;gt<span class="p">;</span>param<span class="o">(</span><span class="s1">'cfg'</span><span class="o">))</span> <span class="o">{</span>
+ <span class="nv">$l_cfgfile</span> <span class="o">=</span> <span class="nv">$q</span>-&amp;gt<span class="p">;</span>param<span class="o">(</span><span class="s1">'cfg'</span><span class="o">)</span><span class="p">;</span>
+ <span class="c"># security fix: don't allow ./ in the config file name</span>
+ print_error<span class="o">(</span><span class="nv">$q</span>, <span class="s2">"Illegal characters in cfg param: ./"</span><span class="o">)</span>
+ <span class="k">if</span> <span class="nv">$l_cfgfile</span> <span class="o">=</span>~ m<span class="s1">'(^/)|(\./)'</span><span class="p">;</span>
+ <span class="nv">$l_cfgfile</span> <span class="o">=</span> <span class="nv">$cfgfiledir</span>.<span class="nv">$l_cfgfile</span> unless <span class="nt">-r</span> <span class="nv">$l_cfgfile</span><span class="p">;</span>
+ print_error<span class="o">(</span><span class="nv">$q</span>, <span class="s2">"Cannot find the given config file: </span><span class="se">\&amp;</span><span class="s2">lt;tt&amp;gt;</span><span class="nv">$l_cfgfile</span><span class="se">\&amp;</span><span class="s2">lt;/tt&amp;gt;"</span><span class="o">)</span>
+ unless <span class="nt">-r</span> <span class="nv">$l_cfgfile</span><span class="p">;</span>
+ <span class="o">}</span> elsif <span class="o">(!</span><span class="nv">$cfgfile</span><span class="o">)</span> <span class="o">{</span>
+ <span class="nv">$l_cfgfile</span> <span class="o">=</span> <span class="nv">$my14all</span>::meurl<span class="p">;</span>
+ <span class="nv">$l_cfgfile</span> <span class="o">=</span>~ s|.<span class="k">*</span><span class="se">\Q</span><span class="nv">$MRTG_lib</span>::SL<span class="se">\E</span><span class="o">||</span><span class="p">;</span>
+ <span class="nv">$l_cfgfile</span> <span class="o">=</span>~ s/<span class="se">\.</span><span class="o">(</span>cgi|pl|perl<span class="o">)</span><span class="nv">$/</span>.cfg/<span class="p">;</span>
+ <span class="c">#$my14all::meurl =~ m{\Q$MRTG_lib::SL\E([^\Q$MRTG_lib::SL\E]*)\.(cgi|pl)$};</span>
+ <span class="c">#$l_cfgfile = $1 . '.cfg';</span>
+ <span class="nv">$l_cfgfile</span> <span class="o">=</span> <span class="nv">$cfgfiledir</span>.<span class="nv">$l_cfgfile</span> unless <span class="nt">-r</span> <span class="nv">$l_cfgfile</span><span class="p">;</span>
+ <span class="o">}</span> <span class="k">else</span> <span class="o">{</span>
+ <span class="nv">$l_cfgfile</span> <span class="o">=</span> <span class="nv">$cfgfile</span><span class="p">;</span>
+ <span class="o">}</span>
+ <span class="c"># now we have the name of the config file.</span>
+ <span class="c"># we might already have it with speedyCGI or mod_perl</span>
+ my <span class="nv">$read_file</span> <span class="o">=</span> 1<span class="p">;</span>
+ my @cfg_stat <span class="o">=</span> <span class="nb">stat</span><span class="o">(</span><span class="nv">$l_cfgfile</span><span class="o">)</span><span class="p">;</span>
+ <span class="k">if</span> <span class="o">(</span>exists <span class="nv">$my14all</span>::config_cache<span class="o">{</span>config<span class="o">}{</span><span class="nv">$l_cfgfile</span><span class="o">}{</span>mtime<span class="o">}</span> &amp;amp<span class="p">;</span>&amp;amp<span class="p">;</span>
+ <span class="nv">$cfg_stat</span><span class="o">[</span>9] &amp;lt<span class="p">;</span><span class="o">=</span> <span class="nv">$my14all</span>::config_cache<span class="o">{</span>config<span class="o">}{</span><span class="nv">$l_cfgfile</span><span class="o">}{</span>mtime<span class="o">})</span>
+ <span class="o">{</span>
+ <span class="nv">$read_file</span> <span class="o">=</span> 0<span class="p">;</span>
+ <span class="o">}</span>
+ <span class="c"># read the config file</span>
+ <span class="k">if</span> <span class="o">(</span><span class="nv">$read_file</span><span class="o">)</span> <span class="o">{</span>
+ <span class="c"># wipe old config</span>
+ delete <span class="nv">$my14all</span>::config_cache<span class="o">{</span>config<span class="o">}{</span><span class="nv">$l_cfgfile</span><span class="o">}</span>
+ <span class="k">if </span>exists <span class="nv">$my14all</span>::config_cache<span class="o">{</span>config<span class="o">}{</span><span class="nv">$l_cfgfile</span><span class="o">}</span><span class="p">;</span>
+ my <span class="o">(</span>@sorted, %config, %targets<span class="o">)</span><span class="p">;</span>
+ readcfg<span class="o">(</span><span class="nv">$l_cfgfile</span>, <span class="se">\@</span>sorted, <span class="se">\%</span>config, <span class="se">\%</span>targets, <span class="s2">"14all"</span>, <span class="se">\%</span>myrules<span class="o">)</span><span class="p">;</span>
+ my @processed_targets<span class="p">;</span>
+ cfgcheck<span class="o">(</span><span class="se">\@</span>sorted, <span class="se">\%</span>config, <span class="se">\%</span>targets, <span class="se">\@</span>processed_targets<span class="o">)</span><span class="p">;</span>
+ <span class="c"># set default refresh</span>
+ <span class="k">if</span> <span class="o">(</span>exists <span class="nv">$config</span><span class="o">{</span>refresh<span class="o">}</span> &amp;amp<span class="p">;</span>&amp;amp<span class="p">;</span> yesorno<span class="o">(</span><span class="nv">$config</span><span class="o">{</span>refresh<span class="o">})</span>
+ &amp;amp<span class="p">;</span>&amp;amp<span class="p">;</span> <span class="nv">$config</span><span class="o">{</span>refresh<span class="o">}</span> <span class="o">!</span>~ m/^<span class="se">\d</span><span class="k">*</span><span class="o">[</span>1-9]<span class="se">\d</span><span class="k">*</span><span class="nv">$/</span>o<span class="o">)</span> <span class="o">{</span>
+ <span class="nv">$config</span><span class="o">{</span>refresh<span class="o">}</span> <span class="o">=</span> <span class="nv">$config</span><span class="o">{</span>interval<span class="o">}</span> <span class="k">*</span> 60<span class="p">;</span>
+ <span class="o">}</span>
+ <span class="c"># store config in "cache"</span>
+ <span class="nv">$my14all</span>::config_cache<span class="o">{</span>config<span class="o">}{</span><span class="nv">$l_cfgfile</span><span class="o">}{</span>sorted<span class="o">}</span> <span class="o">=</span> <span class="se">\@</span>sorted<span class="p">;</span>
+ <span class="nv">$my14all</span>::config_cache<span class="o">{</span>config<span class="o">}{</span><span class="nv">$l_cfgfile</span><span class="o">}{</span>config<span class="o">}</span> <span class="o">=</span> <span class="se">\%</span>config<span class="p">;</span>
+ <span class="nv">$my14all</span>::config_cache<span class="o">{</span>config<span class="o">}{</span><span class="nv">$l_cfgfile</span><span class="o">}{</span>targets<span class="o">}</span> <span class="o">=</span> <span class="se">\%</span>targets<span class="p">;</span>
+ <span class="nv">$my14all</span>::config_cache<span class="o">{</span>config<span class="o">}{</span><span class="nv">$l_cfgfile</span><span class="o">}{</span>processed_targets<span class="o">}</span> <span class="o">=</span> <span class="se">\@</span>processed_targets<span class="p">;</span>
+ <span class="nv">$my14all</span>::config_cache<span class="o">{</span>config<span class="o">}{</span><span class="nv">$l_cfgfile</span><span class="o">}{</span>mtime<span class="o">}</span> <span class="o">=</span> <span class="nv">$cfg_stat</span><span class="o">[</span>9]<span class="p">;</span>
+ <span class="c"># add LibAdd from config for RRDs.pm</span>
+ <span class="k">if</span> <span class="o">(</span><span class="nv">$config</span><span class="o">{</span>libadd<span class="o">})</span> <span class="o">{</span>
+ unshift @INC, <span class="nv">$config</span><span class="o">{</span>libadd<span class="o">}</span><span class="p">;</span>
+ <span class="o">}</span>
+ <span class="c"># load the rrdtool perl extension</span>
+ <span class="nb">eval</span> <span class="s2">"use RRDs 1.00038"</span><span class="p">;</span>
+ <span class="o">}</span>
+ my <span class="nv">$cfg</span> <span class="o">=</span> <span class="nv">$my14all</span>::config_cache<span class="o">{</span>config<span class="o">}{</span><span class="nv">$l_cfgfile</span><span class="o">}</span><span class="p">;</span>
+ my <span class="nv">$footer</span> <span class="o">=</span> <span class="nv">$footer_template</span><span class="p">;</span>
+ <span class="c"># make sure icondir is set (should be done by mrtg)</span>
+ <span class="nv">$cfg</span>-&amp;gt<span class="p">;</span><span class="o">{</span>config<span class="o">}{</span>icondir<span class="o">}</span> <span class="o">||=</span> <span class="nv">$cfg</span>-&amp;gt<span class="p">;</span><span class="o">{</span>config<span class="o">}{</span>workdir<span class="o">}</span><span class="p">;</span>
+ <span class="c"># put icondir into footer</span>
+ <span class="nv">$footer</span> <span class="o">=</span>~ s/##ICONDIR##/<span class="nv">$cfg</span>-&amp;gt<span class="p">;</span><span class="o">{</span>config<span class="o">}{</span>icondir<span class="o">}</span>/g<span class="p">;</span>
+ my <span class="nv">$log</span> <span class="o">=</span> <span class="s1">'_'</span><span class="p">;</span>
+ <span class="k">if</span> <span class="o">(</span>defined <span class="nv">$q</span>-&amp;gt<span class="p">;</span>param<span class="o">(</span><span class="s1">'log'</span><span class="o">))</span> <span class="o">{</span>
+ <span class="nv">$log</span> <span class="o">=</span> <span class="nv">$q</span>-&amp;gt<span class="p">;</span>param<span class="o">(</span><span class="s1">'log'</span><span class="o">)</span><span class="p">;</span>
+ <span class="o">}</span>
+ <span class="c"># set timezone for rrdtool</span>
+ <span class="k">if</span> <span class="o">(</span><span class="nv">$cfg</span>-&amp;gt<span class="p">;</span><span class="o">{</span>targets<span class="o">}{</span>timezone<span class="o">}{</span><span class="nv">$log</span><span class="o">})</span> <span class="o">{</span>
+ <span class="nv">$ENV</span><span class="o">{</span><span class="s2">"TZ"</span><span class="o">}</span> <span class="o">=</span> <span class="nv">$cfg</span>-&amp;gt<span class="p">;</span><span class="o">{</span>targets<span class="o">}{</span>timezone<span class="o">}{</span><span class="nv">$log</span><span class="o">}</span><span class="p">;</span>
+ <span class="o">}</span>
+ <span class="c">### the main switch</span>
+ <span class="c"># the modes:</span>
+ <span class="c"># if parameter "dir" is given show a list of the targets in this "directory"</span>
+ <span class="c"># elsif parameter "png" is given show a graphic for the target given w/ parameter "log"</span>
+ <span class="c"># elsif parameter "log" is given show the page for this target</span>
+ <span class="c"># else show a list of directories and of targets w/o directory</span>
+ <span class="c"># parameter "cfg" can hold the name of the config file to use</span>
+ <span class="k">if</span> <span class="o">(</span>defined <span class="nv">$q</span>-&amp;gt<span class="p">;</span>param<span class="o">(</span><span class="s1">'dir'</span><span class="o">))</span> <span class="o">{</span>
+ show_dir<span class="o">(</span><span class="nv">$cfg</span>, <span class="nv">$q</span>, <span class="nv">$q</span>-&amp;gt<span class="p">;</span>param<span class="o">(</span><span class="s1">'dir'</span><span class="o">))</span><span class="p">;</span>
+ <span class="o">}</span> elsif <span class="o">(</span>defined <span class="nv">$q</span>-&amp;gt<span class="p">;</span>param<span class="o">(</span><span class="s1">'png'</span><span class="o">))</span> <span class="o">{</span>
+ show_graph<span class="o">(</span><span class="nv">$cfg</span>, <span class="nv">$q</span>, <span class="nv">$q</span>-&amp;gt<span class="p">;</span>param<span class="o">(</span><span class="s1">'png'</span><span class="o">))</span><span class="p">;</span>
+ <span class="nb">exit</span><span class="o">(</span>0<span class="o">)</span><span class="p">;</span> <span class="c"># don't show (html) footer</span>
+ <span class="o">}</span> elsif <span class="o">(</span>defined <span class="nv">$q</span>-&amp;gt<span class="p">;</span>param<span class="o">(</span><span class="s1">'log'</span><span class="o">))</span> <span class="o">{</span>
+ show_log<span class="o">(</span><span class="nv">$cfg</span>, <span class="nv">$q</span>, <span class="nv">$q</span>-&amp;gt<span class="p">;</span>param<span class="o">(</span><span class="s1">'log'</span><span class="o">))</span><span class="p">;</span>
+ <span class="o">}</span> <span class="k">else</span> <span class="o">{</span>
+ show_dir<span class="o">(</span><span class="nv">$cfg</span>, <span class="nv">$q</span>, <span class="s1">''</span><span class="o">)</span><span class="p">;</span>
+ <span class="o">}</span>
+ <span class="k">if</span> <span class="o">(!</span><span class="nv">$cfg</span>-&amp;gt<span class="p">;</span><span class="o">{</span>targets<span class="o">}{</span>options<span class="o">}{</span>nobanner<span class="o">}{</span><span class="nv">$log</span><span class="o">})</span> <span class="o">{</span>
+ print <span class="nv">$footer</span><span class="p">;</span>
+ <span class="o">}</span>
+ print <span class="nv">$q</span>-&amp;gt<span class="p">;</span>end_html<span class="o">()</span><span class="p">;</span>
+ <span class="nb">exit</span><span class="o">(</span>0<span class="o">)</span><span class="p">;</span>
+<span class="o">}</span>
+sub set_graph_params<span class="o">(</span><span class="nv">$$$$</span><span class="o">)</span> <span class="o">{</span>
+ <span class="c"># calculate graph params and store in config</span>
+ my <span class="o">(</span><span class="nv">$cfg</span>, <span class="nv">$log</span>, <span class="nv">$png</span>, <span class="nv">$small</span><span class="o">)</span> <span class="o">=</span> @_<span class="p">;</span>
+ unless <span class="o">(</span>exists <span class="nv">$cfg</span>-&amp;gt<span class="p">;</span><span class="o">{</span>targets<span class="o">}{</span>target<span class="o">}{</span><span class="nv">$log</span><span class="o">})</span> <span class="o">{</span>
+ <span class="k">return</span> <span class="s2">"target '</span><span class="nv">$log</span><span class="s2">' unknown"</span><span class="p">;</span>
+ <span class="o">}</span>
+ my <span class="o">(</span><span class="nv">$start</span>, <span class="nv">$end</span>, <span class="nv">$maxage</span><span class="o">)</span><span class="p">;</span>
+ my <span class="nv">$graphparams</span> <span class="o">=</span> <span class="nv">$cfg</span>-&amp;gt<span class="p">;</span><span class="o">{</span>targets<span class="o">}{</span><span class="s2">"graph*</span><span class="nv">$png</span><span class="s2">"</span><span class="o">}{</span><span class="nv">$log</span><span class="o">}</span><span class="p">;</span>
+ <span class="k">if</span> <span class="o">(</span><span class="nv">$graphparams</span><span class="o">)</span> <span class="o">{</span>
+ <span class="o">(</span><span class="nv">$start</span>, <span class="nv">$end</span>, <span class="nv">$maxage</span><span class="o">)</span> <span class="o">=</span> <span class="nb">split</span><span class="o">(</span>/[,<span class="se">\s</span><span class="o">]</span>+/, <span class="nv">$graphparams</span>, 3<span class="o">)</span><span class="p">;</span>
+ <span class="o">}</span>
+ unless <span class="o">(</span><span class="nv">$start</span> &amp;amp<span class="p">;</span>&amp;amp<span class="p">;</span> <span class="nv">$end</span> &amp;amp<span class="p">;</span>&amp;amp<span class="p">;</span> <span class="nv">$maxage</span><span class="o">)</span> <span class="o">{</span>
+ unless <span class="o">(</span>exists <span class="nv">$graphparams</span><span class="o">{</span><span class="nv">$png</span><span class="o">})</span> <span class="o">{</span>
+ <span class="k">return</span> <span class="s2">"CGI call error: graph '</span><span class="nv">$png</span><span class="s2">' unknown"</span><span class="p">;</span>
+ <span class="o">}</span>
+ <span class="o">(</span><span class="nv">$start</span>, <span class="nv">$end</span>, <span class="nv">$maxage</span><span class="o">)</span> <span class="o">=</span> @<span class="o">{</span><span class="nv">$graphparams</span><span class="o">{</span><span class="nv">$png</span><span class="o">}}</span><span class="p">;</span>
+ <span class="o">}</span>
+ my <span class="o">(</span><span class="nv">$xs</span>, <span class="nv">$ys</span><span class="o">)</span><span class="p">;</span>
+ <span class="k">if</span> <span class="o">(</span><span class="nv">$small</span><span class="o">)</span> <span class="o">{</span>
+ <span class="o">(</span><span class="nv">$xs</span>, <span class="nv">$ys</span><span class="o">)</span> <span class="o">=</span> <span class="o">(</span>250, 100<span class="o">)</span><span class="p">;</span>
+ <span class="o">(</span><span class="nv">$xs</span>, <span class="nv">$ys</span><span class="o">)</span> <span class="o">=</span> <span class="o">(</span><span class="nv">$cfg</span>-&amp;gt<span class="p">;</span><span class="o">{</span>targets<span class="o">}{</span><span class="s1">'14all*indexgraphsize'</span><span class="o">}{</span><span class="nv">$log</span><span class="o">}</span> <span class="o">=</span>~ m/<span class="o">(</span><span class="se">\d</span>+<span class="o">)[</span>,<span class="se">\s</span><span class="o">]</span>+<span class="o">(</span><span class="se">\d</span>+<span class="o">)</span>/<span class="o">)</span>
+ <span class="k">if</span> <span class="nv">$cfg</span>-&amp;gt<span class="p">;</span><span class="o">{</span>targets<span class="o">}{</span><span class="s1">'14all*indexgraphsize'</span><span class="o">}{</span><span class="nv">$log</span><span class="o">}</span><span class="p">;</span>
+ <span class="o">}</span> <span class="k">else</span> <span class="o">{</span>
+ <span class="o">(</span><span class="nv">$xs</span>, <span class="nv">$ys</span><span class="o">)</span> <span class="o">=</span> <span class="o">(</span><span class="nv">$cfg</span>-&amp;gt<span class="p">;</span><span class="o">{</span>targets<span class="o">}{</span>xsize<span class="o">}{</span><span class="nv">$log</span><span class="o">}</span>, <span class="nv">$cfg</span>-&amp;gt<span class="p">;</span><span class="o">{</span>targets<span class="o">}{</span>ysize<span class="o">}{</span><span class="nv">$log</span><span class="o">})</span><span class="p">;</span>
+ <span class="o">}</span>
+ unless <span class="o">(</span><span class="nv">$xs</span> &amp;amp<span class="p">;</span>&amp;amp<span class="p">;</span> <span class="nv">$ys</span><span class="o">)</span> <span class="o">{</span>
+ <span class="k">return</span> <span class="s2">"cannot get image sizes for graph </span><span class="nv">$png</span><span class="s2"> / target </span><span class="nv">$log</span><span class="s2">"</span><span class="p">;</span>
+ <span class="o">}</span>
+ my <span class="nv">$rrd</span> <span class="o">=</span> <span class="nv">$cfg</span>-&amp;gt<span class="p">;</span><span class="o">{</span>config<span class="o">}{</span>logdir<span class="o">}</span>.<span class="nv">$cfg</span>-&amp;gt<span class="p">;</span><span class="o">{</span>targets<span class="o">}{</span>directory<span class="o">}{</span><span class="nv">$log</span><span class="o">}</span> <span class="nb">.</span> <span class="nv">$log</span> <span class="nb">.</span> <span class="s1">'.rrd'</span><span class="p">;</span>
+ <span class="c"># escape ':' and '\' with \ in $rrd</span>
+ <span class="c"># (rrdtool replaces '\:' by ':' and '\\' by '\')</span>
+ <span class="nv">$rrd</span> <span class="o">=</span>~ s/<span class="o">([</span>:<span class="se">\\</span><span class="o">])</span>/<span class="se">\\</span><span class="nv">$1</span>/g<span class="p">;</span>
+ my <span class="nv">$pngdir</span> <span class="o">=</span> getdirwriteable<span class="o">(</span><span class="nv">$cfg</span>-&amp;gt<span class="p">;</span><span class="o">{</span>config<span class="o">}{</span>imagedir<span class="o">}</span>, <span class="nv">$cfg</span>-&amp;gt<span class="p">;</span><span class="o">{</span>targets<span class="o">}{</span>directory<span class="o">}{</span><span class="nv">$log</span><span class="o">})</span><span class="p">;</span>
+ <span class="nv">$png</span> .<span class="o">=</span> <span class="s1">'-i'</span> <span class="k">if</span> <span class="nv">$small</span><span class="p">;</span>
+ my <span class="nv">$pngfile</span> <span class="o">=</span> <span class="s2">"</span><span class="k">${</span><span class="nv">pngdir</span><span class="k">}${</span><span class="nv">log</span><span class="k">}</span><span class="s2">-</span><span class="k">${</span><span class="nv">png</span><span class="k">}</span><span class="s2">.png"</span><span class="p">;</span>
+ <span class="c"># build the rrd command line: set the starttime and the graphics format (PNG)</span>
+ my @args <span class="o">=</span> <span class="o">(</span><span class="nv">$pngfile</span>, <span class="s1">'-s'</span>, <span class="nv">$start</span>, <span class="s1">'-e'</span>, <span class="nv">$end</span>, <span class="s1">'-a'</span>, <span class="s1">'PNG'</span><span class="o">)</span><span class="p">;</span>
+ <span class="c"># if it's not a small picture set the legends</span>
+ my <span class="o">(</span><span class="nv">$l1</span>,<span class="nv">$l2</span>,<span class="nv">$l3</span>,<span class="nv">$l4</span>,<span class="nv">$li</span>,<span class="nv">$lo</span><span class="o">)</span> <span class="o">=</span> <span class="o">(</span><span class="s1">''</span>,<span class="s1">''</span>,<span class="s1">''</span>,<span class="s1">''</span>,<span class="s1">''</span>,<span class="s1">''</span><span class="o">)</span><span class="p">;</span>
+ my <span class="o">(</span><span class="nv">$ri</span>, <span class="nv">$ro</span><span class="o">)</span> <span class="o">=</span> <span class="o">(</span><span class="s1">''</span>,<span class="s1">''</span><span class="o">)</span><span class="p">;</span>
+ <span class="c"># set the size of the graph</span>
+ push @args, <span class="s1">'-w'</span>, <span class="nv">$xs</span>, <span class="s1">'-h'</span>, <span class="nv">$ys</span><span class="p">;</span>
+ <span class="c"># set scale factor and legend defaults</span>
+ my <span class="nv">$per_unit</span> <span class="o">=</span> <span class="s1">'Second'</span><span class="p">;</span>
+ my <span class="nv">$persec</span> <span class="o">=</span> <span class="s1">'Bytes'</span><span class="p">;</span>
+ my <span class="nv">$factor</span> <span class="o">=</span> 1<span class="p">;</span> <span class="c"># should we scale the values?</span>
+ <span class="k">if</span> <span class="o">(</span><span class="nv">$cfg</span>-&amp;gt<span class="p">;</span><span class="o">{</span>targets<span class="o">}{</span>options<span class="o">}{</span>perminute<span class="o">}{</span><span class="nv">$log</span><span class="o">})</span> <span class="o">{</span>
+ <span class="nv">$factor</span> <span class="o">=</span> 60<span class="p">;</span> <span class="c"># perminute -&amp;gt; 60x</span>
+ <span class="nv">$per_unit</span> <span class="o">=</span> <span class="s1">'Minute'</span><span class="p">;</span>
+ <span class="o">}</span> elsif <span class="o">(</span><span class="nv">$cfg</span>-&amp;gt<span class="p">;</span><span class="o">{</span>targets<span class="o">}{</span>options<span class="o">}{</span>perhour<span class="o">}{</span><span class="nv">$log</span><span class="o">})</span> <span class="o">{</span>
+ <span class="nv">$factor</span> <span class="o">=</span> 3600<span class="p">;</span> <span class="c"># perhour -&amp;gt; 3600x</span>
+ <span class="nv">$per_unit</span> <span class="o">=</span> <span class="s1">'Hour'</span><span class="p">;</span>
+ <span class="o">}</span>
+ <span class="k">if</span> <span class="o">(</span><span class="nv">$cfg</span>-&amp;gt<span class="p">;</span><span class="o">{</span>targets<span class="o">}{</span>options<span class="o">}{</span>bits<span class="o">}{</span><span class="nv">$log</span><span class="o">})</span> <span class="o">{</span>
+ <span class="nv">$factor</span> <span class="k">*</span><span class="o">=</span> 8<span class="p">;</span> <span class="c"># bits instead of bytes -&amp;gt; 8x</span>
+ <span class="nv">$persec</span> <span class="o">=</span> <span class="s1">'Bits'</span><span class="p">;</span>
+ <span class="o">}</span>
+ <span class="c"># let the user give an arbitrary factor:</span>
+ <span class="k">if</span> <span class="o">(</span><span class="nv">$cfg</span>-&amp;gt<span class="p">;</span><span class="o">{</span>targets<span class="o">}{</span><span class="nb">factor</span><span class="o">}{</span><span class="nv">$log</span><span class="o">}</span> and
+ <span class="nv">$cfg</span>-&amp;gt<span class="p">;</span><span class="o">{</span>targets<span class="o">}{</span><span class="nb">factor</span><span class="o">}{</span><span class="nv">$log</span><span class="o">}</span> <span class="o">=</span>~ m/^[-+]?<span class="se">\d</span>+<span class="o">(</span>.<span class="se">\d</span>+<span class="o">)</span>?<span class="o">([</span>eE][+-]?<span class="se">\d</span>+<span class="o">)</span>?<span class="nv">$/</span><span class="o">)</span>
+ <span class="o">{</span>
+ <span class="nv">$factor</span> <span class="k">*</span><span class="o">=</span> 0+<span class="nv">$cfg</span>-&amp;gt<span class="p">;</span><span class="o">{</span>targets<span class="o">}{</span><span class="nb">factor</span><span class="o">}{</span><span class="nv">$log</span><span class="o">}</span><span class="p">;</span>
+ <span class="o">}</span>
+ <span class="c"># check if only one value should be graphed (set vars for fast access)</span>
+ my <span class="nv">$noi</span> <span class="o">=</span> <span class="nv">$cfg</span>-&amp;gt<span class="p">;</span><span class="o">{</span>targets<span class="o">}{</span>options<span class="o">}{</span>noi<span class="o">}{</span><span class="nv">$log</span><span class="o">}</span><span class="p">;</span>
+ my <span class="nv">$noo</span> <span class="o">=</span> <span class="nv">$cfg</span>-&amp;gt<span class="p">;</span><span class="o">{</span>targets<span class="o">}{</span>options<span class="o">}{</span>noo<span class="o">}{</span><span class="nv">$log</span><span class="o">}</span><span class="p">;</span>
+ <span class="c"># prepare the legends</span>
+ <span class="k">if</span> <span class="o">(!</span><span class="nv">$small</span> &amp;amp<span class="p">;</span>&amp;amp<span class="p">;</span> <span class="o">!</span><span class="nv">$cfg</span>-&amp;gt<span class="p">;</span><span class="o">{</span>targets<span class="o">}{</span>options<span class="o">}{</span>nolegend<span class="o">}{</span><span class="nv">$log</span><span class="o">})</span> <span class="o">{</span>
+ foreach <span class="o">(</span>qw/legend1 legend2 legend3 legend4 legendi legendo legendy shortlegend/<span class="o">)</span> <span class="o">{</span>
+ <span class="k">if</span> <span class="o">(</span><span class="nv">$cfg</span>-&amp;gt<span class="p">;</span><span class="o">{</span>targets<span class="o">}{</span><span class="nv">$_</span><span class="o">}{</span><span class="nv">$log</span><span class="o">})</span> <span class="o">{</span>
+ <span class="nv">$cfg</span>-&amp;gt<span class="p">;</span><span class="o">{</span>targets<span class="o">}{</span><span class="nv">$_</span><span class="o">}{</span><span class="nv">$log</span><span class="o">}</span> <span class="o">=</span>~ s<span class="s1">'&amp;amp;nbsp;'</span> <span class="s1">'go; #'</span>
+ <span class="nv">$cfg</span>-&amp;gt<span class="p">;</span><span class="o">{</span>targets<span class="o">}{</span><span class="nv">$_</span><span class="o">}{</span><span class="nv">$log</span><span class="o">}</span> <span class="o">=</span>~ s/%/%%/go<span class="p">;</span>
+ <span class="o">}</span>
+ <span class="o">}</span>
+ <span class="k">if</span> <span class="o">(</span><span class="nv">$cfg</span>-&amp;gt<span class="p">;</span><span class="o">{</span>targets<span class="o">}{</span>ylegend<span class="o">}{</span><span class="nv">$log</span><span class="o">})</span> <span class="o">{</span>
+ push @args, <span class="s1">'-v'</span>, <span class="nv">$cfg</span>-&amp;gt<span class="p">;</span><span class="o">{</span>targets<span class="o">}{</span>ylegend<span class="o">}{</span><span class="nv">$log</span><span class="o">}</span><span class="p">;</span>
+ <span class="o">}</span> <span class="k">else</span> <span class="o">{</span>
+ push @args, <span class="s1">'-v'</span>, <span class="s2">"</span><span class="nv">$persec</span><span class="s2"> per </span><span class="nv">$per_unit</span><span class="s2">"</span><span class="p">;</span>
+ <span class="o">}</span>
+ <span class="k">if</span> <span class="o">(</span><span class="nv">$cfg</span>-&amp;gt<span class="p">;</span><span class="o">{</span>targets<span class="o">}{</span>legend1<span class="o">}{</span><span class="nv">$log</span><span class="o">})</span> <span class="o">{</span>
+ <span class="nv">$l1</span> <span class="o">=</span> <span class="s2">":"</span>.<span class="nv">$cfg</span>-&amp;gt<span class="p">;</span><span class="o">{</span>targets<span class="o">}{</span>legend1<span class="o">}{</span><span class="nv">$log</span><span class="o">}</span>.<span class="s2">"</span><span class="se">\\</span><span class="s2">l"</span><span class="p">;</span> <span class="o">}</span>
+ <span class="k">else</span> <span class="o">{</span>
+ <span class="nv">$l1</span> <span class="o">=</span> <span class="s2">":Incoming Traffic in </span><span class="nv">$persec</span><span class="s2"> per </span><span class="nv">$per_unit</span><span class="se">\\</span><span class="s2">l"</span><span class="p">;</span> <span class="o">}</span>
+ <span class="k">if</span> <span class="o">(</span><span class="nv">$cfg</span>-&amp;gt<span class="p">;</span><span class="o">{</span>targets<span class="o">}{</span>legend2<span class="o">}{</span><span class="nv">$log</span><span class="o">})</span> <span class="o">{</span>
+ <span class="nv">$l2</span> <span class="o">=</span> <span class="s2">":"</span>.<span class="nv">$cfg</span>-&amp;gt<span class="p">;</span><span class="o">{</span>targets<span class="o">}{</span>legend2<span class="o">}{</span><span class="nv">$log</span><span class="o">}</span>.<span class="s2">"</span><span class="se">\\</span><span class="s2">l"</span><span class="p">;</span> <span class="o">}</span>
+ <span class="k">else</span> <span class="o">{</span>
+ <span class="nv">$l2</span> <span class="o">=</span> <span class="s2">":Outgoing Traffic in </span><span class="nv">$persec</span><span class="s2"> per </span><span class="nv">$per_unit</span><span class="se">\\</span><span class="s2">l"</span><span class="p">;</span> <span class="o">}</span>
+ <span class="k">if</span> <span class="o">(</span><span class="nv">$cfg</span>-&amp;gt<span class="p">;</span><span class="o">{</span>targets<span class="o">}{</span>legend3<span class="o">}{</span><span class="nv">$log</span><span class="o">})</span> <span class="o">{</span>
+ <span class="nv">$l3</span> <span class="o">=</span> <span class="s2">":"</span>.<span class="nv">$cfg</span>-&amp;gt<span class="p">;</span><span class="o">{</span>targets<span class="o">}{</span>legend3<span class="o">}{</span><span class="nv">$log</span><span class="o">}</span>.<span class="s2">"</span><span class="se">\\</span><span class="s2">l"</span><span class="p">;</span> <span class="o">}</span>
+ <span class="k">else</span> <span class="o">{</span>
+ <span class="nv">$l3</span> <span class="o">=</span> <span class="s2">":Maximal 5 Minute Incoming Traffic</span><span class="se">\\</span><span class="s2">l"</span><span class="p">;</span> <span class="o">}</span>
+ <span class="k">if</span> <span class="o">(</span><span class="nv">$cfg</span>-&amp;gt<span class="p">;</span><span class="o">{</span>targets<span class="o">}{</span>legend4<span class="o">}{</span><span class="nv">$log</span><span class="o">})</span> <span class="o">{</span>
+ <span class="nv">$l4</span> <span class="o">=</span> <span class="s2">":"</span>.<span class="nv">$cfg</span>-&amp;gt<span class="p">;</span><span class="o">{</span>targets<span class="o">}{</span>legend4<span class="o">}{</span><span class="nv">$log</span><span class="o">}</span>.<span class="s2">"</span><span class="se">\\</span><span class="s2">l"</span><span class="p">;</span> <span class="o">}</span>
+ <span class="k">else</span> <span class="o">{</span>
+ <span class="nv">$l4</span> <span class="o">=</span> <span class="s2">":Maximal 5 Minute Outgoing Traffic</span><span class="se">\\</span><span class="s2">l"</span><span class="p">;</span> <span class="o">}</span>
+ <span class="k">if</span> <span class="o">(</span>exists <span class="nv">$cfg</span>-&amp;gt<span class="p">;</span><span class="o">{</span>targets<span class="o">}{</span>legendi<span class="o">}{</span><span class="nv">$log</span><span class="o">})</span> <span class="o">{</span>
+ <span class="nv">$li</span> <span class="o">=</span> <span class="nv">$cfg</span>-&amp;gt<span class="p">;</span><span class="o">{</span>targets<span class="o">}{</span>legendi<span class="o">}{</span><span class="nv">$log</span><span class="o">}</span><span class="p">;</span> <span class="o">}</span>
+ <span class="k">else</span> <span class="o">{</span> <span class="nv">$li</span> <span class="o">=</span> <span class="s2">"In: "</span><span class="p">;</span> <span class="o">}</span>
+ <span class="nv">$li</span> <span class="o">=</span>~ s<span class="s1">':'</span><span class="se">\\</span>:<span class="s1">'; # '</span> quote :
+ <span class="k">if</span> <span class="o">(</span>exists <span class="nv">$cfg</span>-&amp;gt<span class="p">;</span><span class="o">{</span>targets<span class="o">}{</span>legendo<span class="o">}{</span><span class="nv">$log</span><span class="o">})</span> <span class="o">{</span>
+ <span class="nv">$lo</span> <span class="o">=</span> <span class="nv">$cfg</span>-&amp;gt<span class="p">;</span><span class="o">{</span>targets<span class="o">}{</span>legendo<span class="o">}{</span><span class="nv">$log</span><span class="o">}</span><span class="p">;</span> <span class="o">}</span>
+ <span class="k">else</span> <span class="o">{</span> <span class="nv">$lo</span> <span class="o">=</span> <span class="s2">"Out:"</span><span class="p">;</span> <span class="o">}</span>
+ <span class="nv">$lo</span> <span class="o">=</span>~ s<span class="s1">':'</span><span class="se">\\</span>:<span class="s1">'; # '</span> quote :
+ <span class="k">if</span> <span class="o">(</span><span class="nv">$cfg</span>-&amp;gt<span class="p">;</span><span class="o">{</span>targets<span class="o">}{</span>options<span class="o">}{</span>integer<span class="o">}{</span><span class="nv">$log</span><span class="o">})</span> <span class="o">{</span>
+ <span class="nv">$li</span> .<span class="o">=</span> <span class="s1">' %9.0lf'</span> <span class="k">if</span> <span class="nv">$li</span><span class="p">;</span>
+ <span class="nv">$lo</span> .<span class="o">=</span> <span class="s1">' %9.0lf'</span> <span class="k">if</span> <span class="nv">$lo</span><span class="p">;</span>
+ <span class="nv">$ri</span> <span class="o">=</span> <span class="s1">'%3.0lf%%'</span><span class="p">;</span>
+ <span class="nv">$ro</span> <span class="o">=</span> <span class="s1">'%3.0lf%%'</span><span class="p">;</span>
+ <span class="o">}</span> <span class="k">else</span> <span class="o">{</span>
+ <span class="nv">$li</span> .<span class="o">=</span> <span class="s1">' %8.3lf'</span> <span class="k">if</span> <span class="nv">$li</span><span class="p">;</span>
+ <span class="nv">$lo</span> .<span class="o">=</span> <span class="s1">' %8.3lf'</span> <span class="k">if</span> <span class="nv">$lo</span><span class="p">;</span>
+ <span class="nv">$ri</span> <span class="o">=</span> <span class="s1">'%6.2lf%%'</span><span class="p">;</span>
+ <span class="nv">$ro</span> <span class="o">=</span> <span class="s1">'%6.2lf%%'</span><span class="p">;</span>
+ <span class="o">}</span>
+ <span class="k">if</span> <span class="o">(!</span>exists<span class="o">(</span><span class="nv">$cfg</span>-&amp;gt<span class="p">;</span><span class="o">{</span>targets<span class="o">}{</span>kmg<span class="o">}{</span><span class="nv">$log</span><span class="o">})</span> <span class="o">||</span> <span class="nv">$cfg</span>-&amp;gt<span class="p">;</span><span class="o">{</span>targets<span class="o">}{</span>kmg<span class="o">}{</span><span class="nv">$log</span><span class="o">})</span> <span class="o">{</span>
+ <span class="nv">$li</span> .<span class="o">=</span> <span class="s1">' %s'</span> <span class="k">if</span> <span class="nv">$li</span><span class="p">;</span>
+ <span class="nv">$lo</span> .<span class="o">=</span> <span class="s1">' %s'</span> <span class="k">if</span> <span class="nv">$lo</span><span class="p">;</span>
+ <span class="k">if</span> <span class="o">(</span><span class="nv">$cfg</span>-&amp;gt<span class="p">;</span><span class="o">{</span>targets<span class="o">}{</span>kilo<span class="o">}{</span><span class="nv">$log</span><span class="o">})</span> <span class="o">{</span>
+ push @args, <span class="s1">'-b'</span>, <span class="nv">$cfg</span>-&amp;gt<span class="p">;</span><span class="o">{</span>targets<span class="o">}{</span>kilo<span class="o">}{</span><span class="nv">$log</span><span class="o">}</span><span class="p">;</span>
+ <span class="o">}</span>
+ <span class="k">if</span> <span class="o">(</span><span class="nv">$cfg</span>-&amp;gt<span class="p">;</span><span class="o">{</span>targets<span class="o">}{</span>shortlegend<span class="o">}{</span><span class="nv">$log</span><span class="o">})</span> <span class="o">{</span>
+ <span class="nv">$li</span> .<span class="o">=</span> <span class="nv">$cfg</span>-&amp;gt<span class="p">;</span><span class="o">{</span>targets<span class="o">}{</span>shortlegend<span class="o">}{</span><span class="nv">$log</span><span class="o">}</span> <span class="k">if</span> <span class="nv">$li</span><span class="p">;</span>
+ <span class="nv">$lo</span> .<span class="o">=</span> <span class="nv">$cfg</span>-&amp;gt<span class="p">;</span><span class="o">{</span>targets<span class="o">}{</span>shortlegend<span class="o">}{</span><span class="nv">$log</span><span class="o">}</span> <span class="k">if</span> <span class="nv">$lo</span><span class="p">;</span>
+ <span class="o">}</span>
+ <span class="o">}</span>
+ <span class="o">}</span>
+ my <span class="nv">$pngchar</span> <span class="o">=</span> substr<span class="o">(</span><span class="nv">$png</span>,0,1<span class="o">)</span><span class="p">;</span>
+ <span class="k">if</span> <span class="o">(</span><span class="nv">$pngchar</span> and <span class="nv">$cfg</span>-&amp;gt<span class="p">;</span><span class="o">{</span>targets<span class="o">}{</span>unscaled<span class="o">}{</span><span class="nv">$log</span><span class="o">}</span> and
+ <span class="nv">$cfg</span>-&amp;gt<span class="p">;</span><span class="o">{</span>targets<span class="o">}{</span>unscaled<span class="o">}{</span><span class="nv">$log</span><span class="o">}</span> <span class="o">=</span>~ m/<span class="nv">$pngchar</span>/<span class="o">)</span> <span class="o">{</span>
+ my <span class="nv">$max</span> <span class="o">=</span> intmax<span class="o">(</span><span class="nv">$cfg</span>-&amp;gt<span class="p">;</span><span class="o">{</span>targets<span class="o">}{</span>maxbytes<span class="o">}{</span><span class="nv">$log</span><span class="o">}</span>,
+ <span class="nv">$cfg</span>-&amp;gt<span class="p">;</span><span class="o">{</span>targets<span class="o">}{</span>maxbytes1<span class="o">}{</span><span class="nv">$log</span><span class="o">}</span>,
+ <span class="nv">$cfg</span>-&amp;gt<span class="p">;</span><span class="o">{</span>targets<span class="o">}{</span>maxbytes2<span class="o">}{</span><span class="nv">$log</span><span class="o">}</span>,
+ <span class="nv">$cfg</span>-&amp;gt<span class="p">;</span><span class="o">{</span>targets<span class="o">}{</span>absmax<span class="o">}{</span><span class="nv">$log</span><span class="o">})</span><span class="p">;</span>
+ <span class="nv">$max</span> <span class="k">*</span><span class="o">=</span> <span class="nv">$factor</span><span class="p">;</span>
+ push @args, <span class="s1">'-l'</span>, 0, <span class="s1">'-u'</span>, <span class="nv">$max</span>, <span class="s1">'-r'</span><span class="p">;</span>
+ <span class="o">}</span> elsif <span class="o">(</span>yesorno<span class="o">(</span><span class="nv">$cfg</span>-&amp;gt<span class="p">;</span><span class="o">{</span>targets<span class="o">}{</span><span class="s1">'14all*logarithmic'</span><span class="o">}{</span><span class="nv">$log</span><span class="o">}))</span> <span class="o">{</span>
+ push @args, <span class="s1">'-o'</span><span class="p">;</span>
+ <span class="o">}</span>
+ push @args,<span class="s1">'--alt-y-mrtg'</span>,<span class="s1">'--lazy'</span>,<span class="s1">'-c'</span>,<span class="s1">'MGRID#ee0000'</span>,<span class="s1">'-c'</span>,<span class="s1">'GRID#000000'</span><span class="p">;</span>
+ <span class="c"># contributed by Henry Chen: option to stack the two values</span>
+ <span class="c"># set the mode of the second line from config</span>
+ my <span class="nv">$line2</span> <span class="o">=</span> <span class="s1">'LINE1:'</span><span class="p">;</span>
+ <span class="k">if</span> <span class="o">(</span>yesorno<span class="o">(</span><span class="nv">$cfg</span>-&amp;gt<span class="p">;</span><span class="o">{</span>targets<span class="o">}{</span><span class="s1">'14all*stackgraph'</span><span class="o">}{</span><span class="nv">$log</span><span class="o">}))</span> <span class="o">{</span>
+ <span class="nv">$line2</span> <span class="o">=</span> <span class="s1">'STACK:'</span><span class="p">;</span>
+ <span class="o">}</span>
+ <span class="c"># now build the graph calculation commands</span>
+ <span class="c"># ds0/ds1 hold the normal data sources to graph/gprint</span>
+ my <span class="o">(</span><span class="nv">$ds0</span>, <span class="nv">$ds1</span><span class="o">)</span> <span class="o">=</span> <span class="o">(</span><span class="s1">'in'</span>, <span class="s1">'out'</span><span class="o">)</span><span class="p">;</span>
+ push @args, <span class="s2">"DEF:</span><span class="nv">$ds0</span><span class="s2">=</span><span class="nv">$rrd</span><span class="s2">:ds0:AVERAGE"</span>, <span class="s2">"DEF:</span><span class="nv">$ds1</span><span class="s2">=</span><span class="nv">$rrd</span><span class="s2">:ds1:AVERAGE"</span><span class="p">;</span>
+ <span class="k">if</span> <span class="o">(</span>defined <span class="nv">$cfg</span>-&amp;gt<span class="p">;</span><span class="o">{</span>targets<span class="o">}{</span>options<span class="o">}{</span>unknaszero<span class="o">}{</span><span class="nv">$log</span><span class="o">})</span> <span class="o">{</span>
+ push @args, <span class="s2">"CDEF:uin=</span><span class="nv">$ds0</span><span class="s2">,UN,0,</span><span class="nv">$ds0</span><span class="s2">,IF"</span>,
+ <span class="s2">"CDEF:uout=</span><span class="nv">$ds1</span><span class="s2">,UN,0,</span><span class="nv">$ds1</span><span class="s2">,IF"</span><span class="p">;</span>
+ <span class="o">(</span><span class="nv">$ds0</span>, <span class="nv">$ds1</span><span class="o">)</span> <span class="o">=</span> <span class="o">(</span><span class="s1">'uin'</span>, <span class="s1">'uout'</span><span class="o">)</span><span class="p">;</span>
+ <span class="o">}</span>
+ <span class="k">if</span> <span class="o">(</span><span class="nv">$factor</span> <span class="o">!=</span> 1<span class="o">)</span> <span class="o">{</span>
+ <span class="c"># scale the values. we need a CDEF for this</span>
+ push @args, <span class="s2">"CDEF:fin=</span><span class="nv">$ds0</span><span class="s2">,</span><span class="nv">$factor</span><span class="s2">,*"</span>,<span class="s2">"CDEF:fout=</span><span class="nv">$ds1</span><span class="s2">,</span><span class="nv">$factor</span><span class="s2">,*"</span><span class="p">;</span>
+ <span class="o">(</span><span class="nv">$ds0</span>, <span class="nv">$ds1</span><span class="o">)</span> <span class="o">=</span> <span class="o">(</span><span class="s1">'fin'</span>, <span class="s1">'fout'</span><span class="o">)</span><span class="p">;</span>
+ <span class="o">}</span>
+ my <span class="nv">$maximum0</span> <span class="o">=</span> <span class="nv">$cfg</span>-&amp;gt<span class="p">;</span><span class="o">{</span>targets<span class="o">}{</span>maxbytes1<span class="o">}{</span><span class="nv">$log</span><span class="o">}</span> <span class="o">||</span> <span class="nv">$cfg</span>-&amp;gt<span class="p">;</span><span class="o">{</span>targets<span class="o">}{</span>maxbytes<span class="o">}{</span><span class="nv">$log</span><span class="o">}</span><span class="p">;</span>
+ my <span class="nv">$maximum1</span> <span class="o">=</span> <span class="nv">$cfg</span>-&amp;gt<span class="p">;</span><span class="o">{</span>targets<span class="o">}{</span>maxbytes2<span class="o">}{</span><span class="nv">$log</span><span class="o">}</span> <span class="o">||</span> <span class="nv">$cfg</span>-&amp;gt<span class="p">;</span><span class="o">{</span>targets<span class="o">}{</span>maxbytes<span class="o">}{</span><span class="nv">$log</span><span class="o">}</span><span class="p">;</span>
+ <span class="nv">$maximum0</span> <span class="o">=</span> 1 unless <span class="nv">$maximum0</span><span class="p">;</span>
+ <span class="nv">$maximum1</span> <span class="o">=</span> 1 unless <span class="nv">$maximum1</span><span class="p">;</span>
+ <span class="c"># ps0/ps1 hold the percentage data source for gprint</span>
+ my <span class="o">(</span><span class="nv">$ps0</span>, <span class="nv">$ps1</span><span class="o">)</span> <span class="o">=</span> <span class="o">(</span><span class="s1">'pin'</span>, <span class="s1">'pout'</span><span class="o">)</span><span class="p">;</span>
+ push @args, <span class="s2">"CDEF:pin=</span><span class="nv">$ds0</span><span class="s2">,</span><span class="nv">$maximum0</span><span class="s2">,/,100,*,</span><span class="nv">$factor</span><span class="s2">,/"</span>,
+ <span class="s2">"CDEF:pout=</span><span class="nv">$ds1</span><span class="s2">,</span><span class="nv">$maximum1</span><span class="s2">,/,100,*,</span><span class="nv">$factor</span><span class="s2">,/"</span><span class="p">;</span>
+ <span class="k">if</span> <span class="o">(</span>yesorno<span class="o">(</span><span class="nv">$cfg</span>-&amp;gt<span class="p">;</span><span class="o">{</span>targets<span class="o">}{</span><span class="s1">'14all*graphtotal'</span><span class="o">}{</span><span class="nv">$log</span><span class="o">})</span>
+ &amp;amp<span class="p">;</span>&amp;amp<span class="p">;</span> <span class="nv">$small</span><span class="o">)</span> <span class="o">{</span>
+ push @args, <span class="s2">"CDEF:total=</span><span class="nv">$ds0</span><span class="s2">,</span><span class="nv">$ds1</span><span class="s2">,+"</span>, <span class="s2">"LINE1:total#ffa050:Total AVG</span><span class="se">\\</span><span class="s2">l"</span><span class="p">;</span>
+ <span class="o">}</span>
+ <span class="c"># now for the peak graphs / maximum values</span>
+ <span class="c"># mx0/mx1 hold the maximum data source for graph/gprint</span>
+ my <span class="o">(</span><span class="nv">$mx0</span>, <span class="nv">$mx1</span><span class="o">)</span> <span class="o">=</span> <span class="o">(</span><span class="nv">$ds0</span>, <span class="nv">$ds1</span><span class="o">)</span><span class="p">;</span>
+ <span class="c"># px0/px1 hold the maximum pecentage data source for gprint</span>
+ my <span class="o">(</span><span class="nv">$px0</span>, <span class="nv">$px1</span><span class="o">)</span> <span class="o">=</span> <span class="o">(</span><span class="nv">$ps0</span>, <span class="nv">$ps1</span><span class="o">)</span><span class="p">;</span>
+ <span class="k">if</span> <span class="o">(!</span><span class="nv">$small</span><span class="o">)</span> <span class="o">{</span>
+ <span class="c"># the defs for the maximum values: for the legend ('MAX') and probabely</span>
+ <span class="c"># for the 'withpeak' graphs</span>
+ push @args, <span class="s2">"DEF:min=</span><span class="nv">$rrd</span><span class="s2">:ds0:MAX"</span>, <span class="s2">"DEF:mout=</span><span class="nv">$rrd</span><span class="s2">:ds1:MAX"</span><span class="p">;</span>
+ <span class="o">(</span><span class="nv">$mx0</span>, <span class="nv">$mx1</span><span class="o">)</span> <span class="o">=</span> <span class="o">(</span><span class="s1">'min'</span>, <span class="s1">'mout'</span><span class="o">)</span><span class="p">;</span>
+ <span class="k">if</span> <span class="o">(</span>defined <span class="nv">$cfg</span>-&amp;gt<span class="p">;</span><span class="o">{</span>targets<span class="o">}{</span>options<span class="o">}{</span>unknaszero<span class="o">}{</span><span class="nv">$log</span><span class="o">})</span> <span class="o">{</span>
+ push @args, <span class="s2">"CDEF:umin=</span><span class="nv">$mx0</span><span class="s2">,UN,0,</span><span class="nv">$mx0</span><span class="s2">,IF"</span>,
+ <span class="s2">"CDEF:umout=</span><span class="nv">$mx1</span><span class="s2">,UN,0,</span><span class="nv">$mx1</span><span class="s2">,IF"</span><span class="p">;</span>
+ <span class="o">(</span><span class="nv">$mx0</span>, <span class="nv">$mx1</span><span class="o">)</span> <span class="o">=</span> <span class="o">(</span><span class="s1">'umin'</span>, <span class="s1">'umout'</span><span class="o">)</span><span class="p">;</span>
+ <span class="o">}</span>
+ <span class="k">if</span> <span class="o">(</span><span class="nv">$factor</span> <span class="o">!=</span> 1<span class="o">)</span> <span class="o">{</span>
+ <span class="c"># scale the values. we need a CDEF for this</span>
+ push @args, <span class="s2">"CDEF:fmin=</span><span class="nv">$mx0</span><span class="s2">,</span><span class="nv">$factor</span><span class="s2">,*"</span>,<span class="s2">"CDEF:fmout=</span><span class="nv">$mx1</span><span class="s2">,</span><span class="nv">$factor</span><span class="s2">,*"</span><span class="p">;</span>
+ <span class="o">(</span><span class="nv">$mx0</span>, <span class="nv">$mx1</span><span class="o">)</span> <span class="o">=</span> <span class="o">(</span><span class="s1">'fmin'</span>, <span class="s1">'fmout'</span><span class="o">)</span><span class="p">;</span>
+ <span class="o">}</span>
+ <span class="c"># draw peak lines if configured</span>
+ <span class="k">if</span> <span class="o">(</span><span class="nv">$cfg</span>-&amp;gt<span class="p">;</span><span class="o">{</span>targets<span class="o">}{</span>withpeak<span class="o">}{</span><span class="nv">$log</span><span class="o">}</span> &amp;amp<span class="p">;</span>&amp;amp<span class="p">;</span>
+ substr<span class="o">(</span><span class="nv">$png</span>,0,1<span class="o">)</span> <span class="o">=</span>~ /[<span class="nv">$cfg</span>-&amp;gt<span class="p">;</span><span class="o">{</span>targets<span class="o">}{</span>withpeak<span class="o">}{</span><span class="nv">$log</span><span class="o">}</span> <span class="o">]</span>/<span class="o">)</span> <span class="o">{</span>
+ push @args, <span class="s2">"AREA:"</span>.<span class="nv">$mx0</span>.<span class="nv">$cfg</span>-&amp;gt<span class="p">;</span><span class="o">{</span>targets<span class="o">}{</span>rgb3<span class="o">}{</span><span class="nv">$log</span><span class="o">}</span>.<span class="nv">$l3</span> unless <span class="nv">$noi</span><span class="p">;</span>
+ push @args, <span class="nv">$line2</span>.<span class="nv">$mx1</span>.<span class="nv">$cfg</span>-&amp;gt<span class="p">;</span><span class="o">{</span>targets<span class="o">}{</span>rgb4<span class="o">}{</span><span class="nv">$log</span><span class="o">}</span>.<span class="nv">$l4</span> unless <span class="nv">$noo</span><span class="p">;</span>
+ <span class="k">if</span> <span class="o">(</span>yesorno<span class="o">(</span><span class="nv">$cfg</span>-&amp;gt<span class="p">;</span><span class="o">{</span>targets<span class="o">}{</span><span class="s1">'14all*graphtotal'</span><span class="o">}{</span><span class="nv">$log</span><span class="o">}))</span> <span class="o">{</span>
+ push @args, <span class="s2">"CDEF:mtotal=</span><span class="nv">$mx0</span><span class="s2">,</span><span class="nv">$mx1</span><span class="s2">,+"</span>, <span class="s2">"LINE1:mtotal#ff5050:Total MAX</span><span class="se">\\</span><span class="s2">l"</span><span class="p">;</span>
+ <span class="o">}</span>
+ <span class="o">}</span>
+ push @args, <span class="s2">"CDEF:pmin=</span><span class="nv">$mx0</span><span class="s2">,</span><span class="nv">$maximum0</span><span class="s2">,/,100,*,</span><span class="nv">$factor</span><span class="s2">,/"</span>,
+ <span class="s2">"CDEF:pmout=</span><span class="nv">$mx1</span><span class="s2">,</span><span class="nv">$maximum1</span><span class="s2">,/,100,*,</span><span class="nv">$factor</span><span class="s2">,/"</span><span class="p">;</span>
+ <span class="o">(</span><span class="nv">$px0</span>, <span class="nv">$px1</span><span class="o">)</span> <span class="o">=</span> <span class="o">(</span><span class="s1">'pmin'</span>, <span class="s1">'pmout'</span><span class="o">)</span><span class="p">;</span>
+ <span class="o">}</span>
+ <span class="c"># the commands to draw the values</span>
+ my <span class="o">(</span>@hr1, @hr2<span class="o">)</span><span class="p">;</span>
+ <span class="k">if</span> <span class="o">(!</span><span class="nv">$small</span> &amp;amp<span class="p">;</span>&amp;amp<span class="p">;</span> yesorno<span class="o">(</span><span class="nv">$cfg</span>-&amp;gt<span class="p">;</span><span class="o">{</span>targets<span class="o">}{</span><span class="s1">'14all*maxrules'</span><span class="o">}{</span><span class="nv">$log</span><span class="o">}))</span> <span class="o">{</span>
+ chop <span class="nv">$l1</span><span class="p">;</span> chop <span class="nv">$l1</span><span class="p">;</span> chop <span class="nv">$l2</span><span class="p">;</span> chop <span class="nv">$l2</span><span class="p">;</span>
+ @hr1 <span class="o">=</span> <span class="o">(</span>sprintf<span class="o">(</span><span class="s2">"HRULE:%d#ff4400: MaxBytes1</span><span class="se">\\</span><span class="s2">l"</span>,<span class="nv">$maximum0</span><span class="k">*</span><span class="nv">$factor</span><span class="o">))</span><span class="p">;</span>
+ @hr2 <span class="o">=</span> <span class="o">(</span>sprintf<span class="o">(</span><span class="s2">"HRULE:%d#aa0000: MaxBytes2</span><span class="se">\\</span><span class="s2">l"</span>,<span class="nv">$maximum1</span><span class="k">*</span><span class="nv">$factor</span><span class="o">))</span><span class="p">;</span>
+ <span class="o">}</span>
+ push @args, <span class="s2">"AREA:"</span>.<span class="nv">$ds0</span>.<span class="nv">$cfg</span>-&amp;gt<span class="p">;</span><span class="o">{</span>targets<span class="o">}{</span>rgb1<span class="o">}{</span><span class="nv">$log</span><span class="o">}</span>.<span class="nv">$l1</span>, @hr1 unless <span class="nv">$noi</span><span class="p">;</span>
+ push @args, <span class="nv">$line2</span>.<span class="nv">$ds1</span>.<span class="nv">$cfg</span>-&amp;gt<span class="p">;</span><span class="o">{</span>targets<span class="o">}{</span>rgb2<span class="o">}{</span><span class="nv">$log</span><span class="o">}</span>.<span class="nv">$l2</span>, @hr2 unless <span class="nv">$noo</span><span class="p">;</span>
+ <span class="k">if</span> <span class="o">(!</span><span class="nv">$small</span> &amp;amp<span class="p">;</span>&amp;amp<span class="p">;</span> <span class="o">!</span><span class="nv">$cfg</span>-&amp;gt<span class="p">;</span><span class="o">{</span>targets<span class="o">}{</span>options<span class="o">}{</span>nolegend<span class="o">}{</span><span class="nv">$log</span><span class="o">})</span> <span class="o">{</span>
+ <span class="c"># print the legends</span>
+ <span class="c"># order matters so noi/noo makes this ugly</span>
+ <span class="k">if</span> <span class="o">(</span><span class="nv">$cfg</span>-&amp;gt<span class="p">;</span><span class="o">{</span>targets<span class="o">}{</span>options<span class="o">}{</span>nopercent<span class="o">}{</span><span class="nv">$log</span><span class="o">})</span> <span class="o">{</span>
+ push @args, <span class="s2">"GPRINT:</span><span class="nv">$mx0</span><span class="s2">:MAX:Maximal </span><span class="nv">$li</span><span class="s2">"</span> <span class="k">if</span> <span class="nv">$li</span> &amp;amp<span class="p">;</span>&amp;amp<span class="p">;</span> <span class="o">!</span><span class="nv">$noi</span><span class="p">;</span>
+ push @args, <span class="s2">"GPRINT:</span><span class="nv">$mx1</span><span class="s2">:MAX:Maximal </span><span class="nv">$lo</span><span class="se">\\</span><span class="s2">l"</span> <span class="k">if</span> <span class="nv">$lo</span> &amp;amp<span class="p">;</span>&amp;amp<span class="p">;</span> <span class="o">!</span><span class="nv">$noo</span><span class="p">;</span>
+ push @args, <span class="s2">"GPRINT:</span><span class="nv">$ds0</span><span class="s2">:AVERAGE:Average </span><span class="nv">$li</span><span class="s2">"</span> <span class="k">if</span> <span class="nv">$li</span> &amp;amp<span class="p">;</span>&amp;amp<span class="p">;</span> <span class="o">!</span><span class="nv">$noi</span><span class="p">;</span>
+ push @args, <span class="s2">"GPRINT:</span><span class="nv">$ds1</span><span class="s2">:AVERAGE:Average </span><span class="nv">$lo</span><span class="se">\\</span><span class="s2">l"</span> <span class="k">if</span> <span class="nv">$lo</span> &amp;amp<span class="p">;</span>&amp;amp<span class="p">;</span> <span class="o">!</span><span class="nv">$noo</span><span class="p">;</span>
+ push @args, <span class="s2">"GPRINT:</span><span class="nv">$ds0</span><span class="s2">:LAST:Current </span><span class="nv">$li</span><span class="s2">"</span> <span class="k">if</span> <span class="nv">$li</span> &amp;amp<span class="p">;</span>&amp;amp<span class="p">;</span> <span class="o">!</span><span class="nv">$noi</span><span class="p">;</span>
+ push @args, <span class="s2">"GPRINT:</span><span class="nv">$ds1</span><span class="s2">:LAST:Current </span><span class="nv">$lo</span><span class="se">\\</span><span class="s2">l"</span> <span class="k">if</span> <span class="nv">$lo</span> &amp;amp<span class="p">;</span>&amp;amp<span class="p">;</span> <span class="o">!</span><span class="nv">$noo</span><span class="p">;</span>
+ <span class="o">}</span> <span class="k">else</span> <span class="o">{</span>
+ push @args,
+ <span class="s2">"GPRINT:</span><span class="nv">$mx0</span><span class="s2">:MAX:Maximal </span><span class="nv">$li</span><span class="s2">"</span>,
+ <span class="s2">"GPRINT:</span><span class="nv">$px0</span><span class="s2">:MAX:(</span><span class="nv">$ri</span><span class="s2">)"</span> <span class="k">if</span> <span class="nv">$li</span> &amp;amp<span class="p">;</span>&amp;amp<span class="p">;</span> <span class="o">!</span><span class="nv">$noi</span><span class="p">;</span>
+ push @args,
+ <span class="s2">"GPRINT:</span><span class="nv">$mx1</span><span class="s2">:MAX:Maximal </span><span class="nv">$lo</span><span class="s2">"</span>,
+ <span class="s2">"GPRINT:</span><span class="nv">$px1</span><span class="s2">:MAX:(</span><span class="nv">$ro</span><span class="s2">)</span><span class="se">\\</span><span class="s2">l"</span> <span class="k">if</span> <span class="nv">$lo</span> &amp;amp<span class="p">;</span>&amp;amp<span class="p">;</span> <span class="o">!</span><span class="nv">$noo</span><span class="p">;</span>
+ push @args,
+ <span class="s2">"GPRINT:</span><span class="nv">$ds0</span><span class="s2">:AVERAGE:Average </span><span class="nv">$li</span><span class="s2">"</span>,
+ <span class="s2">"GPRINT:</span><span class="nv">$ps0</span><span class="s2">:AVERAGE:(</span><span class="nv">$ri</span><span class="s2">)"</span> <span class="k">if</span> <span class="nv">$li</span> &amp;amp<span class="p">;</span>&amp;amp<span class="p">;</span> <span class="o">!</span><span class="nv">$noi</span><span class="p">;</span>
+ push @args,
+ <span class="s2">"GPRINT:</span><span class="nv">$ds1</span><span class="s2">:AVERAGE:Average </span><span class="nv">$lo</span><span class="s2">"</span>,
+ <span class="s2">"GPRINT:</span><span class="nv">$ps1</span><span class="s2">:AVERAGE:(</span><span class="nv">$ro</span><span class="s2">)</span><span class="se">\\</span><span class="s2">l"</span> <span class="k">if</span> <span class="nv">$lo</span> &amp;amp<span class="p">;</span>&amp;amp<span class="p">;</span> <span class="o">!</span><span class="nv">$noo</span><span class="p">;</span>
+ push @args,
+ <span class="s2">"GPRINT:</span><span class="nv">$ds0</span><span class="s2">:LAST:Current </span><span class="nv">$li</span><span class="s2">"</span>,
+ <span class="s2">"GPRINT:</span><span class="nv">$ps0</span><span class="s2">:LAST:(</span><span class="nv">$ri</span><span class="s2">)"</span> <span class="k">if</span> <span class="nv">$li</span> &amp;amp<span class="p">;</span>&amp;amp<span class="p">;</span> <span class="o">!</span><span class="nv">$noi</span><span class="p">;</span>
+ push @args,
+ <span class="s2">"GPRINT:</span><span class="nv">$ds1</span><span class="s2">:LAST:Current </span><span class="nv">$lo</span><span class="s2">"</span>,
+ <span class="s2">"GPRINT:</span><span class="nv">$ps1</span><span class="s2">:LAST:(</span><span class="nv">$ro</span><span class="s2">)</span><span class="se">\\</span><span class="s2">l"</span> <span class="k">if</span> <span class="nv">$lo</span> &amp;amp<span class="p">;</span>&amp;amp<span class="p">;</span> <span class="o">!</span><span class="nv">$noo</span><span class="p">;</span>
+ <span class="o">}</span>
+ <span class="o">}</span>
+ <span class="c"># store rrdtool arg list for speedCGI/mod_perl mode</span>
+ <span class="nv">$cfg</span>-&amp;gt<span class="p">;</span><span class="o">{</span>rrdargs<span class="o">}{</span><span class="nv">$log</span><span class="o">}{</span><span class="nv">$png</span><span class="o">}{</span>args<span class="o">}</span> <span class="o">=</span> <span class="se">\@</span>args<span class="p">;</span>
+ <span class="nv">$cfg</span>-&amp;gt<span class="p">;</span><span class="o">{</span>rrdargs<span class="o">}{</span><span class="nv">$log</span><span class="o">}{</span><span class="nv">$png</span><span class="o">}{</span>pngdir<span class="o">}</span> <span class="o">=</span> <span class="nv">$pngdir</span><span class="p">;</span>
+ <span class="nv">$cfg</span>-&amp;gt<span class="p">;</span><span class="o">{</span>rrdargs<span class="o">}{</span><span class="nv">$log</span><span class="o">}{</span><span class="nv">$png</span><span class="o">}{</span>pngfile<span class="o">}</span> <span class="o">=</span> <span class="nv">$pngfile</span><span class="p">;</span>
+ <span class="nv">$cfg</span>-&amp;gt<span class="p">;</span><span class="o">{</span>rrdargs<span class="o">}{</span><span class="nv">$log</span><span class="o">}{</span><span class="nv">$png</span><span class="o">}{</span>maxage<span class="o">}</span> <span class="o">=</span> <span class="nv">$maxage</span><span class="p">;</span>
+ <span class="k">return</span> <span class="s1">''</span><span class="p">;</span>
+<span class="o">}</span>
+sub show_graph<span class="o">(</span><span class="nv">$$$)</span> <span class="o">{</span>
+ <span class="c"># send a graphic, create it if necessary</span>
+ my <span class="o">(</span><span class="nv">$cfg</span>, <span class="nv">$q</span>, <span class="nv">$png</span><span class="o">)</span> <span class="o">=</span> @_<span class="p">;</span>
+ my <span class="nv">$log</span> <span class="o">=</span> <span class="nv">$q</span>-&amp;gt<span class="p">;</span>param<span class="o">(</span><span class="s1">'log'</span><span class="o">)</span><span class="p">;</span>
+ my <span class="nv">$small</span> <span class="o">=</span> <span class="nv">$q</span>-&amp;gt<span class="p">;</span>param<span class="o">(</span><span class="s1">'small'</span><span class="o">)</span> ? <span class="s1">'-i'</span> : <span class="s1">''</span><span class="p">;</span>
+ my <span class="nv">$errstr</span> <span class="o">=</span> <span class="s1">''</span><span class="p">;</span>
+ <span class="k">if</span> <span class="o">(!</span><span class="nv">$log</span><span class="o">)</span> <span class="o">{</span>
+ <span class="nv">$errstr</span><span class="o">=</span><span class="s2">"CGI call error: missing param 'log'"</span><span class="p">;</span>
+ goto ERROR<span class="p">;</span>
+ <span class="o">}</span>
+ unless <span class="o">(</span>exists <span class="nv">$cfg</span>-&amp;gt<span class="p">;</span><span class="o">{</span>targets<span class="o">}{</span>target<span class="o">}{</span><span class="nv">$log</span><span class="o">})</span> <span class="o">{</span>
+ <span class="nv">$errstr</span><span class="o">=</span><span class="s2">"target '</span><span class="nv">$log</span><span class="s2">' unknown"</span><span class="p">;</span>
+ goto ERROR<span class="p">;</span>
+ <span class="o">}</span>
+ <span class="c"># fix a problem with indexmaker</span>
+ <span class="k">if</span> <span class="o">(</span><span class="nv">$small</span><span class="o">)</span> <span class="o">{</span>
+ my %imaker <span class="o">=</span> qw/day.s daily.s week.s weekly month.s monthly year.s yearly/<span class="p">;</span>
+ <span class="k">if</span> <span class="o">(</span>exists <span class="nv">$imaker</span><span class="o">{</span><span class="nv">$png</span><span class="o">})</span> <span class="o">{</span>
+ <span class="nv">$png</span> <span class="o">=</span> <span class="nv">$imaker</span><span class="o">{</span><span class="nv">$png</span><span class="o">}</span><span class="p">;</span>
+ <span class="o">}</span>
+ <span class="o">}</span>
+ my <span class="nv">$argsref</span><span class="p">;</span>
+ <span class="k">if</span> <span class="o">(!</span>exists <span class="nv">$cfg</span>-&amp;gt<span class="p">;</span><span class="o">{</span>rrdargs<span class="o">}{</span><span class="nv">$log</span><span class="o">}{</span><span class="s2">"</span><span class="nv">$png$small</span><span class="s2">"</span><span class="o">}{</span>args<span class="o">})</span> <span class="o">{</span>
+ <span class="nv">$errstr</span> <span class="o">=</span> set_graph_params<span class="o">(</span><span class="nv">$cfg</span>, <span class="nv">$log</span>, <span class="nv">$png</span>, <span class="nv">$small</span><span class="o">)</span><span class="p">;</span>
+ goto ERROR <span class="k">if</span> <span class="nv">$errstr</span><span class="p">;</span>
+ <span class="o">}</span>
+ <span class="nv">$argsref</span> <span class="o">=</span> <span class="nv">$cfg</span>-&amp;gt<span class="p">;</span><span class="o">{</span>rrdargs<span class="o">}{</span><span class="nv">$log</span><span class="o">}{</span><span class="s2">"</span><span class="nv">$png$small</span><span class="s2">"</span><span class="o">}{</span>args<span class="o">}</span><span class="p">;</span>
+ <span class="c"># fire up rrdtool</span>
+ my <span class="o">(</span><span class="nv">$a</span>, <span class="nv">$rrdx</span>, <span class="nv">$rrdy</span><span class="o">)</span> <span class="o">=</span> RRDs::graph<span class="o">(</span>@<span class="nv">$argsref</span><span class="o">)</span><span class="p">;</span>
+ my <span class="nv">$e</span> <span class="o">=</span> RRDs::error<span class="o">()</span><span class="p">;</span>
+ log_rrdtool_call<span class="o">(</span><span class="nv">$cfg</span>-&amp;gt<span class="p">;</span><span class="o">{</span>config<span class="o">}{</span><span class="s1">'14all*rrdtoollog'</span><span class="o">}</span>,<span class="nv">$e</span>,<span class="s1">'graph'</span>,<span class="nv">$argsref</span><span class="o">)</span><span class="p">;</span>
+ my <span class="nv">$pngfile</span> <span class="o">=</span> <span class="nv">$cfg</span>-&amp;gt<span class="p">;</span><span class="o">{</span>rrdargs<span class="o">}{</span><span class="nv">$log</span><span class="o">}{</span><span class="s2">"</span><span class="nv">$png$small</span><span class="s2">"</span><span class="o">}{</span>pngfile<span class="o">}</span><span class="p">;</span>
+ <span class="k">if</span> <span class="o">(</span><span class="nv">$e</span><span class="o">)</span> <span class="o">{</span>
+ my <span class="nv">$pngdir</span> <span class="o">=</span> <span class="nv">$cfg</span>-&amp;gt<span class="p">;</span><span class="o">{</span>rrdargs<span class="o">}{</span><span class="nv">$log</span><span class="o">}{</span><span class="s2">"</span><span class="nv">$png$small</span><span class="s2">"</span><span class="o">}{</span>pngdir<span class="o">}</span><span class="p">;</span>
+ <span class="k">if</span> <span class="o">(!</span><span class="nt">-w</span> <span class="nv">$pngdir</span><span class="o">)</span> <span class="o">{</span>
+ <span class="nv">$errstr</span> <span class="o">=</span> <span class="s2">"cannot write to graph dir </span><span class="nv">$pngdir</span><span class="se">\n</span><span class="s2">rrdtool error: </span><span class="nv">$e</span><span class="s2">"</span><span class="p">;</span>
+ <span class="o">}</span> elsif <span class="o">(</span><span class="nt">-e</span> <span class="nv">$pngfile</span> and <span class="o">!</span><span class="nt">-w</span> _<span class="o">)</span> <span class="o">{</span>
+ <span class="nv">$errstr</span> <span class="o">=</span> <span class="s2">"cannot write </span><span class="nv">$pngfile</span><span class="se">\n</span><span class="s2">rrdtool error: </span><span class="nv">$e</span><span class="s2">"</span><span class="p">;</span>
+ <span class="o">}</span> elsif <span class="o">(</span><span class="nt">-e</span> <span class="nv">$pngfile</span><span class="o">)</span> <span class="o">{</span>
+ <span class="k">if</span> <span class="o">(</span><span class="nb">unlink</span><span class="o">(</span><span class="nv">$pngfile</span><span class="o">))</span> <span class="o">{</span>
+ <span class="c"># try rrdtool a second time</span>
+ <span class="o">(</span><span class="nv">$a</span>, <span class="nv">$rrdx</span>, <span class="nv">$rrdy</span><span class="o">)</span> <span class="o">=</span> RRDs::graph<span class="o">(</span>@<span class="nv">$argsref</span><span class="o">)</span><span class="p">;</span>
+ <span class="nv">$e</span> <span class="o">=</span> RRDs::error<span class="o">()</span><span class="p">;</span>
+ log_rrdtool_call<span class="o">(</span><span class="nv">$cfg</span>-&amp;gt<span class="p">;</span><span class="o">{</span>config<span class="o">}{</span><span class="s1">'14all*rrdtoollog'</span><span class="o">}</span>,<span class="nv">$e</span>,<span class="s1">'graph'</span>,<span class="nv">$argsref</span><span class="o">)</span><span class="p">;</span>
+ <span class="nv">$errstr</span> <span class="o">=</span> <span class="nv">$e</span> ? <span class="nv">$errstr</span>.<span class="s2">"</span><span class="se">\n</span><span class="s2">rrdtool error from 2. call: </span><span class="nv">$e</span><span class="s2">"</span> : <span class="s1">''</span><span class="p">;</span>
+ <span class="o">}</span> <span class="k">else</span> <span class="o">{</span>
+ <span class="nv">$errstr</span> <span class="o">=</span> <span class="s2">"cannot delete file </span><span class="nv">$pngfile</span><span class="s2">: </span><span class="nv">$!</span><span class="s2">"</span><span class="p">;</span>
+ <span class="o">}</span>
+ <span class="o">}</span> <span class="k">else</span> <span class="o">{</span>
+ <span class="nv">$errstr</span> <span class="o">=</span> <span class="s2">"cannot create graph</span><span class="se">\n</span><span class="s2">rrdtool error: </span><span class="nv">$e</span><span class="s2">"</span><span class="p">;</span>
+ <span class="o">}</span>
+ <span class="o">}</span>
+ unless <span class="o">(</span><span class="nv">$errstr</span><span class="o">)</span> <span class="o">{</span>
+ <span class="k">if</span> <span class="o">(</span>open<span class="o">(</span>PNG, <span class="s2">"&amp;lt;</span><span class="nv">$pngfile</span><span class="s2">"</span><span class="o">))</span> <span class="o">{</span>
+ my <span class="nv">$maxage</span> <span class="o">=</span> <span class="nv">$cfg</span>-&amp;gt<span class="p">;</span><span class="o">{</span>rrdargs<span class="o">}{</span><span class="nv">$log</span><span class="o">}{</span><span class="s2">"</span><span class="nv">$png$small</span><span class="s2">"</span><span class="o">}{</span>maxage<span class="o">}</span><span class="p">;</span>
+ print <span class="nv">$q</span>-&amp;gt<span class="p">;</span>header<span class="o">(</span><span class="nt">-type</span> <span class="o">=</span>&amp;gt<span class="p">;</span> <span class="s2">"image/png"</span>, <span class="nt">-expires</span> <span class="o">=</span>&amp;gt<span class="p">;</span> <span class="s2">"+</span><span class="k">${</span><span class="nv">maxage</span><span class="k">}</span><span class="s2">s"</span><span class="o">)</span><span class="p">;</span>
+ binmode<span class="o">(</span>PNG<span class="o">)</span><span class="p">;</span> binmode<span class="o">(</span>STDOUT<span class="o">)</span><span class="p">;</span>
+ <span class="k">while</span><span class="o">(</span><span class="nb">read </span>PNG, my <span class="nv">$buf</span>, 16384<span class="o">)</span> <span class="o">{</span> print STDOUT <span class="nv">$buf</span><span class="p">;</span> <span class="o">}</span>
+ close PNG<span class="p">;</span>
+ <span class="k">return</span><span class="p">;</span>
+ <span class="o">}</span>
+ <span class="nv">$errstr</span> <span class="o">=</span> <span class="s2">"cannot read graph file: </span><span class="nv">$!</span><span class="s2">"</span><span class="p">;</span>
+ <span class="o">}</span>
+ ERROR:
+ <span class="k">if</span> <span class="o">(</span>yesorno<span class="o">(</span><span class="nv">$cfg</span>-&amp;gt<span class="p">;</span><span class="o">{</span>config<span class="o">}{</span><span class="s1">'14all*grapherrorstobrowser'</span><span class="o">}))</span> <span class="o">{</span>
+ my <span class="o">(</span><span class="nv">$errpic</span>, <span class="nv">$format</span><span class="o">)</span> <span class="o">=</span> gettextpic<span class="o">(</span><span class="nv">$errstr</span><span class="o">)</span><span class="p">;</span>
+ print <span class="nv">$q</span>-&amp;gt<span class="p">;</span>header<span class="o">(</span><span class="nt">-type</span> <span class="o">=</span>&amp;gt<span class="p">;</span> <span class="nv">$format</span>, <span class="nt">-expires</span> <span class="o">=</span>&amp;gt<span class="p">;</span> <span class="s1">'now'</span><span class="o">)</span><span class="p">;</span>
+ binmode<span class="o">(</span>STDOUT<span class="o">)</span><span class="p">;</span>
+ print <span class="nv">$errpic</span><span class="p">;</span>
+ <span class="k">return</span><span class="p">;</span>
+ <span class="o">}</span>
+ <span class="nv">$log</span> <span class="o">||=</span> <span class="s1">'_'</span><span class="p">;</span>
+ <span class="k">if</span> <span class="o">(</span>defined <span class="nv">$cfg</span>-&amp;gt<span class="p">;</span><span class="o">{</span>targets<span class="o">}{</span>options<span class="o">}{</span><span class="s1">'14all*errorpic'</span><span class="o">}{</span><span class="nv">$log</span><span class="o">}</span> &amp;amp<span class="p">;</span>&amp;amp<span class="p">;</span>
+ open<span class="o">(</span>PNG, <span class="nv">$cfg</span>-&amp;gt<span class="p">;</span><span class="o">{</span>targets<span class="o">}{</span>options<span class="o">}{</span><span class="s1">'14all*errorpic'</span><span class="o">}{</span><span class="nv">$log</span><span class="o">}))</span> <span class="o">{</span>
+ print <span class="nv">$q</span>-&amp;gt<span class="p">;</span>header<span class="o">(</span><span class="nt">-type</span> <span class="o">=</span>&amp;gt<span class="p">;</span> <span class="s2">"image/png"</span>, <span class="nt">-expires</span> <span class="o">=</span>&amp;gt<span class="p">;</span> <span class="s1">'now'</span><span class="o">)</span><span class="p">;</span>
+ binmode<span class="o">(</span>PNG<span class="o">)</span><span class="p">;</span> binmode<span class="o">(</span>STDOUT<span class="o">)</span><span class="p">;</span>
+ <span class="k">while</span><span class="o">(</span><span class="nb">read </span>PNG, my <span class="nv">$buf</span>,16384<span class="o">)</span> <span class="o">{</span> print STDOUT <span class="nv">$buf</span><span class="p">;</span> <span class="o">}</span>
+ close PNG<span class="p">;</span>
+ <span class="k">return</span><span class="p">;</span>
+ <span class="o">}</span>
+ print <span class="nv">$q</span>-&amp;gt<span class="p">;</span>header<span class="o">(</span><span class="nt">-type</span> <span class="o">=</span>&amp;gt<span class="p">;</span> <span class="s2">"image/png"</span>, <span class="nt">-expires</span> <span class="o">=</span>&amp;gt<span class="p">;</span> <span class="s1">'now'</span><span class="o">)</span><span class="p">;</span>
+ binmode<span class="o">(</span>STDOUT<span class="o">)</span><span class="p">;</span>
+ print pack<span class="o">(</span><span class="s2">"C*"</span>, errorpng<span class="o">())</span><span class="p">;</span>
+<span class="o">}</span>
+sub show_log<span class="o">(</span><span class="nv">$$$)</span> <span class="o">{</span>
+ <span class="c"># show the graphics for one target</span>
+ my <span class="o">(</span><span class="nv">$cfg</span>, <span class="nv">$q</span>, <span class="nv">$log</span><span class="o">)</span> <span class="o">=</span> @_<span class="p">;</span>
+ print_error<span class="o">(</span><span class="nv">$q</span>,<span class="s2">"Target '</span><span class="nv">$log</span><span class="s2">' unknown"</span><span class="o">)</span> <span class="k">if</span> <span class="o">(!</span>exists <span class="nv">$cfg</span>-&amp;gt<span class="p">;</span><span class="o">{</span>targets<span class="o">}{</span>target<span class="o">}{</span><span class="nv">$log</span><span class="o">})</span><span class="p">;</span>
+ my <span class="nv">$title</span><span class="p">;</span>
+ <span class="c"># user defined title?</span>
+ <span class="k">if</span> <span class="o">(</span><span class="nv">$cfg</span>-&amp;gt<span class="p">;</span><span class="o">{</span>targets<span class="o">}{</span>title<span class="o">}{</span><span class="nv">$log</span><span class="o">})</span> <span class="o">{</span>
+ <span class="nv">$title</span> <span class="o">=</span> <span class="nv">$cfg</span>-&amp;gt<span class="p">;</span><span class="o">{</span>targets<span class="o">}{</span>title<span class="o">}{</span><span class="nv">$log</span><span class="o">}</span><span class="p">;</span>
+ <span class="o">}</span> <span class="k">else</span> <span class="o">{</span>
+ <span class="nv">$title</span> <span class="o">=</span> <span class="s2">"MRTG/RRD - Target </span><span class="nv">$log</span><span class="s2">"</span><span class="p">;</span>
+ <span class="o">}</span>
+ my @httphead<span class="p">;</span>
+ push @httphead, <span class="o">(</span><span class="nt">-expires</span> <span class="o">=</span>&amp;gt<span class="p">;</span> <span class="s1">'+'</span> <span class="nb">.</span> int<span class="o">(</span><span class="nv">$cfg</span>-&amp;gt<span class="p">;</span><span class="o">{</span>config<span class="o">}{</span>interval<span class="o">})</span> <span class="nb">.</span> <span class="s1">'m'</span><span class="o">)</span><span class="p">;</span>
+ <span class="k">if</span> <span class="o">(</span>yesorno<span class="o">(</span><span class="nv">$cfg</span>-&amp;gt<span class="p">;</span><span class="o">{</span>config<span class="o">}{</span>refresh<span class="o">}))</span> <span class="o">{</span>
+ push @httphead, <span class="o">(</span><span class="nt">-refresh</span> <span class="o">=</span>&amp;gt<span class="p">;</span> <span class="nv">$cfg</span>-&amp;gt<span class="p">;</span><span class="o">{</span>config<span class="o">}{</span>refresh<span class="o">})</span><span class="p">;</span>
+ <span class="o">}</span>
+ my @htmlhead <span class="o">=</span> <span class="o">(</span><span class="nt">-title</span> <span class="o">=</span>&amp;gt<span class="p">;</span> <span class="nv">$title</span>, @headeropts,
+ <span class="nt">-bgcolor</span> <span class="o">=</span>&amp;gt<span class="p">;</span> <span class="nv">$cfg</span>-&amp;gt<span class="p">;</span><span class="o">{</span>targets<span class="o">}{</span>background<span class="o">}{</span><span class="nv">$log</span><span class="o">})</span><span class="p">;</span>
+ <span class="k">if</span> <span class="o">(</span><span class="nv">$cfg</span>-&amp;gt<span class="p">;</span><span class="o">{</span>targets<span class="o">}{</span>addhead<span class="o">}{</span><span class="nv">$log</span><span class="o">})</span> <span class="o">{</span>
+ push @htmlhead, <span class="o">(</span><span class="nt">-head</span> <span class="o">=</span>&amp;gt<span class="p">;</span> <span class="nv">$cfg</span>-&amp;gt<span class="p">;</span><span class="o">{</span>targets<span class="o">}{</span>addhead<span class="o">}{</span><span class="nv">$log</span><span class="o">})</span><span class="p">;</span>
+ <span class="o">}</span>
+ print <span class="nv">$q</span>-&amp;gt<span class="p">;</span>header<span class="o">(</span>@httphead<span class="o">)</span>, <span class="nv">$q</span>-&amp;gt<span class="p">;</span>start_html<span class="o">(</span>@htmlhead<span class="o">)</span><span class="p">;</span>
+ <span class="c"># user defined header line? (should exist as mrtg requires it)</span>
+ print <span class="nv">$cfg</span>-&amp;gt<span class="p">;</span><span class="o">{</span>targets<span class="o">}{</span>pagetop<span class="o">}{</span><span class="nv">$log</span><span class="o">}</span>,<span class="s2">"</span><span class="se">\n</span><span class="s2">"</span><span class="p">;</span>
+ my <span class="nv">$rrd</span> <span class="o">=</span> <span class="nv">$cfg</span>-&amp;gt<span class="p">;</span><span class="o">{</span>config<span class="o">}{</span>logdir<span class="o">}</span>.<span class="nv">$cfg</span>-&amp;gt<span class="p">;</span><span class="o">{</span>targets<span class="o">}{</span>directory<span class="o">}{</span><span class="nv">$log</span><span class="o">}</span> <span class="nb">.</span> <span class="nv">$log</span> <span class="nb">.</span> <span class="s1">'.rrd'</span><span class="p">;</span>
+ my <span class="nv">$lasttime</span> <span class="o">=</span> RRDs::last<span class="o">(</span><span class="nv">$rrd</span><span class="o">)</span><span class="p">;</span>
+ log_rrdtool_call<span class="o">(</span><span class="nv">$cfg</span>-&amp;gt<span class="p">;</span><span class="o">{</span>config<span class="o">}{</span><span class="s1">'14all*rrdtoollog'</span><span class="o">}</span>,<span class="s1">''</span>,<span class="s1">'last'</span>,<span class="nv">$rrd</span><span class="o">)</span><span class="p">;</span>
+ print <span class="nv">$q</span>-&amp;gt<span class="p">;</span>hr,
+ <span class="s2">"The statistics were last updated: "</span>,<span class="nv">$q</span>-&amp;gt<span class="p">;</span>b<span class="o">(</span>scalar<span class="o">(</span>localtime<span class="o">(</span><span class="nv">$lasttime</span><span class="o">)))</span>,
+ <span class="nv">$q</span>-&amp;gt<span class="p">;</span>hr <span class="k">if</span> <span class="nv">$lasttime</span><span class="p">;</span>
+ my <span class="nv">$sup</span> <span class="o">=</span> <span class="nv">$cfg</span>-&amp;gt<span class="p">;</span><span class="o">{</span>targets<span class="o">}{</span>suppress<span class="o">}{</span><span class="nv">$log</span><span class="o">}</span> <span class="o">||</span> <span class="s1">''</span><span class="p">;</span>
+ my <span class="nv">$url</span> <span class="o">=</span> <span class="s2">"</span><span class="nv">$my14all</span><span class="s2">::meurl?log=</span><span class="nv">$log</span><span class="s2">"</span><span class="p">;</span>
+ my <span class="nv">$tmpcfg</span> <span class="o">=</span> <span class="nv">$q</span>-&amp;gt<span class="p">;</span>param<span class="o">(</span><span class="s1">'cfg'</span><span class="o">)</span><span class="p">;</span>
+ <span class="nv">$url</span> .<span class="o">=</span> <span class="s2">"&amp;amp;cfg=</span><span class="nv">$tmpcfg</span><span class="s2">"</span> <span class="k">if </span>defined <span class="nv">$tmpcfg</span><span class="p">;</span>
+ <span class="nv">$url</span> .<span class="o">=</span> <span class="s2">"&amp;amp;png"</span><span class="p">;</span>
+ <span class="c"># the header lines and tags for the graphics</span>
+ my <span class="nv">$pngdir</span> <span class="o">=</span> getdirwriteable<span class="o">(</span><span class="nv">$cfg</span>-&amp;gt<span class="p">;</span><span class="o">{</span>config<span class="o">}{</span>imagedir<span class="o">}</span>, <span class="nv">$cfg</span>-&amp;gt<span class="p">;</span><span class="o">{</span>targets<span class="o">}{</span>directory<span class="o">}{</span><span class="nv">$log</span><span class="o">})</span><span class="p">;</span>
+ <span class="k">if</span> <span class="o">(</span><span class="nv">$sup</span> <span class="o">!</span>~ /d/<span class="o">)</span> <span class="o">{</span>
+ print <span class="nv">$q</span>-&amp;gt<span class="p">;</span>h2<span class="o">(</span><span class="s2">"'Daily' graph (5 Minute Average)"</span><span class="o">)</span>,<span class="s2">"</span><span class="se">\n</span><span class="s2">"</span>,
+ <span class="nv">$q</span>-&amp;gt<span class="p">;</span>img<span class="o">({</span>src <span class="o">=</span>&amp;gt<span class="p">;</span> <span class="s2">"</span><span class="nv">$url</span><span class="s2">=daily"</span>, alt <span class="o">=</span>&amp;gt<span class="p">;</span> <span class="s2">"daily-graph"</span>,
+ getpngsize<span class="o">(</span><span class="s2">"</span><span class="nv">$pngdir$log</span><span class="s2">-daily.png"</span><span class="o">)}</span>
+ <span class="o">)</span>, <span class="s2">"</span><span class="se">\n</span><span class="s2">"</span><span class="p">;</span>
+ <span class="o">}</span>
+ <span class="k">if</span> <span class="o">(</span><span class="nv">$sup</span> <span class="o">!</span>~ /w/<span class="o">)</span> <span class="o">{</span>
+ print <span class="nv">$q</span>-&amp;gt<span class="p">;</span>h2<span class="o">(</span><span class="s2">"'Weekly' graph (30 Minute Average)"</span><span class="o">)</span>,<span class="s2">"</span><span class="se">\n</span><span class="s2">"</span>,
+ <span class="nv">$q</span>-&amp;gt<span class="p">;</span>img<span class="o">({</span>src <span class="o">=</span>&amp;gt<span class="p">;</span> <span class="s2">"</span><span class="nv">$url</span><span class="s2">=weekly"</span>, alt <span class="o">=</span>&amp;gt<span class="p">;</span> <span class="s2">"weekly-graph"</span>,
+ getpngsize<span class="o">(</span><span class="s2">"</span><span class="nv">$pngdir$log</span><span class="s2">-weekly.png"</span><span class="o">)}</span>
+ <span class="o">)</span>, <span class="s2">"</span><span class="se">\n</span><span class="s2">"</span><span class="p">;</span>
+ <span class="o">}</span>
+ <span class="k">if</span> <span class="o">(</span><span class="nv">$sup</span> <span class="o">!</span>~ /m/<span class="o">)</span> <span class="o">{</span>
+ print <span class="nv">$q</span>-&amp;gt<span class="p">;</span>h2<span class="o">(</span><span class="s2">"'Monthly' graph (2 Hour Average)"</span><span class="o">)</span>,<span class="s2">"</span><span class="se">\n</span><span class="s2">"</span>,
+ <span class="nv">$q</span>-&amp;gt<span class="p">;</span>img<span class="o">({</span>src <span class="o">=</span>&amp;gt<span class="p">;</span> <span class="s2">"</span><span class="nv">$url</span><span class="s2">=monthly"</span>, alt <span class="o">=</span>&amp;gt<span class="p">;</span> <span class="s2">"monthly-graph"</span>,
+ getpngsize<span class="o">(</span><span class="s2">"</span><span class="nv">$pngdir$log</span><span class="s2">-monthly.png"</span><span class="o">)}</span>
+ <span class="o">)</span>, <span class="s2">"</span><span class="se">\n</span><span class="s2">"</span><span class="p">;</span>
+ <span class="o">}</span>
+ <span class="k">if</span> <span class="o">(</span><span class="nv">$sup</span> <span class="o">!</span>~ /y/<span class="o">)</span> <span class="o">{</span>
+ print <span class="nv">$q</span>-&amp;gt<span class="p">;</span>h2<span class="o">(</span><span class="s2">"'Yearly' graph (1 Day Average)"</span><span class="o">)</span>,<span class="s2">"</span><span class="se">\n</span><span class="s2">"</span>,
+ <span class="nv">$q</span>-&amp;gt<span class="p">;</span>img<span class="o">({</span>src <span class="o">=</span>&amp;gt<span class="p">;</span> <span class="s2">"</span><span class="nv">$url</span><span class="s2">=yearly"</span>, alt <span class="o">=</span>&amp;gt<span class="p">;</span> <span class="s2">"yearly-graph"</span>,
+ getpngsize<span class="o">(</span><span class="s2">"</span><span class="nv">$pngdir$log</span><span class="s2">-yearly.png"</span><span class="o">)}</span>
+ <span class="o">)</span>, <span class="s2">"</span><span class="se">\n</span><span class="s2">"</span><span class="p">;</span>
+ <span class="o">}</span>
+ <span class="k">if</span> <span class="o">(</span><span class="nv">$cfg</span>-&amp;gt<span class="p">;</span><span class="o">{</span>targets<span class="o">}{</span>pagefoot<span class="o">}{</span><span class="nv">$log</span><span class="o">})</span> <span class="o">{</span>
+ print <span class="nv">$cfg</span>-&amp;gt<span class="p">;</span><span class="o">{</span>targets<span class="o">}{</span>pagefoot<span class="o">}{</span><span class="nv">$log</span><span class="o">}</span><span class="p">;</span>
+ <span class="o">}</span>
+<span class="o">}</span>
+sub show_dir<span class="o">(</span><span class="nv">$$$)</span> <span class="o">{</span>
+ <span class="c"># if no parameter - show a list of directories and targets</span>
+ <span class="c"># without "Directory[...]" (aka root-targets)</span>
+ <span class="c"># else show a list of targets in the given directory</span>
+ my <span class="o">(</span><span class="nv">$cfg</span>, <span class="nv">$q</span>, <span class="nv">$dir</span><span class="o">)</span> <span class="o">=</span> @_<span class="p">;</span>
+ my @httphead<span class="p">;</span>
+ push @httphead, <span class="o">(</span><span class="nt">-expires</span> <span class="o">=</span>&amp;gt<span class="p">;</span>
+ <span class="o">(</span><span class="nv">$dir</span> ? <span class="s1">'+'</span> <span class="nb">.</span> int<span class="o">(</span><span class="nv">$cfg</span>-&amp;gt<span class="p">;</span><span class="o">{</span>config<span class="o">}{</span>interval<span class="o">})</span> <span class="nb">.</span> <span class="s1">'m'</span> : <span class="s1">'+1d'</span><span class="o">)</span> <span class="o">)</span><span class="p">;</span>
+ <span class="k">if</span> <span class="o">(</span>yesorno<span class="o">(</span><span class="nv">$cfg</span>-&amp;gt<span class="p">;</span><span class="o">{</span>config<span class="o">}{</span>refresh<span class="o">}))</span> <span class="o">{</span>
+ push @httphead, <span class="o">(</span><span class="nt">-refresh</span> <span class="o">=</span>&amp;gt<span class="p">;</span> <span class="nv">$cfg</span>-&amp;gt<span class="p">;</span><span class="o">{</span>config<span class="o">}{</span>refresh<span class="o">})</span><span class="p">;</span>
+ <span class="o">}</span>
+ push @headeropts, <span class="o">(</span><span class="nt">-bgcolor</span> <span class="o">=</span>&amp;gt<span class="p">;</span> <span class="o">(</span><span class="nv">$cfg</span>-&amp;gt<span class="p">;</span><span class="o">{</span>config<span class="o">}{</span><span class="s1">'14all*background'</span><span class="o">}</span> <span class="o">||</span> <span class="s1">'#ffffff'</span><span class="o">))</span><span class="p">;</span>
+ my @htmlhead <span class="o">=</span> <span class="o">(</span><span class="nt">-title</span> <span class="o">=</span>&amp;gt<span class="p">;</span>
+ <span class="o">(</span><span class="nv">$dir</span> ? <span class="s2">"MRTG/14all - Group </span><span class="nv">$dir</span><span class="s2">"</span> : <span class="s2">"MRTG/14all </span><span class="nv">$version</span><span class="s2">"</span><span class="o">)</span>,
+ @headeropts<span class="o">)</span><span class="p">;</span>
+ print <span class="nv">$q</span>-&amp;gt<span class="p">;</span>header<span class="o">(</span>@httphead<span class="o">)</span>, <span class="nv">$q</span>-&amp;gt<span class="p">;</span>start_html<span class="o">(</span>@htmlhead<span class="o">)</span><span class="p">;</span>
+ my <span class="o">(</span>@dirs, %dirs, @logs<span class="o">)</span><span class="p">;</span>
+ <span class="c"># get the list of directories and "root"-targets</span>
+ <span class="c"># or get list of targets from given directory</span>
+ foreach my <span class="nv">$tar</span> <span class="o">(</span>@<span class="o">{</span><span class="nv">$cfg</span>-&amp;gt<span class="p">;</span><span class="o">{</span>sorted<span class="o">}})</span> <span class="o">{</span>
+ next <span class="k">if</span> <span class="nv">$tar</span> <span class="o">=</span>~ m/^[_<span class="se">\$\^</span><span class="o">]</span><span class="nv">$/</span><span class="p">;</span> <span class="c"># pseudo targets</span>
+ <span class="k">if</span> <span class="o">(</span><span class="nv">$cfg</span>-&amp;gt<span class="p">;</span><span class="o">{</span>targets<span class="o">}{</span>directory<span class="o">}{</span><span class="nv">$tar</span><span class="o">})</span> <span class="o">{</span>
+ <span class="k">if</span> <span class="o">(</span><span class="nv">$dir</span><span class="o">)</span> <span class="o">{</span>
+ <span class="c"># show a specified dir. check this targets dir against specified</span>
+ <span class="k">if</span> <span class="o">(</span><span class="nv">$dir</span> eq <span class="nv">$cfg</span>-&amp;gt<span class="p">;</span><span class="o">{</span>targets<span class="o">}{</span>directory<span class="o">}{</span><span class="nv">$tar</span><span class="o">})</span> <span class="o">{</span>
+ <span class="c"># target is from specified dir</span>
+ push @logs, <span class="nv">$tar</span><span class="p">;</span>
+ <span class="o">}</span>
+ next<span class="p">;</span>
+ <span class="o">}</span>
+ next <span class="k">if </span>exists <span class="nv">$dirs</span><span class="o">{</span><span class="nv">$cfg</span>-&amp;gt<span class="p">;</span><span class="o">{</span>targets<span class="o">}{</span>directory<span class="o">}{</span><span class="nv">$tar</span><span class="o">}}</span><span class="p">;</span>
+ <span class="nv">$dirs</span><span class="o">{</span><span class="nv">$cfg</span>-&amp;gt<span class="p">;</span><span class="o">{</span>targets<span class="o">}{</span>directory<span class="o">}{</span><span class="nv">$tar</span><span class="o">}}</span> <span class="o">=</span> <span class="nv">$tar</span><span class="p">;</span>
+ push @dirs, <span class="nv">$cfg</span>-&amp;gt<span class="p">;</span><span class="o">{</span>targets<span class="o">}{</span>directory<span class="o">}{</span><span class="nv">$tar</span><span class="o">}</span><span class="p">;</span>
+ <span class="o">}</span> elsif <span class="o">(!</span><span class="nv">$dir</span><span class="o">)</span> <span class="o">{</span>
+ <span class="c"># showing 'homepage', add this target</span>
+ push @logs, <span class="nv">$tar</span><span class="p">;</span>
+ <span class="o">}</span>
+ <span class="o">}</span>
+ my <span class="nv">$cfgstr</span> <span class="o">=</span> <span class="o">(</span>defined <span class="nv">$q</span>-&amp;gt<span class="p">;</span>param<span class="o">(</span><span class="s1">'cfg'</span><span class="o">)</span> ? <span class="s2">"&amp;amp;cfg="</span>.<span class="nv">$q</span>-&amp;gt<span class="p">;</span>param<span class="o">(</span><span class="s1">'cfg'</span><span class="o">)</span> : <span class="s1">''</span><span class="o">)</span><span class="p">;</span>
+ print <span class="nv">$q</span>-&amp;gt<span class="p">;</span>h1<span class="o">(</span><span class="s2">"Available Targets"</span><span class="o">)</span>,<span class="s2">"</span><span class="se">\n</span><span class="s2">"</span><span class="p">;</span>
+ my <span class="nv">$confcolumns</span> <span class="o">=</span> <span class="nv">$cfg</span>-&amp;gt<span class="p">;</span><span class="o">{</span>config<span class="o">}{</span><span class="s1">'14all*columns'</span><span class="o">}</span> <span class="o">||</span> 2<span class="p">;</span>
+ <span class="k">if</span> <span class="o">(</span><span class="nv">$#dirs</span> &amp;gt<span class="p">;</span> <span class="nt">-1</span><span class="o">)</span> <span class="o">{</span>
+ print <span class="nv">$q</span>-&amp;gt<span class="p">;</span>h2<span class="o">(</span><span class="s2">"Directories"</span><span class="o">)</span>,<span class="s2">"</span><span class="se">\n\&amp;</span><span class="s2">lt;table width=100</span><span class="se">\%</span><span class="s2">&amp;gt;</span><span class="se">\n</span><span class="s2">"</span><span class="p">;</span>
+ my <span class="nv">$column</span> <span class="o">=</span> 0<span class="p">;</span>
+ foreach my <span class="nv">$tar</span> <span class="o">(</span>@dirs<span class="o">)</span> <span class="o">{</span>
+ print <span class="s1">'&amp;lt;tr&amp;gt;'</span> <span class="k">if</span> <span class="nv">$column</span> <span class="o">==</span> 0<span class="p">;</span>
+ <span class="o">(</span>my <span class="nv">$link</span> <span class="o">=</span> <span class="nv">$tar</span><span class="o">)</span> <span class="o">=</span>~ s/ /<span class="se">\+</span>/g<span class="p">;</span>
+ chop <span class="nv">$tar</span><span class="p">;</span> <span class="c"># remove / for display (from ensureSL)</span>
+ print <span class="nv">$q</span>-&amp;gt<span class="p">;</span>td<span class="o">(</span><span class="nv">$q</span>-&amp;gt<span class="p">;</span>a<span class="o">({</span>href <span class="o">=</span>&amp;gt<span class="p">;</span> <span class="s2">"</span><span class="nv">$my14all</span><span class="s2">::meurl?dir=</span><span class="nv">$link$cfgstr</span><span class="s2">"</span><span class="o">}</span>,
+ <span class="nv">$tar</span><span class="o">))</span>,<span class="s2">"</span><span class="se">\n</span><span class="s2">"</span><span class="p">;</span>
+ <span class="nv">$column</span>++<span class="p">;</span>
+ <span class="k">if</span> <span class="o">(</span><span class="nv">$column</span> &amp;gt<span class="p">;</span><span class="o">=</span> <span class="nv">$confcolumns</span><span class="o">)</span> <span class="o">{</span>
+ <span class="nv">$column</span> <span class="o">=</span> 0<span class="p">;</span>
+ print <span class="s1">'&amp;lt;/tr&amp;gt;'</span><span class="p">;</span>
+ <span class="o">}</span>
+ <span class="o">}</span>
+ <span class="k">if</span> <span class="o">(</span><span class="nv">$column</span> <span class="o">!=</span> 0 and <span class="nv">$column</span> &amp;lt<span class="p">;</span> <span class="nv">$confcolumns</span><span class="o">)</span> <span class="o">{</span>
+ print <span class="s1">'&amp;lt;td&amp;gt;&amp;amp;nbsp;&amp;lt;/td&amp;gt;'</span> x <span class="o">(</span><span class="nv">$confcolumns</span> - <span class="nv">$column</span><span class="o">)</span>,<span class="s2">"</span><span class="se">\&amp;</span><span class="s2">lt;/tr&amp;gt;</span><span class="se">\n</span><span class="s2">"</span><span class="p">;</span>
+ <span class="o">}</span>
+ print <span class="s1">'&amp;lt;/table&amp;gt;&amp;lt;hr&amp;gt;'</span><span class="p">;</span>
+ <span class="o">}</span>
+ my <span class="nv">$pngdir</span> <span class="o">=</span> getdirwriteable<span class="o">(</span><span class="nv">$cfg</span>-&amp;gt<span class="p">;</span><span class="o">{</span>config<span class="o">}{</span>imagedir<span class="o">}</span>,<span class="nv">$dir</span><span class="o">)</span><span class="p">;</span>
+ <span class="k">if</span> <span class="o">(</span><span class="nv">$#logs</span> &amp;gt<span class="p">;</span> <span class="nt">-1</span><span class="o">)</span> <span class="o">{</span>
+ print <span class="nv">$q</span>-&amp;gt<span class="p">;</span>h2<span class="o">(</span><span class="s2">"Targets"</span><span class="o">)</span>,<span class="s2">"</span><span class="se">\n\&amp;</span><span class="s2">lt;table width=100</span><span class="se">\%</span><span class="s2">&amp;gt;</span><span class="se">\n</span><span class="s2">"</span><span class="p">;</span>
+ my <span class="nv">$column</span> <span class="o">=</span> 0<span class="p">;</span>
+ foreach my <span class="nv">$tar</span> <span class="o">(</span>@logs<span class="o">)</span> <span class="o">{</span>
+ my <span class="nv">$small</span> <span class="o">=</span> 0<span class="p">;</span>
+ unless <span class="o">(</span>yesorno<span class="o">(</span><span class="nv">$cfg</span>-&amp;gt<span class="p">;</span><span class="o">{</span>targets<span class="o">}{</span><span class="s1">'14all*dontshowindexgraph'</span><span class="o">}{</span><span class="nv">$tar</span><span class="o">}))</span> <span class="o">{</span>
+ <span class="nv">$small</span> <span class="o">=</span> <span class="nv">$cfg</span>-&amp;gt<span class="p">;</span><span class="o">{</span>targets<span class="o">}{</span><span class="s1">'14all*indexgraph'</span><span class="o">}{</span><span class="nv">$tar</span><span class="o">}</span><span class="p">;</span>
+ <span class="nv">$small</span> <span class="o">=</span> <span class="s1">'daily.s'</span> unless <span class="nv">$small</span><span class="p">;</span>
+ <span class="o">}</span>
+ next <span class="k">if</span> <span class="nv">$tar</span> <span class="o">=</span>~ m/^[<span class="se">\$\^</span>_]<span class="nv">$/</span><span class="p">;</span> <span class="c"># _ is not a real target</span>
+ print <span class="s1">'&amp;lt;tr&amp;gt;'</span> <span class="k">if</span> <span class="nv">$column</span> <span class="o">==</span> 0<span class="p">;</span>
+ print <span class="s1">'&amp;lt;td&amp;gt;'</span>,
+ <span class="nv">$q</span>-&amp;gt<span class="p">;</span>p<span class="o">(</span><span class="nv">$q</span>-&amp;gt<span class="p">;</span>a<span class="o">({</span>href <span class="o">=</span>&amp;gt<span class="p">;</span> <span class="s2">"</span><span class="nv">$my14all</span><span class="s2">::meurl?log=</span><span class="nv">$tar$cfgstr</span><span class="s2">"</span><span class="o">}</span>, <span class="nv">$cfg</span>-&amp;gt<span class="p">;</span><span class="o">{</span>targets<span class="o">}{</span>title<span class="o">}{</span><span class="nv">$tar</span><span class="o">}))</span><span class="p">;</span>
+ print <span class="nv">$q</span>-&amp;gt<span class="p">;</span>a<span class="o">({</span>href <span class="o">=</span>&amp;gt<span class="p">;</span> <span class="s2">"</span><span class="nv">$my14all</span><span class="s2">::meurl?log=</span><span class="nv">$tar$cfgstr</span><span class="s2">"</span><span class="o">}</span>,
+ <span class="nv">$q</span>-&amp;gt<span class="p">;</span>img<span class="o">({</span>src <span class="o">=</span>&amp;gt<span class="p">;</span> <span class="s2">"</span><span class="nv">$my14all</span><span class="s2">::meurl?log=</span><span class="nv">$tar</span><span class="s2">&amp;amp;png=</span><span class="nv">$small</span><span class="s2">&amp;amp;small=1</span><span class="nv">$cfgstr</span><span class="s2">"</span>,
+ alt <span class="o">=</span>&amp;gt<span class="p">;</span> <span class="s2">"index-graph"</span>,
+ getpngsize<span class="o">(</span><span class="s2">"</span><span class="nv">$pngdir$tar</span><span class="s2">-</span><span class="nv">$small</span><span class="s2">-i.png"</span><span class="o">)}))</span>
+ <span class="k">if</span> <span class="nv">$small</span><span class="p">;</span>
+ print <span class="s2">"</span><span class="se">\&amp;</span><span class="s2">lt;/td&amp;gt;</span><span class="se">\n</span><span class="s2">"</span><span class="p">;</span>
+ <span class="nv">$column</span>++<span class="p">;</span>
+ <span class="k">if</span> <span class="o">(</span><span class="nv">$column</span> &amp;gt<span class="p">;</span><span class="o">=</span> <span class="nv">$confcolumns</span><span class="o">)</span> <span class="o">{</span>
+ <span class="nv">$column</span> <span class="o">=</span> 0<span class="p">;</span>
+ print <span class="s1">'&amp;lt;/tr&amp;gt;'</span><span class="p">;</span>
+ <span class="o">}</span>
+ <span class="o">}</span>
+ <span class="k">if</span> <span class="o">(</span><span class="nv">$column</span> <span class="o">!=</span> 0 and <span class="nv">$column</span> &amp;lt<span class="p">;</span> <span class="nv">$confcolumns</span><span class="o">)</span> <span class="o">{</span>
+ print <span class="s1">'&amp;lt;td&amp;gt;&amp;amp;nbsp;&amp;lt;/td&amp;gt;'</span> x <span class="o">(</span><span class="nv">$confcolumns</span> - <span class="nv">$column</span><span class="o">)</span>,<span class="s2">"</span><span class="se">\&amp;</span><span class="s2">lt;/tr&amp;gt;</span><span class="se">\n</span><span class="s2">"</span><span class="p">;</span>
+ <span class="o">}</span>
+ print <span class="s1">'&amp;lt;/table&amp;gt;'</span><span class="p">;</span>
+ <span class="o">}</span>
+<span class="o">}</span>
+sub print_error<span class="o">(</span><span class="nv">$@</span><span class="o">)</span>
+<span class="o">{</span>
+ my <span class="nv">$q</span> <span class="o">=</span> <span class="nb">shift</span><span class="p">;</span>
+ print <span class="nv">$q</span>-&amp;gt<span class="p">;</span>header<span class="o">()</span>,
+ <span class="nv">$q</span>-&amp;gt<span class="p">;</span>start_html<span class="o">(</span>
+ <span class="nt">-title</span> <span class="o">=</span>&amp;gt<span class="p">;</span> <span class="s1">'MRTG/RRD index.cgi - Script error'</span>,
+ <span class="nt">-bgcolor</span> <span class="o">=</span>&amp;gt<span class="p">;</span> <span class="s1">'#ffffff'</span>
+ <span class="o">)</span>,
+ <span class="nv">$q</span>-&amp;gt<span class="p">;</span>h1<span class="o">(</span><span class="s1">'Script Error'</span><span class="o">)</span>,
+ @_, <span class="nv">$q</span>-&amp;gt<span class="p">;</span>end_html<span class="o">()</span><span class="p">;</span>
+ <span class="nb">exit </span>0<span class="p">;</span>
+<span class="o">}</span>
+sub intmax<span class="o">(</span>@<span class="o">)</span>
+<span class="o">{</span>
+ my <span class="o">(</span>@p<span class="o">)</span> <span class="o">=</span> @_<span class="p">;</span>
+ my <span class="nv">$max</span> <span class="o">=</span> 0<span class="p">;</span>
+ foreach my <span class="nv">$n</span> <span class="o">(</span>@p<span class="o">)</span> <span class="o">{</span>
+ <span class="nv">$max</span> <span class="o">=</span> int<span class="o">(</span><span class="nv">$n</span><span class="o">)</span> <span class="k">if </span>defined <span class="nv">$n</span> and int<span class="o">(</span><span class="nv">$n</span><span class="o">)</span> &amp;gt<span class="p">;</span> <span class="nv">$max</span><span class="p">;</span>
+ <span class="o">}</span>
+ <span class="k">return</span> <span class="nv">$max</span><span class="p">;</span>
+<span class="o">}</span>
+sub yesorno<span class="o">(</span><span class="nv">$)</span>
+<span class="o">{</span>
+ my <span class="nv">$opt</span> <span class="o">=</span> <span class="nb">shift</span><span class="p">;</span>
+ <span class="k">return </span>0 unless defined <span class="nv">$opt</span><span class="p">;</span>
+ <span class="k">return </span>0 <span class="k">if</span> <span class="nv">$opt</span> <span class="o">=</span>~ /^<span class="o">((</span>no?<span class="o">)</span>|<span class="o">(</span><span class="nb">false</span><span class="o">)</span>|0<span class="o">)</span><span class="nv">$/</span>i<span class="p">;</span>
+ <span class="k">return </span>1<span class="p">;</span>
+<span class="o">}</span>
+sub getdirwriteable<span class="o">(</span><span class="nv">$$</span><span class="o">)</span>
+<span class="o">{</span>
+ my <span class="o">(</span><span class="nv">$base</span>, <span class="nv">$sub</span><span class="o">)</span> <span class="o">=</span> @_<span class="p">;</span>
+ <span class="nv">$base</span> .<span class="o">=</span> <span class="nv">$MRTG_lib</span>::SL <span class="nb">.</span> <span class="nv">$sub</span> <span class="k">if</span> <span class="nv">$sub</span><span class="p">;</span>
+ ensureSL<span class="o">(</span><span class="se">\$</span>base<span class="o">)</span><span class="p">;</span>
+ <span class="k">if</span> <span class="o">(!</span><span class="nt">-w</span> <span class="nv">$base</span><span class="o">)</span> <span class="o">{</span>
+ <span class="k">if</span> <span class="o">(</span><span class="nv">$^</span>O <span class="o">=</span>~ m/Win/i<span class="o">)</span> <span class="o">{</span>
+ <span class="nv">$base</span> <span class="o">=</span> <span class="nv">$ENV</span><span class="o">{</span><span class="s1">'TEMP'</span><span class="o">}</span><span class="p">;</span>
+ <span class="nv">$base</span> <span class="o">=</span> <span class="nv">$ENV</span><span class="o">{</span><span class="s1">'TMP'</span><span class="o">}</span> unless <span class="nv">$base</span><span class="p">;</span>
+ <span class="nv">$base</span> <span class="o">=</span> <span class="nv">$MRTG_lib</span>::SL unless <span class="nv">$base</span><span class="p">;</span>
+ ensureSL<span class="o">(</span><span class="se">\$</span>base<span class="o">)</span><span class="p">;</span>
+ <span class="o">}</span> <span class="k">else</span> <span class="o">{</span>
+ <span class="nv">$base</span> <span class="o">=</span> <span class="s1">'/tmp/'</span><span class="p">;</span>
+ <span class="o">}</span>
+ <span class="o">}</span>
+ <span class="k">return</span> <span class="nv">$base</span><span class="p">;</span>
+<span class="o">}</span>
+use IO::File<span class="p">;</span>
+sub pngstring<span class="o">()</span> <span class="o">{</span> <span class="k">return </span>chr<span class="o">(</span>137<span class="o">)</span>.<span class="s2">"PNG"</span>.chr<span class="o">(</span>13<span class="o">)</span>.chr<span class="o">(</span>10<span class="o">)</span>.chr<span class="o">(</span>26<span class="o">)</span>.chr<span class="o">(</span>10<span class="o">)</span><span class="p">;</span> <span class="o">}</span><span class="p">;</span>
+sub getpngsize<span class="o">(</span><span class="nv">$)</span>
+<span class="o">{</span>
+ my <span class="o">(</span><span class="nv">$file</span><span class="o">)</span> <span class="o">=</span> @_<span class="p">;</span>
+ my <span class="nv">$fh</span> <span class="o">=</span> new IO::File <span class="nv">$file</span><span class="p">;</span>
+ <span class="k">return</span> <span class="o">()</span> unless defined <span class="nv">$fh</span><span class="p">;</span>
+ my <span class="nv">$line</span><span class="p">;</span>
+ <span class="k">if</span> <span class="o">(</span>sysread<span class="o">(</span><span class="nv">$fh</span>, <span class="nv">$line</span>, 8<span class="o">)</span> <span class="o">!=</span> 8 or <span class="nv">$line</span> ne pngstring<span class="o">())</span> <span class="o">{</span>
+ <span class="nv">$fh</span>-&amp;gt<span class="p">;</span>close<span class="p">;</span>
+ <span class="k">return</span> <span class="o">()</span><span class="p">;</span>
+ <span class="o">}</span>
+ CHUNKS: <span class="k">while</span><span class="o">(</span>1<span class="o">)</span> <span class="o">{</span>
+ last CHUNKS <span class="k">if</span> <span class="o">(</span>sysread<span class="o">(</span><span class="nv">$fh</span>, <span class="nv">$line</span>, 8<span class="o">)</span> <span class="o">!=</span> 8<span class="o">)</span><span class="p">;</span>
+ my <span class="o">(</span><span class="nv">$chunksize</span>, <span class="nv">$type</span><span class="o">)</span> <span class="o">=</span> unpack <span class="s2">"Na4"</span>, <span class="nv">$line</span><span class="p">;</span>
+ <span class="k">if</span> <span class="o">(</span><span class="nv">$type</span> ne <span class="s2">"IHDR"</span><span class="o">)</span> <span class="o">{</span>
+ last CHUNKS <span class="k">if</span> <span class="o">(</span>sysread<span class="o">(</span><span class="nv">$fh</span>, <span class="nv">$line</span>, <span class="nv">$chunksize</span> + 4<span class="o">)</span> <span class="o">!=</span> <span class="nv">$chunksize</span> + 4<span class="o">)</span><span class="p">;</span>
+ next CHUNKS<span class="p">;</span>
+ <span class="o">}</span>
+ last CHUNKS <span class="k">if</span> <span class="o">(</span>sysread<span class="o">(</span><span class="nv">$fh</span>, <span class="nv">$line</span>, 8<span class="o">)</span> <span class="o">!=</span> 8<span class="o">)</span><span class="p">;</span>
+ <span class="nv">$fh</span>-&amp;gt<span class="p">;</span>close<span class="p">;</span>
+ my <span class="o">(</span><span class="nv">$x</span>, <span class="nv">$y</span><span class="o">)</span> <span class="o">=</span> unpack<span class="o">(</span><span class="s2">"NN"</span>, <span class="nv">$line</span><span class="o">)</span><span class="p">;</span>
+ <span class="k">return</span> <span class="o">(</span><span class="s1">'-width'</span> <span class="o">=</span>&amp;gt<span class="p">;</span> <span class="s2">"</span><span class="nv">$x</span><span class="s2">"</span>, <span class="s1">'-height'</span> <span class="o">=</span>&amp;gt<span class="p">;</span> <span class="s2">"</span><span class="nv">$y</span><span class="s2">"</span><span class="o">)</span><span class="p">;</span>
+ <span class="o">}</span>
+ <span class="nv">$fh</span>-&amp;gt<span class="p">;</span>close<span class="p">;</span>
+ <span class="k">return</span> <span class="o">()</span><span class="p">;</span>
+<span class="o">}</span>
+<span class="c"># this data contains a small png with the text:</span>
+<span class="c"># "error: cannot create graph"</span>
+sub errorpng<span class="o">()</span>
+<span class="o">{</span>
+ <span class="k">return</span> <span class="o">(</span>
+ 137,80,78,71,13,10,26,10,0,0,0,13,73,72,68,82,0,0,0,187,0,0,0,29,4,3,0,
+ 0,0,0,251,0,170,0,0,0,4,103,65,77,65,0,0,177,143,11,252,97,5,0,0,0,30,80,
+ 76,84,69,255,0,0,255,93,93,255,128,128,255,155,155,255,176,176,255,195,
+ 195,255,212,212,255,227,227,255,241,241,255,255,255,17,191,146,253,0,0,
+ 0,56,116,69,88,116,83,111,102,116,119,97,114,101,0,88,86,32,86,101,114,
+ 115,105,111,110,32,51,46,49,48,97,32,32,82,101,118,58,32,49,50,47,50,57,
+ 47,57,52,32,40,80,78,71,32,112,97,116,99,104,32,49,46,50,41,221,21,46,73,
+ 0,0,2,40,73,68,65,84,120,218,237,147,177,107,219,64,20,198,159,34,233,92,
+ 109,130,180,132,108,55,180,78,189,169,113,8,220,166,80,106,208,230,102,
+ 48,237,118,56,246,153,219,28,7,2,183,165,77,23,109,142,101,157,244,254,
+ 219,62,73,198,113,106,211,150,144,108,254,166,143,167,79,63,221,125,167,
+ 3,216,107,175,189,94,65,136,56,223,26,58,166,224,207,71,6,114,3,175,148,
+ 220,10,136,66,47,183,134,44,254,115,114,48,252,55,126,87,192,92,248,24,
+ 254,237,173,70,110,246,95,120,182,184,17,231,242,4,103,160,79,34,213,12,
+ 117,148,224,204,205,211,159,96,205,18,24,254,162,26,105,189,198,66,29,149,
+ 96,80,10,172,29,64,154,91,55,83,30,22,92,124,43,33,152,60,86,75,229,196,
+ 172,204,68,42,83,85,114,157,70,4,97,182,218,121,121,150,187,56,41,0,111,
+ 75,254,253,54,141,197,13,64,203,154,184,138,78,114,223,158,47,222,229,156,
+ 28,128,95,104,235,150,182,115,159,244,133,53,211,160,208,215,27,71,43,153,
+ 253,36,238,223,23,96,250,250,42,84,43,188,55,58,180,174,117,16,202,208,
+ 156,166,97,114,87,237,185,211,239,72,138,230,78,217,30,126,200,220,204,
+ 35,199,225,227,67,139,240,167,189,11,33,197,244,120,17,60,180,178,39,229,
+ 60,128,136,217,156,74,211,117,227,53,30,18,164,29,211,115,11,186,155,1,
+ 155,87,120,93,157,123,204,104,77,145,65,194,215,14,68,228,90,119,9,30,173,
+ 148,108,22,72,246,20,63,167,4,91,64,71,234,213,48,116,204,89,193,31,241,
+ 57,28,173,240,46,167,104,214,237,30,229,135,21,158,92,8,162,239,85,209,
+ 100,22,72,17,251,187,241,94,93,14,64,151,6,250,171,143,108,225,173,241,
+ 235,114,146,233,177,172,162,142,13,174,91,85,57,228,160,41,39,3,205,147,
+ 166,156,77,60,98,86,227,65,163,13,117,243,189,35,196,31,30,150,107,124,
+ 36,176,228,111,170,67,71,12,235,232,172,133,101,118,128,146,28,253,160,
+ 77,52,193,84,138,20,227,77,188,82,106,232,73,104,115,120,171,46,160,71,
+ 3,26,58,131,49,135,193,229,136,238,141,130,17,244,184,171,46,193,165,39,
+ 78,239,170,142,142,67,71,125,30,194,32,38,71,249,193,200,82,212,31,183,
+ 99,241,101,76,247,207,219,125,223,158,41,49,111,126,134,202,70,47,9,110,
+ 228,151,230,238,21,241,123,237,245,162,250,13,181,158,203,16,233,3,210,
+ 153,0,0,0,7,116,73,77,69,7,208,1,19,13,28,15,223,54,180,209,0,0,0,0,73,
+ 69,78,68,174,66,96,130
+ <span class="o">)</span><span class="p">;</span>
+<span class="o">}</span>
+sub gettextpic<span class="o">(</span><span class="nv">$)</span> <span class="o">{</span>
+ my <span class="o">(</span><span class="nv">$text</span><span class="o">)</span> <span class="o">=</span> @_<span class="p">;</span>
+ my @textsplit <span class="o">=</span> <span class="nb">split</span><span class="o">(</span>/<span class="se">\n</span>/, <span class="nv">$text</span><span class="o">)</span><span class="p">;</span>
+ my <span class="nv">$len</span> <span class="o">=</span> 0<span class="p">;</span>
+ my <span class="nv">$max</span> <span class="o">=</span> sub <span class="o">{</span> <span class="nv">$_</span><span class="o">[</span>0] &amp;gt<span class="p">;</span> <span class="nv">$_</span><span class="o">[</span>1] ? <span class="nv">$_</span><span class="o">[</span>0] : <span class="nv">$_</span><span class="o">[</span>1] <span class="o">}</span><span class="p">;</span>
+ my @rrdargs<span class="p">;</span>
+ foreach <span class="o">(</span>@textsplit<span class="o">)</span> <span class="o">{</span>
+ <span class="nv">$len</span> <span class="o">=</span> &amp;amp<span class="p">;</span><span class="nv">$max</span><span class="o">(</span><span class="nv">$len</span>, length<span class="o">(</span><span class="nv">$_</span><span class="o">))</span><span class="p">;</span>
+ push @rrdargs, <span class="s2">"COMMENT:</span><span class="nv">$_</span><span class="se">\\</span><span class="s2">l"</span><span class="p">;</span>
+ <span class="o">}</span>
+ <span class="nb">eval</span> <span class="o">{</span> require GD<span class="p">;</span> 1<span class="p">;</span> <span class="o">}</span><span class="p">;</span>
+ unless <span class="o">(</span><span class="nv">$@</span><span class="o">)</span> <span class="o">{</span>
+ my <span class="nv">$ys</span> <span class="o">=</span> @textsplit <span class="k">*</span> <span class="o">(</span>GD::gdMediumBoldFont<span class="o">()</span>-&amp;gt<span class="p">;</span>height + 5<span class="o">)</span><span class="p">;</span>
+ my <span class="nv">$xs</span> <span class="o">=</span> <span class="nv">$len</span> <span class="k">*</span> GD::gdMediumBoldFont<span class="o">()</span>-&amp;gt<span class="p">;</span>width<span class="o">()</span><span class="p">;</span>
+ my <span class="nv">$im</span> <span class="o">=</span> new GD::Image<span class="o">(</span><span class="nv">$xs</span> + 20, <span class="nv">$ys</span> + 20<span class="o">)</span><span class="p">;</span>
+ my <span class="nv">$back</span> <span class="o">=</span> <span class="nv">$im</span>-&amp;gt<span class="p">;</span>colorAllocate<span class="o">(</span>255,255,255<span class="o">)</span><span class="p">;</span>
+ <span class="nv">$im</span>-&amp;gt<span class="p">;</span>transparent<span class="o">(</span><span class="nv">$back</span><span class="o">)</span><span class="p">;</span>
+ my <span class="nv">$red</span> <span class="o">=</span> <span class="nv">$im</span>-&amp;gt<span class="p">;</span>colorAllocate<span class="o">(</span>255,0,0<span class="o">)</span><span class="p">;</span>
+ <span class="nv">$im</span>-&amp;gt<span class="p">;</span>filledRectangle<span class="o">(</span>0,0,<span class="nv">$xs</span><span class="nt">-1</span>,<span class="nv">$ys</span><span class="nt">-1</span>,<span class="nv">$back</span><span class="o">)</span><span class="p">;</span>
+ my <span class="nv">$starty</span> <span class="o">=</span> 10<span class="p">;</span>
+ foreach <span class="nv">$text</span> <span class="o">(</span>@textsplit<span class="o">)</span> <span class="o">{</span>
+ <span class="nv">$im</span>-&amp;gt<span class="p">;</span>string<span class="o">(</span>GD::gdMediumBoldFont<span class="o">()</span>, 10, <span class="nv">$starty</span>, <span class="nv">$text</span>, <span class="nv">$red</span><span class="o">)</span><span class="p">;</span>
+ <span class="nv">$starty</span> +<span class="o">=</span> 5 + GD::gdMediumBoldFont<span class="o">()</span>-&amp;gt<span class="p">;</span>height<span class="p">;</span>
+ <span class="o">}</span>
+ binmode<span class="o">(</span>STDOUT<span class="o">)</span><span class="p">;</span>
+ <span class="k">if</span> <span class="o">(</span><span class="nv">$GD</span>::VERSION lt <span class="s1">'1.20'</span><span class="o">)</span> <span class="o">{</span>
+ <span class="c">#eval 'print $im-&amp;gt;gif';</span>
+ <span class="k">return</span> <span class="o">(</span><span class="nv">$im</span>-&amp;gt<span class="p">;</span>gif<span class="o">()</span>, <span class="s1">'image/gif'</span><span class="o">)</span><span class="p">;</span>
+ <span class="o">}</span> elsif <span class="o">(</span><span class="nv">$GD</span>::VERSION ge <span class="s1">'1.20'</span><span class="o">)</span> <span class="o">{</span>
+ <span class="k">return</span> <span class="o">(</span><span class="nv">$im</span>-&amp;gt<span class="p">;</span>png<span class="o">()</span>, <span class="s1">'image/png'</span><span class="o">)</span><span class="p">;</span>
+ <span class="o">}</span>
+ <span class="o">}</span>
+ <span class="k">if</span> <span class="o">(</span><span class="nv">$ENV</span><span class="o">{</span>MOD_PERL<span class="o">})</span> <span class="o">{</span>
+ <span class="c"># forking a RRDs child doesn't work with mod_perl</span>
+ <span class="k">return</span> <span class="o">(</span>pack<span class="o">(</span><span class="s2">"C*"</span>, errorpng<span class="o">())</span>, <span class="s1">'image/png'</span><span class="o">)</span><span class="p">;</span>
+ <span class="o">}</span>
+ <span class="c"># create a graphic with rrdtool</span>
+ <span class="nv">$len</span> <span class="o">=</span> &amp;amp<span class="p">;</span><span class="nv">$max</span><span class="o">(</span><span class="nv">$len</span><span class="k">*</span>6-60,50<span class="o">)</span><span class="p">;</span>
+ unshift @rrdargs, <span class="o">(</span><span class="s1">'-'</span>, <span class="s1">'-w'</span>, <span class="nv">$len</span>, <span class="s1">'-h'</span>, 10, <span class="s1">'-c'</span>, <span class="s1">'FONT#ff0000'</span><span class="o">)</span><span class="p">;</span>
+ my <span class="nv">$pid</span> <span class="o">=</span> open<span class="o">(</span>P, <span class="s2">"-|"</span><span class="o">)</span><span class="p">;</span>
+ unless <span class="o">(</span>defined <span class="nv">$pid</span><span class="o">)</span> <span class="o">{</span>
+ <span class="k">return</span> <span class="o">(</span>pack<span class="o">(</span><span class="s2">"C*"</span>, errorpng<span class="o">())</span>, <span class="s1">'image/png'</span><span class="o">)</span><span class="p">;</span>
+ <span class="o">}</span>
+ unless <span class="o">(</span><span class="nv">$pid</span><span class="o">)</span> <span class="o">{</span>
+ RRDs::graph<span class="o">(</span>@rrdargs<span class="o">)</span><span class="p">;</span>
+ <span class="nb">exit </span>0<span class="p">;</span>
+ <span class="o">}</span>
+ <span class="nb">local</span> <span class="nv">$/</span> <span class="o">=</span> undef<span class="p">;</span>
+ my <span class="nv">$png</span> <span class="o">=</span> &amp;lt<span class="p">;</span>P&amp;gt<span class="p">;;</span>
+ close P<span class="p">;</span>
+ unless <span class="o">(</span>defined <span class="nv">$png</span><span class="o">)</span> <span class="o">{</span>
+ <span class="k">return</span> <span class="o">(</span>pack<span class="o">(</span><span class="s2">"C*"</span>, errorpng<span class="o">())</span>, <span class="s1">'image/png'</span><span class="o">)</span><span class="p">;</span>
+ <span class="o">}</span>
+ <span class="k">return</span> <span class="o">(</span><span class="nv">$png</span>, <span class="s1">'image/png'</span><span class="o">)</span><span class="p">;</span>
+<span class="o">}</span>
+sub log_rrdtool_call<span class="o">(</span><span class="nv">$$</span>@<span class="o">)</span> <span class="o">{</span>
+ my <span class="o">(</span><span class="nv">$logfile</span>, <span class="nv">$error</span>, @args<span class="o">)</span> <span class="o">=</span> @_<span class="p">;</span>
+ <span class="k">return </span>unless yesorno<span class="o">(</span><span class="nv">$logfile</span><span class="o">)</span><span class="p">;</span>
+ unless <span class="o">(</span>open<span class="o">(</span>LOG, <span class="s1">'&amp;gt;&amp;gt;'</span>.<span class="nv">$logfile</span><span class="o">))</span> <span class="o">{</span>
+ print STDERR <span class="s2">"cannot log rrdtool call: </span><span class="nv">$!</span><span class="se">\n</span><span class="s2">"</span><span class="p">;</span>
+ <span class="k">return</span><span class="p">;</span>
+ <span class="o">}</span>
+ print LOG <span class="s2">"</span><span class="se">\n</span><span class="s2"># call to rrdtool:</span><span class="se">\n</span><span class="s2">rrdtool "</span><span class="p">;</span>
+ foreach my <span class="nv">$arg</span> <span class="o">(</span>@args<span class="o">)</span> <span class="o">{</span>
+ <span class="k">if</span> <span class="o">(</span>ref<span class="o">(</span><span class="nv">$arg</span><span class="o">)</span> eq <span class="s1">'ARRAY'</span><span class="o">)</span> <span class="o">{</span>
+ print LOG <span class="nb">join</span><span class="o">(</span><span class="s1">' '</span>,@<span class="nv">$arg</span><span class="o">)</span>,<span class="s1">' '</span><span class="p">;</span>
+ <span class="o">}</span> <span class="k">else</span> <span class="o">{</span>
+ print LOG <span class="nv">$arg</span>,<span class="s2">" "</span><span class="p">;</span>
+ <span class="o">}</span>
+ <span class="o">}</span>
+ print LOG <span class="s2">"</span><span class="se">\n</span><span class="s2">"</span><span class="p">;</span>
+ <span class="k">if</span> <span class="o">(</span><span class="nv">$error</span><span class="o">)</span> <span class="o">{</span>
+ print LOG <span class="s2">"# gave ERROR: </span><span class="nv">$error</span><span class="se">\n</span><span class="s2">"</span><span class="p">;</span>
+ <span class="o">}</span> <span class="k">else</span> <span class="o">{</span>
+ print LOG <span class="s2">"# completed without error</span><span class="se">\n</span><span class="s2">"</span><span class="p">;</span>
+ <span class="o">}</span>
+ close LOG<span class="p">;</span>
+<span class="o">}</span>
+</code></pre></div></div>
+<p>Change the permission of the CGI file</p>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="o">[</span>root@localhost]# <span class="nb">chmod </span>777 /var/www/cgi-bin/14all.cgi
+</code></pre></div></div>
+
+<p>Note: Please make sure to allow the httpd in your SELinux &amp; IPtables or disable both SELinux &amp; IPtables
+Its done…… now lets test our MRTG installation.</p>
+
+<p>Open the browser window &amp;  type in http://localhost/mrtg or http://serverIP/mrtg</p>
+
+<p>Thanks
+Guys please share your comments about the blog  if you found this useful also let me know if you faced any issues during the process.</p>
+
+<p>Enjoy…..</p>
+
+        
+      </section>
+
+      <footer class="page__meta">
+        
+        
+
+
+        
+
+  <p class="page__date"><strong><i class="fas fa-fw fa-calendar-alt" aria-hidden="true"></i> Updated:</strong> <time class="dt-published" datetime="2014-10-24T00:00:00+05:30">October 24, 2014</time></p>
+
+      </footer>
+
+      
+
+      
+  <nav class="pagination">
+    
+      <a href="/2014/09/15/how-to-install-tomcat-8-on-centos-rhel-multiple-instances.html" class="pagination--pager" title="How To Install Tomcat 8 On Centos Rhel Multiple Instances">Previous</a>
+    
+    
+      <a href="/2014/11/07/mrtg-rrd-installation-script-for-centos.html" class="pagination--pager" title="Mrtg Rrd Installation Script For Centos">Next</a>
+    
+  </nav>
+
+
+    </div>
+
+    
+  </article>
+
+  
+  
+</div>
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="site-footer">
+      <p>&copy; 2025 Shivam's Tech Blog</p>
+    </footer>
+  </body>
+</html>
